@@ -15,8 +15,9 @@ int	main()
     socklen_t addrlen = sizeof(address);
 
 	// create a socket with domain local and type TCP socket
-	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd < 0){
+	int sockfd;
+
+	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		perror("socket failed");
 		exit(1);
 	}
@@ -25,7 +26,7 @@ int	main()
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
 
-	if (bind(sockfd, (struct sockaddr*)&address, sizeof(address) < 0)){
+	if (bind(sockfd, (struct sockaddr*)&address, sizeof(address)) < 0){
 		perror("bind failed");
 		exit(1);
 	}
@@ -54,17 +55,4 @@ int	main()
     // closing the listening socket
     close(sockfd);
     return 0;
-
-
-
-
-
-
-
-
-
-
-	
-
-
 }
