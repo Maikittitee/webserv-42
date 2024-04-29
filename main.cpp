@@ -46,9 +46,9 @@ int	main()
 
 	read(new_socket, buffer, 1024 - 1);
 
+	printf("this is request message\n");
 	printf("%s\n", buffer);
-    send(new_socket, "hello", 5, 0);
-    printf("Hello message sent\n");
+
  
     // closing the connected socket
     close(new_socket);
