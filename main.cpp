@@ -6,14 +6,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define PORT 8080
+#define PORT 24
 
 int	main()
 {
 	struct sockaddr_in address;
 	char buffer[1024];
     socklen_t addrlen = sizeof(address);
-	char *msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 225\r\n\r\n<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n<meta charset=\"UTF-8\">\r\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n<title>Hello World</title>\r\n</head>\r\n<body>\r\n<h1>Hello, World!</h1>\r\n</body>\r\n</html>\r\n\0";
+	char *msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\nContent-Length: 214\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Hello World</title>\n</head>\n<body>\n<h1>Hello, World!</h1>\n</body>\n</html>\n\0";
 
 	// create a socket with domain local and type TCP socket
 	int sockfd;

@@ -1,4 +1,4 @@
-NAME	= a.out
+NAME	= webserv
 
 CC		= c++
 RM		= rm -f
