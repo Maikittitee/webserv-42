@@ -13,6 +13,7 @@ int	main()
 	struct sockaddr_in address;
 	char buffer[1024];
     socklen_t addrlen = sizeof(address);
+	char *msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 225\r\n\r\n<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n<meta charset=\"UTF-8\">\r\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n<title>Hello World</title>\r\n</head>\r\n<body>\r\n<h1>Hello, World!</h1>\r\n</body>\r\n</html>\r\n\0";
 
 	// create a socket with domain local and type TCP socket
 	int sockfd;
@@ -48,6 +49,8 @@ int	main()
 
 	printf("this is request message\n");
 	printf("%s\n", buffer);
+	send(new_socket, msg, strlen(msg), 0);
+	printf("send response\n");
 
  
     // closing the connected socket
