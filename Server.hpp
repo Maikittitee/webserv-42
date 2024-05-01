@@ -11,12 +11,17 @@
 
 class Server{
 	public:
-		int client_fd;
-		int server_fd;
+		int _client_fd;
+		int _server_fd;
+		struct sockaddr_in _address;
+    	socklen_t _addrlen;
+		int _server_port;
 
-		struct sockaddr_in address;
-    	socklen_t addrlen = sizeof(address);
+		Server(int port);
 
+		class PortNotExist: public std::exception{
+			char *what() const throw();
+		};
 
 };
 

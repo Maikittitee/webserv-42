@@ -7,6 +7,10 @@
  
 int main(int argc, char const* argv[])
 {
+
+	// server
+
+
     int status, valread, client_fd;
     struct sockaddr_in serv_addr;
     char* hello = "Hello from client";
