@@ -31,6 +31,8 @@ class Request{
 		};
 		std::vector<std::string> _accept;
 		int _content_length;
+
+		std::string _body;
 };
 
 

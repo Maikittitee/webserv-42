@@ -7,8 +7,6 @@
 #include <unistd.h>
 #include "Server.hpp"
 
-#define PORT 24
-
 int	main()
 {
 	Server server(8384);
