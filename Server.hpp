@@ -18,10 +18,14 @@ class Server{
 		int _server_port;
 
 		Server(int port);
+		~Server();
 
 		class PortNotExist: public std::exception{
 			char *what() const throw();
 		};
+
+		bool run_server();
+		void send_response(char *response, int client_fd);
 
 };
 
