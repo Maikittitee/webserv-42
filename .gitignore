@@ -1,0 +1,4 @@
+*.o
+.vscode/
+webserv
+.DS_Store
