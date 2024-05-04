@@ -6,6 +6,36 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "../include/Server.hpp"
+#include "../include/Location.hpp"
+#include "../include/Request.hpp"
+
+Request* mock_file_request(void)
+{
+	Request *ret = new Request();
+
+
+	// for example
+	// GET /docs/test.html HTTP/1.1
+	ret->_method = GET;
+	ret->_path = "docs/test.html";
+	ret->_http_version = HTTP11;
+
+	// for example
+	// Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+	ret->_accept.push_back(std::make_tuple(0.9, "text/html"));
+	ret->_accept.push_back(std::make_tuple(0.9, "application/xhtml+xml"));
+	ret->_accept.push_back(std::make_tuple(0.9, "application/xml"));
+	ret->_accept.push_back(std::make_tuple(0.8, "*/*"));
+
+	ret->_body = "";
+
+	return (ret);
+
+}
+
+
+
+
 
 int	main()
 {

@@ -6,31 +6,24 @@
 #	include <sys/socket.h>
 #	include <netinet/in.h>
 #	include <stdio.h>
+#	include <tuple>
 #	include <stdlib.h>
 #	include <unistd.h>
+#	include "Utils.hpp"
+
+
+
 
 class Request{
 	public:
-		Request(std::string request);
-		~Request( void );
+		Request(std::string request){};
+		Request( void ){};
+		~Request( void ){};
 
-
-		enum _method{
-			ELSE,
-			GET,
-			POST,
-			DELETE,
-			HEAD,
-		};
+		t_method _method;
 		std::string _path;
-		enum _version{
-			HTTP09, // HTTP/0.9
-			HTTP10, // HTTP/1.0
-			HTTP11, // HTTP/1.1
-			HTTP00, // else
-		};
-		std::vector<std::string> _accept;
-		int _content_length;
+		t_version _http_version;	
+		std::vector<std::tuple <float, std::string > > _accept; // accept type ex. text/html
 
 		std::string _body;
 };

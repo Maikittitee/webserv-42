@@ -8,6 +8,7 @@
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <unistd.h>
+#	include "Utils.hpp"
 
 struct return_t {
 	bool		have;	// if there is a return 1 (true)
@@ -15,13 +16,6 @@ struct return_t {
 	std::string	text;	// Option
 };
 
-typedef enum e_method{
-			ELSE,
-			GET,
-			POST,
-			DELETE,
-			HEAD,
-} t_method;
 
 class Location{
 	public:
@@ -29,7 +23,6 @@ class Location{
 		bool						autoIndex;
 		std::vector<t_method>		allowMethod;
 		uint64_t					cliBodySize;
-		std::string					path;	// path
 		std::string					root;
 		std::vector<std::string>	index;
 		return_t					ret;
