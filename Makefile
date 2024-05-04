@@ -4,9 +4,13 @@ CC		= c++
 RM		= rm -f
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 
-SRCS	= main.cpp Server.cpp
+SRCS_PATH = srcs
 
-HEADER	= Server.cpp
+INCLUDE_PATH = include
+
+SRCS	= $(wildcard $(SRCS_PATH)/*.cpp)
+
+HEADER	= $(wildcard $(INCLUDE_PATH)/*.hpp)
 
 OBJS	= $(SRCS:.cpp=.o)
 
