@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "../include/Server.hpp"
 
 Server::Server(int port){
 	if (port < 0 || port > 65535)
