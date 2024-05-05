@@ -47,3 +47,15 @@ char *Server::PortNotExist::what() const throw(){
 	return ("Your port is not in range of 0 - 65535");
 }
 
+std::string Server::classify_request(Request &request, Location &location)
+{
+	std::string response;
+	if (request._method == GET){
+		// check is cgi is on or off
+		// check is file exist
+		// readfile and create response
+
+	}
+
+	
+}

@@ -8,6 +8,12 @@
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <unistd.h>
+#	include "Location.hpp"
+#	include "Request.hpp"
+
+class Request;
+
+class Location;
 
 class Server{
 	public:
@@ -25,8 +31,11 @@ class Server{
 		};
 
 		bool run_server();
+		std::string classify_request(Request &request, Location &location);
 		void send_response(char *response, int client_fd);
+		
 
+		std::string method_get(Request &request)
 };
 
 #endif

@@ -26,6 +26,8 @@ class Request{
 		std::vector<std::tuple <float, std::string > > _accept; // accept type ex. text/html
 
 		std::string _body;
+
+		
 };
 
 
