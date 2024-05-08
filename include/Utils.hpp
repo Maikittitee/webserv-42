@@ -1,6 +1,10 @@
 #ifndef WS_UTILS_HPP
 # define WS_UTILS_HPP
 
+#	include <iostream>
+#	include <string>
+#	include <fstream>
+
 typedef enum e_method{
 			ELSE,
 			GET,
@@ -15,5 +19,8 @@ typedef enum e_version{
 	HTTP11, // HTTP/1.1
 	HTTP00, // else
 } t_version;
+
+bool	readFile(std::string &buff, std::string const &filename);
+void	replace_str(std::string &str, std::string s1, std::string s2);
 
 #endif

@@ -50,10 +50,21 @@ char *Server::PortNotExist::what() const throw(){
 std::string Server::classify_request(Request &request, Location &location)
 {
 	std::string response;
-	if (request._method == GET){
-		// check is cgi is on or off
+	std::string body;
+	if (location.cgiPass){
+		// go cgi;
+	}else{
 		// check is file exist
-		// readfile and create response
+		if (access(request._path.c_str(), F_OK | R_OK) < 0){
+			std::cout << "404 " << request._path << " doesn't exist." << std::endl;
+			// error_page(404);
+		}
+		if (!readFile(body, request._path)){
+			std::cout << "readfile error" << std::endl;
+		}
+		replace_str(body, "\n", "\r\n");
+		std::cout << "---------" << std::endl;
+		std::cout << body << std::endl;
 
 	}
 
