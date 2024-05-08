@@ -50,7 +50,10 @@ char *Server::PortNotExist::what() const throw(){
 std::string Server::classify_request(Request &request, Location &location)
 {
 	std::string response;
+	
 	std::string body;
+
+
 	if (location.cgiPass){
 		// go cgi;
 	}else{
@@ -63,10 +66,7 @@ std::string Server::classify_request(Request &request, Location &location)
 			std::cout << "readfile error" << std::endl;
 		}
 		replace_str(body, "\n", "\r\n");
-		std::cout << "---------" << std::endl;
-		std::cout << body << std::endl;
-
 	}
-
-	
+	response = create_response(body);
+	return (body);	
 }

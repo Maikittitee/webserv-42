@@ -32,10 +32,16 @@ class Server{
 
 		bool run_server();
 		std::string classify_request(Request &request, Location &location);
+		std::string create_response(std::string body);
+
+
+
+
+
 		void send_response(char *response, int client_fd);
 		
 
-		std::string method_get(Request &request)
+		std::string method_get(Request &request);
 };
 
 #endif

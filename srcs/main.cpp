@@ -21,10 +21,10 @@ Request* mock_file_request(void)
 
 	// for example
 	// Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-	ret->_accept.push_back(std::make_tuple(0.9, "text/html"));
-	ret->_accept.push_back(std::make_tuple(0.9, "application/xhtml+xml"));
-	ret->_accept.push_back(std::make_tuple(0.9, "application/xml"));
-	ret->_accept.push_back(std::make_tuple(0.8, "*/*"));
+	ret->_accept.push_back(std::make_pair(0.9, "text/html"));
+	ret->_accept.push_back(std::make_pair(0.9, "application/xhtml+xml"));
+	ret->_accept.push_back(std::make_pair(0.9, "application/xml"));
+	ret->_accept.push_back(std::make_pair(0.8, "*/*"));
 
 	ret->_body = "";
 	return (ret);
@@ -45,6 +45,9 @@ int	main()
 	Server server(8384);
 	Request *req = mock_file_request();
 	Location *loc = mock_location();
+
+	server.classify_request(*req, *loc);
+	std::cout << "bp2\n";
 
 
 }
