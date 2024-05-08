@@ -17,7 +17,7 @@ Request* mock_file_request(void)
 	// GET /docs/test.html HTTP/1.1
 	ret->_method = GET;
 	ret->_path = "docs/test.html";
-	ret->_http_version = HTTP11;
+	ret->_http_version = "HTTP/1.1";
 
 	// for example
 	// Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
@@ -40,40 +40,40 @@ Location *mock_location(void)
 
 
 
-int	main()
-{
-	Server server(8384);
-	Request *req = mock_file_request();
-	Location *loc = mock_location();
-
-	server.classify_request(*req, *loc);
-	std::cout << "bp2\n";
-
-
-}
-
 // int	main()
 // {
 // 	Server server(8384);
-// 	char buffer[1024];
-// 	char *msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\nContent-Length: 214\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Hello World</title>\n</head>\n<body>\n<h1>Hello, World!</h1>\n</body>\n</html>\n\0";
+// 	Request *req = mock_file_request();
+// 	Location *loc = mock_location();
 
-// 	// parsing config here
+// 	server.classify_request(*req, *loc);
+// 	// std::cout << "bp2\n";
 
-// 	server.run_server();
 
-
-// 	read(server._client_fd, buffer, 1024 - 1);
-
-// 	// parsing request here
-
-// 	printf("this is request message\n");
-// 	printf("%s\n", buffer);
-
-// 	// cgi & responce here
-
-// 	server.send_response(msg, server._client_fd);
-// 	printf("send response\n");
-
-//     return 0;
 // }
+
+int	main()
+{
+	Server server(8384);
+	char buffer[1024];
+	Request *req = mock_file_request();
+	Location *loc = mock_location();
+	// char *msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\nContent-Length: 214\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Hello World</title>\n</head>\n<body>\n<h1>Hello, World!</h1>\n</body>\n</html>\n\0";
+
+	// parsing config here
+
+	server.run_server();
+	read(server._client_fd, buffer, 1024 - 1);
+
+	// parsing request here
+
+	printf("this is request message\n");
+	printf("%s\n", buffer);
+
+	// cgi & responce here
+	std::string response = server.classify_request(*req, *loc);
+	server.send_response(response.c_str(), server._client_fd);
+	printf("send response\n");
+
+    return 0;
+}

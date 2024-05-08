@@ -38,7 +38,7 @@ bool Server::run_server(void)
 	return (true);
 }
 
-void Server::send_response(char *response, int client_fd)
+void Server::send_response(const char *response, int client_fd)
 {
 	send(client_fd, response, strlen(response), 0);
 }
@@ -60,13 +60,45 @@ std::string Server::classify_request(Request &request, Location &location)
 		// check is file exist
 		if (access(request._path.c_str(), F_OK | R_OK) < 0){
 			std::cout << "404 " << request._path << " doesn't exist." << std::endl;
-			// error_page(404);
+			location.ret.code = 404;
+			location.ret.have = false;
+			// body = error_page(404, location);
 		}
-		if (!readFile(body, request._path)){
-			std::cout << "readfile error" << std::endl;
+		else {
+			if (!readFile(body, request._path)){
+				std::cout << "readfile error" << std::endl;
+			}
+			location.ret.code = 200;
+			location.ret.text = "OK";
+			replace_str(body, "\n", "\r\n");
 		}
-		replace_str(body, "\n", "\r\n");
 	}
-	response = create_response(body);
-	return (body);	
+	response = create_response(body, request, location);
+	return (response);	
+}
+
+std::string Server::create_response(std::string body, Request &request, Location &location)
+{
+	int content_length = strlen(body.c_str());
+	std::string content_type = "text/html";
+	std::string response;
+	
+	// content_type = mime_decoder();
+
+	response = request._http_version + " " + std::to_string(location.ret.code) + " " + location.ret.text + "\r\n";
+	response += "Content-Type: " + content_type + "\r\n";
+	response += "Content-Length: " + std::to_string(content_length) + "\r\n";
+	
+	response += "\r\n";
+	response += body;
+
+	std::cout << "-++++++++++\n";
+	std::cout << response; 
+
+
+	return (response);
+
+
+
+
 }
