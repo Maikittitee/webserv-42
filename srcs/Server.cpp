@@ -52,27 +52,28 @@ std::string Server::classify_request(Request &request, Location &location)
 	std::string response;
 	
 	std::string body;
+	
+	// is_path match in config; => N:404
+	
+	// is allow mathod => N:405
+
+	// is cgi => y:do cgi
+
+	// is path
+	//	is path => add index
+
+	//	is access file => N:404
+
+	//	body = readfile and \r\n
+
+	// is cliBodySize => 413
 
 
-	if (location.cgiPass){
-		// go cgi;
-	}else{
-		// check is file exist
-		if (access(request._path.c_str(), F_OK | R_OK) < 0){
-			std::cout << "404 " << request._path << " doesn't exist." << std::endl;
-			location.ret.code = 404;
-			location.ret.have = false;
-			// body = error_page(404, location);
-		}
-		else {
-			if (!readFile(body, request._path)){
-				std::cout << "readfile error" << std::endl;
-			}
-			location.ret.code = 200;
-			location.ret.text = "OK";
-			replace_str(body, "\n", "\r\n");
-		}
-	}
+
+	
+
+	
+	
 	response = create_response(body, request, location);
 	return (response);	
 }
