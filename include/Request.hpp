@@ -23,8 +23,6 @@ class Request{
 		t_method _method;
 		std::string _path;
 		std::string _http_version;	
-		std::vector<std::pair <float, std::string > > _accept; // accept type ex. text/html
-
 		std::string _body;
 
 		

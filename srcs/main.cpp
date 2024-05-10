@@ -19,13 +19,6 @@ Request* mock_file_request(void)
 	ret->_path = "docs/test.html";
 	ret->_http_version = "HTTP/1.1";
 
-	// for example
-	// Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-	ret->_accept.push_back(std::make_pair(0.9, "text/html"));
-	ret->_accept.push_back(std::make_pair(0.9, "application/xhtml+xml"));
-	ret->_accept.push_back(std::make_pair(0.9, "application/xml"));
-	ret->_accept.push_back(std::make_pair(0.8, "*/*"));
-
 	ret->_body = "";
 	return (ret);
 
