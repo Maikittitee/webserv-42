@@ -6,6 +6,7 @@
 #	include <sys/socket.h>
 #	include <netinet/in.h>
 #	include <stdio.h>
+#	include <map>
 #	include <stdlib.h>
 #	include <unistd.h>
 #	include "Location.hpp"
@@ -22,6 +23,7 @@ class Server{
 		struct sockaddr_in _address;
     	socklen_t _addrlen;
 		int _server_port;
+		std::map<std::string, Location> _config;
 
 		Server(int port);
 		~Server();
@@ -31,9 +33,10 @@ class Server{
 		};
 
 		bool run_server();
-		std::string classify_request(Request &request, Location &location);
+		std::string classify_request(Request &request);
 		std::string create_response(std::string body, Request &request,Location &location);
-
+		
+		std::string errorPage(int error_code);
 
 
 

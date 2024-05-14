@@ -46,14 +46,32 @@ void Server::send_response(const char *response, int client_fd)
 char *Server::PortNotExist::what() const throw(){
 	return ("Your port is not in range of 0 - 65535");
 }
+std::string Server::errorPage(int error_code)
+{
+	std::string body;
 
-std::string Server::classify_request(Request &request, Location &location)
+	switch (error_code){
+		case 404:
+			readFile(body, "docs/error.html");
+		case 405:
+			readFile(body, "docs/error.html");
+	}
+	return (body);
+}
+
+std::string Server::classify_request(Request &request)
 {
 	std::string response;
 	
 	std::string body;
 	
+	// find config associate with the request
+
+	auto conf = _config.find(request._path);
+
 	// is_path match in config; => N:404
+	if (conf == _config.end())
+		body = errorPage(404);
 	
 	// is allow mathod => N:405
 
