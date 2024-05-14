@@ -24,8 +24,7 @@ class Request{
 		std::string _path;
 		std::string _http_version;	
 		std::string _body;
-
-		
+		std::string _query_string;
 };
 
 
