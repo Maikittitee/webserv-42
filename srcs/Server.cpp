@@ -38,7 +38,7 @@ bool Server::run_server(void)
 	return (true);
 }
 
-void Server::send_response(char *response, int client_fd)
+void Server::send_response(const char *response, int client_fd)
 {
 	send(client_fd, response, strlen(response), 0);
 }
@@ -46,4 +46,78 @@ void Server::send_response(char *response, int client_fd)
 char *Server::PortNotExist::what() const throw(){
 	return ("Your port is not in range of 0 - 65535");
 }
+std::string Server::errorPage(int error_code)
+{
+	std::string body;
 
+	switch (error_code){
+		case 404:
+			readFile(body, "docs/error.html");
+		case 405:
+			readFile(body, "docs/error.html");
+	}
+	return (body);
+}
+
+std::string Server::classify_request(Request &request)
+{
+	std::string response;
+	
+	std::string body;
+	
+	// find config associate with the request
+
+	auto conf = _config.find(request._path);
+
+	// is_path match in config; => N:404
+	if (conf == _config.end())
+		body = errorPage(404);
+	
+	// is allow mathod => N:405
+
+	// is cgi => y:do cgi
+
+	// is path
+	//	is path => add index
+
+	//	is access file => N:404
+
+	//	body = readfile and \r\n
+
+	// is cliBodySize => 413
+
+
+
+	
+
+	
+	
+	response = create_response(body, request, location);
+	return (response);	
+}
+
+std::string Server::create_response(std::string body, Request &request, Location &location)
+{
+	int content_length = strlen(body.c_str());
+	std::string content_type = "text/html";
+	std::string response;
+	
+	// content_type = mime_decoder();
+
+	response = request._http_version + " " + std::to_string(location.ret.code) + " " + location.ret.text + "\r\n";
+	response += "Content-Type: " + content_type + "\r\n";
+	response += "Content-Length: " + std::to_string(content_length) + "\r\n";
+	
+	response += "\r\n";
+	response += body;
+
+	std::cout << "-++++++++++\n";
+	std::cout << response; 
+
+
+	return (response);
+
+
+
+
+}
