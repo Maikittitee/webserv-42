@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/17 13:03:31 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/19 20:12:24 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,7 @@ std::string	ft_trimtab(std::string line)
 	size_t	end;
 
 	start = line.find_first_not_of("	");
-	// std::cout << "start : " << start << std::endl;
 	end = line.find_last_not_of("	");
-	// std::cout << "end : " << end << std::endl;
 	
 	if (start != std::string::npos &&  end != 0)
 		return (line.substr(start, end - start));
@@ -151,7 +149,6 @@ int main(int ac ,char **av)
 		return(std::cerr << "Error : Could not open file : " << av[1] << std::endl, 0);
 	if (ft_check_extension(av[1]) == false)
 		return (std::cerr << "Error : extension file" << std::endl, 0);
-	// std::cout << "test" << std::endl;
 	int i = 0;
 	while(std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
