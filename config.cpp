@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/19 20:12:24 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/19 20:15:24 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ std::string	ft_getvalue(std::string key, std::string sp_line)
 			i++;
 		}
 	}
-	// std::cout << "[value] : " << value << std::endl;
 	return (value);
 }
 // std::string	ft_getvalue(std::string txt)
