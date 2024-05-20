@@ -35,7 +35,9 @@ class Server{
 		bool run_server();
 		std::string classify_request(Request &request);
 		std::string create_response(std::string body, Request &request,Location &location);
-		
+		std::string get_body(Request &request, Location &conf);
+		std::string Server::do_cgi(Request &request);
+			
 		std::string errorPage(int error_code);
 
 

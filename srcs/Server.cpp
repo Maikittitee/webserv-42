@@ -59,43 +59,57 @@ std::string Server::errorPage(int error_code)
 	return (body);
 }
 
+std::string Server::do_cgi(Request &request)
+{
+	
+}
+
+std::string Server::get_body(Request &request, Location &conf)
+{
+	std::string body;
+	
+	// is allow mathod => N:405
+	
+	//	is path => add index
+	
+	//	is access file => N:404
+	if (access(request._path.c_str(), F_OK) < 0)
+		return (errorPage(404));
+
+
+	//is cgi => y:do cgi
+	if (conf.cgiPass)
+		body = do_cgi(request);
+	else{
+		readFile(body, request._path.c_str());
+	}
+	replace_str(body, "\n", "\r\n");
+	if (strlen(body.c_str()) > conf.cliBodySize)
+		return (errorPage(413));
+		
+	return (body);
+}
+
 std::string Server::classify_request(Request &request)
 {
 	std::string response;
-	
 	std::string body;
 	
 	// find config associate with the request
-
 	auto conf = _config.find(request._path);
 
 	// is_path match in config; => N:404
 	if (conf == _config.end())
 		body = errorPage(404);
-	
-	// is allow mathod => N:405
+	else
+		body = get_body(request, conf->second);
 
-	// is cgi => y:do cgi
-
-	// is path
-	//	is path => add index
-
-	//	is access file => N:404
-
-	//	body = readfile and \r\n
-
-	// is cliBodySize => 413
-
-
-
-	
-
-	
-	
-	response = create_response(body, request, location);
+	response = create_response(body, request, conf->second);
 	return (response);	
 }
 
+
+// mocking up
 std::string Server::create_response(std::string body, Request &request, Location &location)
 {
 	int content_length = strlen(body.c_str());
