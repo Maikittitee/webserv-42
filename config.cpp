@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/22 14:28:39 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/22 14:37:15 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ std::string ft_getkey(std::string txt)
 			i++;
 		while (txt[i]) // keep txt
 		{
-			if (txt[i] && (txt[i] == '{' || txt[i] == '}' || txt[i] == ';' || isspace(txt[i])))
+			if (txt[i] && (txt[i] == '{' || txt[i] == '}' || isspace(txt[i])))
 				break;
 			key += txt[i];
 			i++;
