@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/22 14:37:15 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/22 17:38:42 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ std::string	ft_trimtab(std::string line)
 	end = line.find_last_not_of("	");
 	
 	if (start != std::string::npos &&  end != 0)
-		return (line.substr(start, end - start));
-	return ("");
+		return (line.substr(start, end - start + 1));
+	return (line);
 }
 
 std::string	ft_trimsp(std::string line)
@@ -53,9 +53,16 @@ std::string	ft_trim(std::string line, char c)
 	end = line.find_last_not_of(c);
 	// std::cout << "end : " << end << std::endl;
 	
+	// std::string::npos is position that string doesn't match
+	// end != 0 -> checks if there are any non-key characters at the end of the string.
+	
 	if (start != std::string::npos &&  end != 0)
-		return (line.substr(start, end - start));
-	return ("");
+		return (line.substr(start, end - start + 1));
+	/* Incase string and char have 1 charater and same text*/
+	if (start == std::string::npos && end == std::string::npos)
+		return ("");
+	// std::cout << "test" << std::endl;
+	return (line);	
 }
 bool	ft_check_extension(char	*file)
 {
@@ -66,33 +73,40 @@ bool	ft_check_extension(char	*file)
 		return (true);
 	return (false);
 }
-std::string	ft_getvalue(std::string key, std::string sp_line)
+std::string	ft_getvalue(std::string key, std::string line)
 {
 	int			i;
 	std::string	value;
 
 	i = 0;
-	while (sp_line[i])
+	std::cout << "ft_getvalue" << std::endl;
+	std::cout << key << ":" << line << std::endl;
+
+	while (line[i])
 	{
-		
-		while (sp_line[i] == key[i])
+		// std::cout  << "Entry" << std::endl;
+		while (isspace(line[i])) // escape space
 			i++;
-		while (sp_line[i] && isspace(sp_line[i]))
+		while (line[i] == key[i]) // escape key
 			i++;
-		while (sp_line[i] != ';' && sp_line[i])
+		while (line[i] && isspace(line[i]))
+			i++;
+		while (line[i] != ';' && line[i])
 		{
-			value += sp_line[i];
+			value += line[i];
 			// value.append(sp_line[i]);
 			i++;
 		}
 	}
+	std::cout << "End of ft_getvalue" << std::endl << std::endl;
 	return (value);
 }
 std::string ft_getkey(std::string txt)
 {
 	int	i;
 	std::string key;
-
+	
+	key = "";
 	i = 0;
 	
 	// std::cout << "ft_getkey" << std::endl;
@@ -113,7 +127,21 @@ std::string ft_getkey(std::string txt)
 	return (key);
 }
 
-
+std::string	ft_trim_ispace(std::string line)
+{
+	char is_sp[5] = {'\t', '\n', '\v', '\f', '\r'};
+	std::string	sp_line;
+	int	i;
+	
+	i = 0;
+	sp_line = ft_trim(line, ' ');
+	while (i < 4)
+	{
+		sp_line = ft_trim(sp_line, is_sp[i]);
+		i++;
+	}
+	return (sp_line);	
+}
 
 int main(int ac ,char **av)
 {
@@ -134,10 +162,12 @@ int main(int ac ,char **av)
 	while(std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		
-		key = ft_getkey(line);
+		sp_line = ft_trim_ispace(line);
+		std::cout << "|" << sp_line << "|" << std::endl;
+		// key = ft_getkey(line);
+		// if (!key.empty())
+		// 	value = ft_getvalue(key, line);
 		// std::cout << "before value" << std::endl;
-		// value = ft_getvalue(key, sp_line);
-		// if (key.empty())
 			// std::cout << "Empty" << std::endl;
 		// else if ( key != "{" && key != "}")
 		// std::cout << key << " : " << value << std::endl;
