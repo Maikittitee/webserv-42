@@ -28,6 +28,7 @@ Location *mock_location(void)
 {
 	Location *ret = new Location();
 	ret->cgiPass = false;
+	ret->cliBodySize = 100000000;
 	return (ret);
 }
 
@@ -51,6 +52,7 @@ int	main()
 	char buffer[1024];
 	Request *req = mock_file_request();
 	Location *loc = mock_location();
+	server._config.insert(std::pair<std::string, Location>("docs/test.html", *loc));
 	// char *msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\nContent-Length: 214\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Hello World</title>\n</head>\n<body>\n<h1>Hello, World!</h1>\n</body>\n</html>\n\0";
 
 	// parsing config here
@@ -64,7 +66,7 @@ int	main()
 	printf("%s\n", buffer);
 
 	// cgi & responce here
-	std::string response = server.classify_request(*req, *loc);
+	std::string response = server.classify_request(*req);
 	server.send_response(response.c_str(), server._client_fd);
 	printf("send response\n");
 

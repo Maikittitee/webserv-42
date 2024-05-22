@@ -11,6 +11,10 @@
 #	include <unistd.h>
 #	include "Location.hpp"
 #	include "Request.hpp"
+#	include "Mime.hpp"
+#	include <time.h>
+
+class Mime;
 
 class Request;
 
@@ -24,6 +28,7 @@ class Server{
     	socklen_t _addrlen;
 		int _server_port;
 		std::map<std::string, Location> _config;
+		Mime _mime;
 
 		Server(int port);
 		~Server();
@@ -36,7 +41,8 @@ class Server{
 		std::string classify_request(Request &request);
 		std::string create_response(std::string body, Request &request,Location &location);
 		std::string get_body(Request &request, Location &conf);
-		std::string Server::do_cgi(Request &request);
+		std::string get_date(void);
+		std::string do_cgi(Request &request);
 			
 		std::string errorPage(int error_code);
 

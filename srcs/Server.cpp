@@ -81,6 +81,7 @@ std::string Server::get_body(Request &request, Location &conf)
 	if (conf.cgiPass)
 		body = do_cgi(request);
 	else{
+		std::cout << "readfile" << std::endl;;
 		readFile(body, request._path.c_str());
 	}
 	replace_str(body, "\n", "\r\n");
@@ -108,26 +109,43 @@ std::string Server::classify_request(Request &request)
 	return (response);	
 }
 
+std::string Server::get_date(void)
+{
+	char buf[1000];
+	std::string ret = "";
+	time_t now = time(0);
+	struct tm tm = *gmtime(&now);
+	strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
 
+	int i = 0;
+	while (buf[i])
+	{
+		ret += buf[i];
+		i++;
+	}
+	std::cout << "Now time is " << buf << std::endl;
+	return (ret);
+
+
+}
 // mocking up
 std::string Server::create_response(std::string body, Request &request, Location &location)
 {
 	int content_length = strlen(body.c_str());
-	std::string content_type = "text/html";
+	std::string content_type = _mime.get_mime_type(request._path);
 	std::string response;
 	
-	// content_type = mime_decoder();
-
 	response = request._http_version + " " + std::to_string(location.ret.code) + " " + location.ret.text + "\r\n";
 	response += "Content-Type: " + content_type + "\r\n";
+	response += "Date: " + get_date() + "\r\n";
 	response += "Content-Length: " + std::to_string(content_length) + "\r\n";
+
 	
 	response += "\r\n";
 	response += body;
 
-	std::cout << "-++++++++++\n";
-	std::cout << response; 
-
+	std::cout << "+-+-+-" << std::endl;
+	std::cout << response;
 
 	return (response);
 

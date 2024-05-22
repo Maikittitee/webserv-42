@@ -100,11 +100,3 @@ std::string Mime::get_mime_type(std::string filename)
 	return (mime_pair->second);
 
 }
-
-int main()
-{
-	// std::cout << "hello" << std::endl;
-	Mime mime;
-
-	std::cout << mime.get_type("eie.html") << std::endl;
-}
