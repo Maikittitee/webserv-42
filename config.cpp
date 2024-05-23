@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/22 17:38:42 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/23 09:33:38 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ std::string	ft_trim(std::string line, char c)
 	/* Incase string and char have 1 charater and same text*/
 	if (start == std::string::npos && end == std::string::npos)
 		return ("");
-	// std::cout << "test" << std::endl;
 	return (line);	
 }
 bool	ft_check_extension(char	*file)
@@ -79,26 +78,23 @@ std::string	ft_getvalue(std::string key, std::string line)
 	std::string	value;
 
 	i = 0;
-	std::cout << "ft_getvalue" << std::endl;
-	std::cout << key << ":" << line << std::endl;
-
 	while (line[i])
 	{
 		// std::cout  << "Entry" << std::endl;
-		while (isspace(line[i])) // escape space
-			i++;
+		// while (isspace(line[i])) // escape space
+		// 	i++;
 		while (line[i] == key[i]) // escape key
 			i++;
 		while (line[i] && isspace(line[i]))
 			i++;
-		while (line[i] != ';' && line[i])
+		while ((line[i] != ';' || line[i] != '{' || line[i] != '}') && line[i])
 		{
 			value += line[i];
 			// value.append(sp_line[i]);
 			i++;
 		}
+		break;
 	}
-	std::cout << "End of ft_getvalue" << std::endl << std::endl;
 	return (value);
 }
 std::string ft_getkey(std::string txt)
@@ -110,20 +106,14 @@ std::string ft_getkey(std::string txt)
 	i = 0;
 	
 	// std::cout << "ft_getkey" << std::endl;
-	while (txt[i])
-	{	
-		while (txt[i] && isspace(txt[i])) // escape isspace
-			i++;
-		while (txt[i]) // keep txt
-		{
-			if (txt[i] && (txt[i] == '{' || txt[i] == '}' || isspace(txt[i])))
-				break;
-			key += txt[i];
-			i++;
-		}
-		break;
+	while (txt[i]) // keep txt
+	{
+		if (txt[i] && (txt[i] == '{' || txt[i] == '}' || isspace(txt[i])))
+			break;
+		key += txt[i];
+		i++;
 	}
-	std::cout << "|" << key << "|" << std::endl;  
+	// std::cout << "|" << key << "|" << std::endl;  
 	return (key);
 }
 
@@ -163,13 +153,14 @@ int main(int ac ,char **av)
 	{
 		
 		sp_line = ft_trim_ispace(line);
-		std::cout << "|" << sp_line << "|" << std::endl;
-		// key = ft_getkey(line);
+		key = ft_getkey(sp_line);
 		// if (!key.empty())
-		// 	value = ft_getvalue(key, line);
-		// std::cout << "before value" << std::endl;
-			// std::cout << "Empty" << std::endl;
-		// else if ( key != "{" && key != "}")
+		if (key[0] == '\0')
+			continue;
+		else
+			value = ft_getvalue(key, sp_line);
+		std::cout << "[key]   : |" << key << "|" << std::endl;
+		std::cout << "[value] : |" << value  << "|" << std::endl;
 		// std::cout << key << " : " << value << std::endl;
 		// i++;
 		// if (i == 4)
