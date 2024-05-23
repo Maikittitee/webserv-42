@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/23 09:44:51 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/23 11:15:03 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,11 @@ std::string ft_getkey(std::string txt)
 	i = 0;
 	
 	// std::cout << "ft_getkey" << std::endl;
+	if (txt == "}")
+	{	
+		key = "}";
+		return (key);
+	}	
 	while (txt[i]) // keep txt
 	{
 		if (txt[i] && (txt[i] == '{' || txt[i] == '}' || isspace(txt[i])))
@@ -132,6 +137,25 @@ std::string	ft_trim_ispace(std::string line)
 	}
 	return (sp_line);	
 }
+bool	ft_getlocate(std::string key, std::string value, std::string sp_line)
+{
+	bool locate;
+	
+	locate = true;
+	if (key != "location")
+		return (false);
+	// std::cout << "[key_locate]   : |" << key << "|" << std::endl;
+	// std::cout << "[value_locate] : |" << value  << "|" << std::endl;
+	// std::cout << "sp_line : " << sp_line << std::endl;
+	if (key == "}") 
+		locate = false;
+	return (locate);
+}
+
+bool	ft_check_locate(std::string key)
+{
+	
+}
 
 int main(int ac ,char **av)
 {
@@ -140,6 +164,7 @@ int main(int ac ,char **av)
 	std::string	key;
 	std::string	value;
 	std::string	sp_line;
+	bool		locate;
 	
 	if (ac != 2)
 		return(std::cerr << "Error : Expected 2 arguments" << std::endl, 0);
@@ -149,23 +174,27 @@ int main(int ac ,char **av)
 	if (ft_check_extension(av[1]) == false)
 		return (std::cerr << "Error : extension file" << std::endl, 0);
 	int i = 0;
-	while(std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
+	locate = true;
+	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		
 		sp_line = ft_trim_ispace(line);
 		key = ft_getkey(sp_line);
+		if (key == "location")
+			locate = true;
 		if (key.empty())
 			continue;
 		else
 			value = ft_getvalue(key, sp_line);
-		std::cout << "[key]   : |" << key << "|" << std::endl;
-		std::cout << "[value] : |" << value  << "|" << std::endl;
+		// std::cout << "[key]   : |" << key << "|" << std::endl;
+		// std::cout << "[value] : |" << value  << "|" << std::endl;
+		if (locate == true) // check prob word of locate
+			locate = ft_getlocate(key, value, sp_line);
 		// std::cout << key << " : " << value << std::endl;
 		// i++;
 		// if (i == 4)
 		// 	break;
 		// std::cout << line << std::endl;
-		
 	}
 	input_file.close();
 	return (0);
