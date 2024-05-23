@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/23 09:33:38 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/23 09:44:51 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,7 @@ int main(int ac ,char **av)
 		
 		sp_line = ft_trim_ispace(line);
 		key = ft_getkey(sp_line);
-		// if (!key.empty())
-		if (key[0] == '\0')
+		if (key.empty())
 			continue;
 		else
 			value = ft_getvalue(key, sp_line);
