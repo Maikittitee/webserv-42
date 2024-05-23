@@ -148,8 +148,4 @@ std::string Server::create_response(std::string body, Request &request, Location
 	std::cout << response;
 
 	return (response);
-
-
-
-
 }
