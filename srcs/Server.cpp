@@ -122,10 +122,9 @@ std::string Server::get_date(void)
 		ret += buf[i++];
 	std::cout << "Now time is " << buf << std::endl;
 	return (ret);
-
-
 }
 // mocking up
+
 std::string Server::create_response(std::string body, Request &request, Location &location)
 {
 	int content_length = strlen(body.c_str());
