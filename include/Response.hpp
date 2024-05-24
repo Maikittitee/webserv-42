@@ -7,6 +7,7 @@
 # include <string>
 # include <time.h>
 # include <sstream>
+# include "Mime.hpp"
 
 class Request;
 
@@ -15,6 +16,7 @@ class Response{
 		int _return_code;
 		std::string _header;
 		std::string _body;
+		std::string _content_type;
 
 		Response(int return_code, std::string body);
 		void genarate_header();

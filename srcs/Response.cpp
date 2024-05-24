@@ -11,8 +11,13 @@ void Response::genarate_header(void)
 	std::stringstream header;
 
 	header << "HTTP/1.1 ";
-	header << "200 OK\r\n";
-	header <<  "Content-Type: text/html\r\n";
+	header << _return_code;
+	header << " ";
+	header << status_def();
+	header << "\r\n";
+	header <<  "Content-Type: ";
+	header << _content_type;
+	header << "\r\n";
 	header << "Date: "; 
 	header << get_date();
 	header << "\r\n";
@@ -27,6 +32,9 @@ void Response::genarate_header(void)
 
 std::string Response::status_def(void)
 {
+	if (_return_code == 200)
+		return ("OK");
+	return ("ERROR");
 
 }
 

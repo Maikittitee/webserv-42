@@ -97,7 +97,6 @@ std::string Server::get_body(Request &request, Location &conf, int &return_code)
 
 std::string Server::classify_request(Request &request)
 {
-	// std::string response;
 	std::string body;
 	int			return_code;
 	
@@ -113,49 +112,7 @@ std::string Server::classify_request(Request &request)
 		body = get_body(request, conf->second, return_code);
 
 	Response response = Response(return_code, body);
+	response._content_type = _mime.get_mime_type(request._path);
 	response.genarate_header();
-	// response = create_response(body, request, conf->second);
 	return (response.get_response_text());	
-}
-
-
-// should be on Response
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
-std::string Server::get_date(void)
-{
-	char buf[1000];
-	std::string ret = "";
-	time_t now = time(0);
-	struct tm tm = *gmtime(&now);
-	strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
-
-	int i = 0;
-	while (buf[i])
-	{
-		ret += buf[i];
-		i++;
-	}
-	std::cout << "Now time is " << buf << std::endl;
-	return (ret);
-}
-// mocking up
-std::string Server::create_response(std::string body, Request &request, Location &location)
-{
-	int content_length = strlen(body.c_str());
-	std::string content_type = _mime.get_mime_type(request._path);
-	std::string response;
-	
-	response = request._http_version + " " + std::to_string(location.ret.code) + " " + location.ret.text + "\r\n";
-	response += "Content-Type: " + content_type + "\r\n";
-	response += "Date: " + get_date() + "\r\n";
-	response += "Content-Length: " + std::to_string(content_length) + "\r\n";
-
-	
-	response += "\r\n";
-	response += body;
-
-	std::cout << "+-+-+-" << std::endl;
-	std::cout << response;
-
-	return (response);
 }
