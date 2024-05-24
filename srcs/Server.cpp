@@ -119,10 +119,7 @@ std::string Server::get_date(void)
 
 	int i = 0;
 	while (buf[i])
-	{
-		ret += buf[i];
-		i++;
-	}
+		ret += buf[i++];
 	std::cout << "Now time is " << buf << std::endl;
 	return (ret);
 
