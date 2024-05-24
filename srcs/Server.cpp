@@ -64,7 +64,7 @@ std::string Server::do_cgi(Request &request)
 	
 }
 
-std::string Server::get_body(Request &request, Location &conf)
+std::string Server::get_body(Request &request, Location &conf, int &return_code)
 {
 	std::string body;
 	
@@ -73,8 +73,10 @@ std::string Server::get_body(Request &request, Location &conf)
 	//	is path => add index
 	
 	//	is access file => N:404
-	if (access(request._path.c_str(), F_OK) < 0)
+	if (access(request._path.c_str(), F_OK) < 0){
+		return_code = 404;
 		return (errorPage(404));
+	}
 
 
 	//is cgi => y:do cgi
@@ -85,30 +87,40 @@ std::string Server::get_body(Request &request, Location &conf)
 		readFile(body, request._path.c_str());
 	}
 	replace_str(body, "\n", "\r\n");
-	if (strlen(body.c_str()) > conf.cliBodySize)
+	if (strlen(body.c_str()) > conf.cliBodySize){
+		return_code = 413;
 		return (errorPage(413));
-		
+	}
+	return_code = 200;	
 	return (body);
 }
 
 std::string Server::classify_request(Request &request)
 {
-	std::string response;
+	// std::string response;
 	std::string body;
+	int			return_code;
 	
 	// find config associate with the request
 	auto conf = _config.find(request._path);
 
 	// is_path match in config; => N:404
-	if (conf == _config.end())
+	if (conf == _config.end()){
 		body = errorPage(404);
+		return_code = 404;
+	}
 	else
-		body = get_body(request, conf->second);
+		body = get_body(request, conf->second, return_code);
 
-	response = create_response(body, request, conf->second);
-	return (response);	
+	Response response = Response(return_code, body);
+	response.genarate_header();
+	// response = create_response(body, request, conf->second);
+	return (response.get_response_text());	
 }
 
+
+// should be on Response
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 std::string Server::get_date(void)
 {
 	char buf[1000];
