@@ -13,7 +13,9 @@ void Response::genarate_header(void)
 	header << "HTTP/1.1 ";
 	header << "200 OK\r\n";
 	header <<  "Content-Type: text/html\r\n";
-	// response += "Date: " + get_date() + "\r\n";
+	header << "Date: "; 
+	header << get_date();
+	header << "\r\n";
 	header << "Content-Length: ";
 	header << strlen(_body.c_str());
 	header << "\r\n";
@@ -30,6 +32,13 @@ std::string Response::status_def(void)
 
 std::string Response::get_response_text(void)
 {
+	std::stringstream response;
+
+	response << _header;
+	response << "\r\n";
+	response << _body;
+
+	return (response.str());
 
 }
 
@@ -44,9 +53,6 @@ std::string Response::get_date(void)
 
 	int i = 0;
 	while (buf[i])
-	{
-		ret += buf[i];
-		i++;
-	}
+		ret += buf[i++];
 	return (ret);
 }
