@@ -137,8 +137,6 @@ std::string Server::get_date(void)
 	}
 	std::cout << "Now time is " << buf << std::endl;
 	return (ret);
-
-
 }
 // mocking up
 std::string Server::create_response(std::string body, Request &request, Location &location)

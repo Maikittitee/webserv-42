@@ -8,6 +8,7 @@
 #include "../include/Server.hpp"
 #include "../include/Location.hpp"
 #include "../include/Request.hpp"
+#include "../include/Response.hpp"
 
 Request* mock_file_request(void)
 {

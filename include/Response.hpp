@@ -6,6 +6,7 @@
 # include <iostream>
 # include <string>
 # include <time.h>
+# include <sstream>
 
 class Request;
 
@@ -16,9 +17,10 @@ class Response{
 		std::string _body;
 
 		Response(int return_code, std::string body);
-		std::string genarate_header();
+		void genarate_header();
 		std::string status_def();
 		std::string get_response_text();
+		std::string get_date();
 
 
 };
