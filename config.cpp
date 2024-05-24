@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/23 11:15:03 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/24 22:29:35 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,8 @@ bool	ft_getlocate(std::string key, std::string value, std::string sp_line)
 	// std::cout << "[key_locate]   : |" << key << "|" << std::endl;
 	// std::cout << "[value_locate] : |" << value  << "|" << std::endl;
 	// std::cout << "sp_line : " << sp_line << std::endl;
+	
+	// if check key == gzip , include -> link to other function
 	if (key == "}") 
 		locate = false;
 	return (locate);
@@ -154,7 +156,11 @@ bool	ft_getlocate(std::string key, std::string value, std::string sp_line)
 
 bool	ft_check_locate(std::string key)
 {
-	
+	if (key == "root" || key == "return" \
+	|| key == "index" || key == "autoindex"
+	|| key == "cgi_pass" || key == "client_max_body_size")
+		return (true);
+	return (false);
 }
 
 int main(int ac ,char **av)
@@ -177,7 +183,7 @@ int main(int ac ,char **av)
 	locate = true;
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
-		
+		// write new code for trim isspace
 		sp_line = ft_trim_ispace(line);
 		key = ft_getkey(sp_line);
 		if (key == "location")
@@ -188,7 +194,7 @@ int main(int ac ,char **av)
 			value = ft_getvalue(key, sp_line);
 		// std::cout << "[key]   : |" << key << "|" << std::endl;
 		// std::cout << "[value] : |" << value  << "|" << std::endl;
-		if (locate == true) // check prob word of locate
+		if (ft_check_locate(key) == true && locate == true) // check prob word of locate
 			locate = ft_getlocate(key, value, sp_line);
 		// std::cout << key << " : " << value << std::endl;
 		// i++;
