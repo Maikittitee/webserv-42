@@ -28,7 +28,9 @@ class Server{
 		struct sockaddr_in _address;
     	socklen_t _addrlen;
 		int _server_port;
-		std::map<std::string, Location> _config;
+
+		std::map<std::string, Location> _config; 
+		
 		Mime _mime;
 
 		Server(int port);
