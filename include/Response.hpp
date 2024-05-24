@@ -9,14 +9,12 @@ class Request;
 
 class Response{
 	public:
-		std::string	_http_version;
-		int return_code;
-		std::string content_type;
-		std::string date_time;
-		std::string body;
+		int _return_code;
+		std::string _header;
+		std::string _body;
 
-		Response(Request request);
-		std::string generate_header();
+		Response(int return_code, std::string header, std::string body);
+		std::string get_status_text();
 
 
 };
