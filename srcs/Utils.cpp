@@ -38,3 +38,20 @@ void	replace_str(std::string &str, std::string s1, std::string s2)
 		index = found_pos + s2.length();
 	}
 }
+
+std::vector<std::string> splitToVector(const std::string& str, char delimiter) 
+{
+    std::vector<std::string> tokens;
+    std::string::size_type start = 0;
+    std::string::size_type end = 0;
+
+    while ((end = str.find(delimiter, start)) != std::string::npos)
+	{
+        if (end != start)
+            tokens.push_back(str.substr(start, end - start));
+        start = end + 1;
+    }
+    if (start < str.length())
+        tokens.push_back(str.substr(start));
+    return tokens;
+}

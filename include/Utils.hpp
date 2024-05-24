@@ -11,7 +11,14 @@ typedef enum e_method{
 			POST,
 			DELETE,
 			HEAD,
+			PUT,
+			NONE
 } t_method;
+
+typedef enum e_requestErrorCode{
+			SUCESS_REQUEST
+			BAD_REQUESTLINE
+} t_reqErr;
 
 typedef enum e_version{
 	HTTP09, // HTTP/0.9
