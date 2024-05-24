@@ -22,10 +22,10 @@ class Request{
 
 		t_method _method;
 		std::string _path;
-		t_version _http_version;	
-		std::vector<std::tuple <float, std::string > > _accept; // accept type ex. text/html
-
+		std::string _http_version;	
 		std::string _body;
+		std::string _query_string;
+		int			write_fd;
 };
 
 
