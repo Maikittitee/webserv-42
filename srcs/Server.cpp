@@ -62,10 +62,10 @@ std::string Server::errorPage(int error_code)
 std::string Server::do_cgi(Request &request)
 {
 	// pass
-	
+	return ("cgiiiiii");
 }
 
-std::string Server::routing(Request &request)
+std::string Server::rout(Request &request)
 {
 	Response response;
 

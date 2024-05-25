@@ -41,7 +41,7 @@ class Server{
 		};
 
 		bool run_server();
-		std::string routing(Request &request);
+		std::string rout(Request &request);
 		std::string do_cgi(Request &request);
 			
 		std::string errorPage(int error_code);

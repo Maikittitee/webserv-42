@@ -67,7 +67,7 @@ int	main()
 	printf("%s\n", buffer);
 
 	// cgi & responce here
-	std::string response = server.classify_request(*req);
+	std::string response = server.rout(*req);
 	server.send_response(response.c_str(), server._client_fd);
 	printf("send response\n");
 
