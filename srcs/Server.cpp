@@ -59,7 +59,7 @@ std::string Server::errorPage(int error_code)
 	return (body);
 }
 
-char* Server::do_cgi(Request &request)
+std::string Server::do_cgi(Request &request)
 {
 	// pass
 	
@@ -76,7 +76,7 @@ std::string Server::routing(Request &request)
 	// send request and target config to response;
 	response.receive_request(request, /* mock -> */ _config.begin()->second);
 	if (response._return_code >= 400) // incase error => redirect to error file
-		response.set_body(std::to_string(response._return_code) + ".html");
+		response.set_body(errorPage(response._return_code));
 	if (response._return_code < 0) // incase cgi => redirect to do cgi
 		response.set_body(do_cgi(request));
 	response.genarate_header();

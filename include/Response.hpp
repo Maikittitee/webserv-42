@@ -27,7 +27,7 @@ class Response{
 		~Response();
 		void		receive_request(Request &request, Location &config);
 		void		set_body(std::string filename);
-		void		set_body(char *content);
+		std::string		get_body_from_file(std::string filename);
 		void		genarate_header(void);
 		std::string status_def();
 		std::string get_response_text();

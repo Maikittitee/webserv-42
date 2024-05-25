@@ -24,7 +24,7 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 	}
 	else{
 		std::cout << "readfile" << std::endl;;
-		set_body(request._path);
+		set_body(get_body_from_file(request._path));
 	}
 	if (strlen(body.c_str()) > conf.cliBodySize){
 		_return_code = 413;
@@ -90,17 +90,18 @@ std::string Response::get_date(void)
 	return (ret);
 }
 
-void		Response::set_body(std::string filename)
+std::string		Response::get_body_from_file(std::string filename)
 {
 	std::string body;
 	
 	readFile(body, filename.c_str());
 	replace_str(body, "\n", "\r\n");
 
-	_body = body;
+	return (body);
+
 }
 
-void		Response::set_body(char *content)
+void		Response::set_body(std::string content)
 {
-	// pass
+	_body = content;
 }
