@@ -16,6 +16,9 @@ typedef enum e_requestErrorCode{
 			EMPTHY_REQUEST
 			INVALID_METHOD
 			BAD_REQUESTLINE
+			METHOD_OUTOFRANGE
+			BAD_HEADERFIELD
+			BAD_HTTPREQUEST
 } t_reqErr;
 
 class Request{
@@ -55,7 +58,7 @@ class Request{
 		t_reqErr	_reqErr;
 		t_method	_method;
 		std::string	_path;
-		std::string	_http_version;
+		t_version	_http_version;
 		std::string	_host;
 		std::string	_body;
 		std::string	_query_string;
@@ -65,14 +68,15 @@ class Request{
 		int			write_fd;
 	
 		std::map<std::string, int>	_method_map;
-		std::map<std::string, int>	_headerField_map;
+		std::map<std::string, std::string>	_headerField_map;
 
 		// Method
 		bool		_collectRequestToVector(std::string &request);
 		bool		_readRequestLine( void );
 		bool		_readRequestHeaderField( void );
-		bool		_readRequestMassageBody( void );
+		void		_readRequestMassageBody( void );
 		int			_reqErrMsg( void );
+
 };
 
 

@@ -55,3 +55,23 @@ std::vector<std::string> splitToVector(const std::string& str, char delimiter)
         tokens.push_back(str.substr(start));
     return tokens;
 }
+
+void	trimLeadingSpaces(std::string& str) 
+{
+	size_t start = str.find_first_not_of(' ');
+	if (start != std::string::npos)
+		str = str.substr(start);
+}
+
+void	trimTrailingSpaces(std::string& str)
+{
+    size_t end = str.find_last_not_of(' ');
+    if (end != std::string::npos)
+        str = str.substr(0, end + 1);
+}
+
+void	trimSpaces(std::string& str) 
+{
+    trimLeadingSpaces(str);
+    trimTrailingSpaces(str);
+}
