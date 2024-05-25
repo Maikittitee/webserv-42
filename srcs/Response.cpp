@@ -1,10 +1,35 @@
 #include "../include/Response.hpp"
 
-Response::Response(int return_code, std::string body): _return_code(return_code), _body(body){
-	std::cout << "response instant was created" << std::endl;
+Response::Response(void) {}
+
+Response::~Response(void) {}
+
+void	Response::receive_request(Request &request, Location &conf) // for body and return code
+{
+	std::string body;
+
+	_return_code = 200;
+	
+	// is allow mathod => N:405
+	
+	//	is path => add index
+	
+	//	is access file => N:404
+	if (access(request._path.c_str(), F_OK) < 0){
+		_return_code = 404;
+	}
+	//is cgi => y:do cgi
+	if (conf.cgiPass){
+		_return_code = -1;
+	}
+	else{
+		std::cout << "readfile" << std::endl;;
+		set_body(request._path);
+	}
+	if (strlen(body.c_str()) > conf.cliBodySize){
+		_return_code = 413;
+	}
 }
-
-
 
 void Response::genarate_header(void)
 {
@@ -25,7 +50,7 @@ void Response::genarate_header(void)
 	header << strlen(_body.c_str());
 	header << "\r\n";
 
-	_header = header.str();
+	this->_header = header.str();
 
 
 }
@@ -63,4 +88,19 @@ std::string Response::get_date(void)
 	while (buf[i])
 		ret += buf[i++];
 	return (ret);
+}
+
+void		Response::set_body(std::string filename)
+{
+	std::string body;
+	
+	readFile(body, filename.c_str());
+	replace_str(body, "\n", "\r\n");
+
+	_body = body;
+}
+
+void		Response::set_body(char *content)
+{
+	// pass
 }

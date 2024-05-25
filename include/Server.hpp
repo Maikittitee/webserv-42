@@ -41,9 +41,8 @@ class Server{
 		};
 
 		bool run_server();
-		std::string classify_request(Request &request);
-		std::string get_body(Request &request, Location &conf, int &return_code);
-		std::string do_cgi(Request &request);
+		std::string routing(Request &request);
+		char * do_cgi(Request &request);
 			
 		std::string errorPage(int error_code);
 

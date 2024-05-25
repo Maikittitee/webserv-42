@@ -7,9 +7,14 @@
 # include <string>
 # include <time.h>
 # include <sstream>
+#include <unistd.h>
 # include "Mime.hpp"
+# include "Request.hpp"
+# include "Location.hpp"
 
 class Request;
+
+class Location;
 
 class Response{
 	public:
@@ -18,8 +23,12 @@ class Response{
 		std::string _body;
 		std::string _content_type;
 
-		Response(int return_code, std::string body);
-		void genarate_header();
+		Response();
+		~Response();
+		void		receive_request(Request &request, Location &config);
+		void		set_body(std::string filename);
+		void		set_body(char *content);
+		void		genarate_header(void);
 		std::string status_def();
 		std::string get_response_text();
 		std::string get_date();

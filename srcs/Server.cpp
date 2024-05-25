@@ -59,60 +59,26 @@ std::string Server::errorPage(int error_code)
 	return (body);
 }
 
-std::string Server::do_cgi(Request &request)
+char* Server::do_cgi(Request &request)
 {
+	// pass
 	
 }
 
-std::string Server::get_body(Request &request, Location &conf, int &return_code)
+std::string Server::routing(Request &request)
 {
-	std::string body;
-	
-	// is allow mathod => N:405
-	
-	//	is path => add index
-	
-	//	is access file => N:404
-	if (access(request._path.c_str(), F_OK) < 0){
-		return_code = 404;
-		return (errorPage(404));
-	}
+	Response response;
 
+	// find config;
 
-	//is cgi => y:do cgi
-	if (conf.cgiPass)
-		body = do_cgi(request);
-	else{
-		std::cout << "readfile" << std::endl;;
-		readFile(body, request._path.c_str());
-	}
-	replace_str(body, "\n", "\r\n");
-	if (strlen(body.c_str()) > conf.cliBodySize){
-		return_code = 413;
-		return (errorPage(413));
-	}
-	return_code = 200;	
-	return (body);
-}
+	// 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
 
-std::string Server::classify_request(Request &request)
-{
-	std::string body;
-	int			return_code;
-	
-	// find config associate with the request
-	auto conf = _config.find(request._path);
-
-	// is_path match in config; => N:404
-	if (conf == _config.end()){
-		body = errorPage(404);
-		return_code = 404;
-	}
-	else
-		body = get_body(request, conf->second, return_code);
-
-	Response response = Response(return_code, body);
-	response._content_type = _mime.get_mime_type(request._path);
+	// send request and target config to response;
+	response.receive_request(request, /* mock -> */ _config.begin()->second);
+	if (response._return_code >= 400) // incase error => redirect to error file
+		response.set_body(std::to_string(response._return_code) + ".html");
+	if (response._return_code < 0) // incase cgi => redirect to do cgi
+		response.set_body(do_cgi(request));
 	response.genarate_header();
 	return (response.get_response_text());	
 }
