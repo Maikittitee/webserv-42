@@ -43,7 +43,20 @@ std::map<std::string, Location> mock_location(void)
 	Location r(def);
 	Location redir(def);
 	
-	redir.ret = (return_t){true, 301, "/sample.html"}
+	redir.ret = (return_t){true, 301, "/sample.html"};
+	
+	Location blog(def);
+	blog.autoIndex = true;
+
+	Location images(def);
+	images.index.clear();
+	images.index.insert(images.index.end(), "Cat03.jpg");
+	images.index.insert(images.index.end(), "test.png");
+
+	Location cgi_bin(def);
+	cgi_bin.autoIndex = true;
+	cgi_bin.cliBodySize = 5000;
+
 
 
 
