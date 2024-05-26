@@ -19,6 +19,7 @@ struct return_t {
 
 class Location{
 	public:
+		Location();
 		bool						cgiPass;
 		bool						autoIndex;
 		std::vector<t_method>		allowMethod;

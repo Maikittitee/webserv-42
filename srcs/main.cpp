@@ -35,6 +35,16 @@ std::map<std::string, Location> mock_location(void)
 	def.allowMethod.insert(def.allowMethod.end(), GET);
 	def.allowMethod.insert(def.allowMethod.end(), POST);
 	def.allowMethod.insert(def.allowMethod.end(), DELETE);
+	def.autoIndex = false;
+	def.cgiPass = false;
+	def.ret.have = false;
+
+	
+	Location r(def);
+	Location redir(def);
+	
+	redir.ret = (return_t){true, 301, "/sample.html"}
+
 
 
 
