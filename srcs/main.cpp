@@ -57,9 +57,16 @@ std::map<std::string, Location> mock_location(void)
 	cgi_bin.autoIndex = true;
 	cgi_bin.cliBodySize = 5000;
 
+	std::map<std::string, Location> ret;
 
-
-
+	ret.insert(std::pair<std::string, Location>("def", def));	
+	ret.insert(std::pair<std::string, Location>("/", r));	
+	ret.insert(std::pair<std::string, Location>("/redir", redir));	
+	ret.insert(std::pair<std::string, Location>("/blog", blog));	
+	ret.insert(std::pair<std::string, Location>("/images", images));	
+	ret.insert(std::pair<std::string, Location>("/cgi-bin", cgi_bin));	
+	
+	return (ret);
 
 }
 
