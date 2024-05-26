@@ -4,6 +4,17 @@ Response::Response(void) {}
 
 Response::~Response(void) {}
 
+static bool is_allow_method(t_method method, Location &conf)
+{
+	int i = 0;
+	while (i < conf.allowMethod.size()){
+		if (method == conf.allowMethod[i])
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
 void	Response::receive_request(Request &request, Location &conf) // for body and return code
 {
 	std::string body;
@@ -11,7 +22,9 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 	_return_code = 200;
 	
 	// is allow mathod => N:405
-	
+	if (!is_allow_method(request._method, conf))
+		_return_code = 405;
+		
 	//	is path => add index
 	
 	//	is access file => N:404
