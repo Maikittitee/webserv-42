@@ -6,42 +6,14 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/25 00:26:43 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/26 15:33:46 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fstream>
 #include <iostream>
 #include <cstring>
-
-std::string	ft_trimtab(std::string line)
-{
-	size_t	start;
-	size_t	end;
-
-	start = line.find_first_not_of("	");
-	end = line.find_last_not_of("	");
-	
-	if (start != std::string::npos &&  end != 0)
-		return (line.substr(start, end - start + 1));
-	return (line);
-}
-
-std::string	ft_trimsp(std::string line)
-{
-	size_t	start;
-	size_t	end;
-
-	start = line.find_first_not_of(" ");
-	// std::cout << "start : " << start << std::endl;
-	end = line.find_last_not_of(" ");
-	// std::cout << "end : " << end << std::endl;
-	
-	if (start != std::string::npos &&  end != 0)
-		return (line.substr(start, end - start));
-	return ("");
-}
-
+#include "../include/Server.hpp"
 
 std::string	ft_trim(std::string line, char c)
 {
@@ -78,9 +50,11 @@ std::string	ft_getvalue(std::string key, std::string line)
 	std::string	value;
 
 	i = 0;
+	value = "";
+	if (key == "}")
+		return("");
 	while (line[i])
 	{
-		// std::cout  << "Entry" << std::endl;
 		// while (isspace(line[i])) // escape space
 		// 	i++;
 		while (line[i] == key[i]) // escape key
@@ -97,28 +71,26 @@ std::string	ft_getvalue(std::string key, std::string line)
 	}
 	return (value);
 }
-std::string ft_getkey(std::string txt)
+
+std::string ft_getkey(std::string sp_line)
 {
 	int	i;
 	std::string key;
 	
 	key = "";
 	i = 0;
-	
-	// std::cout << "ft_getkey" << std::endl;
-	if (txt == "}")
+	if (sp_line == "}")
 	{	
 		key = "}";
 		return (key);
 	}	
-	while (txt[i]) // keep txt
+	while (sp_line[i]) // keep txt
 	{
-		if (txt[i] && (txt[i] == '{' || txt[i] == '}' || isspace(txt[i])))
+		if (sp_line[i] && (sp_line[i] == '{' || sp_line[i] == '}' || isspace(sp_line[i])))
 			break;
-		key += txt[i];
+		key += sp_line[i];
 		i++;
 	}
-	// std::cout << "|" << key << "|" << std::endl;  
 	return (key);
 }
 
@@ -163,7 +135,40 @@ bool	ft_check_locate(std::string key)
 	return (false);
 }
 
-int main(int ac ,char **av)
+void	ft_prt_locate(Location location)
+{
+	std::cout << "cgiPass : " << location.cgiPass << std::endl;
+	std::cout << "autoIndex :" << location.autoIndex << std::endl;
+	std::cout << "cliBodySize : " << location.cliBodySize << std::endl;
+	std::cout << "root : " << location.root << std::endl;
+	// std::cout << 
+}
+
+Location	ft_init_locate(void)
+{
+	Location	locate;
+	
+	locate.cgiPass = 0;
+	locate.autoIndex = 0;
+	locate.cliBodySize = 0;
+	locate.root = "";
+	locate.ret = {0, 0, ""};
+	return (locate);
+}
+Location	ft_locate(std::string value)
+{
+	Location location;
+
+	// location.autoIndex = stoi(value);
+	location = ft_init_locate();
+	// if (value == "cgiPass")
+		// location.cgiPass = value;
+	// location
+	
+	return (location);
+}
+
+int	parsing_config(Server server, int ac, char **av)
 {
 	std::string	line;
 	std::string	file;
@@ -171,7 +176,12 @@ int main(int ac ,char **av)
 	std::string	value;
 	std::string	sp_line;
 	bool		locate;
+	Location	location;
 	
+	// server._client_fd = 505;
+	// std::cout << "Error page : " << server._client_fd << std::endl; 
+	// server._config["name"] = Location.
+	// std::cout << "parsing config" << std::endl;	
 	if (ac != 2)
 		return(std::cerr << "Error : Expected 2 arguments" << std::endl, 0);
 	std::ifstream input_file(av[1]);
@@ -184,25 +194,37 @@ int main(int ac ,char **av)
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		// write new code for trim isspace
+		// key = "";
+		// value = "";
+		// std::cout << key << " | " << value << std::endl;
 		sp_line = ft_trim_ispace(line);
+		// std::cout << "|" << sp_line << "|" << std::endl;
 		key = ft_getkey(sp_line);
-		if (key == "location")
-			locate = true;
+		// if (key == "location")
+		// 	locate = true;
 		if (key.empty())
 			continue;
 		else
 			value = ft_getvalue(key, sp_line);
 		// std::cout << "[key]   : |" << key << "|" << std::endl;
 		// std::cout << "[value] : |" << value  << "|" << std::endl;
-		if (ft_check_locate(key) == true && locate == true) // check prob word of locate
-			locate = ft_getlocate(key, value, sp_line);
-		// std::cout << key << " : " << value << std::endl;
+		// if (ft_check_locate(key) == true && locate == true) // check prob word of locate
+			// locate = ft_getlocate(key, value, sp_line);
+		std::cout << key << " : " << value << std::endl;
+		// server._config[key] = ft_locate(value);
+		// server._config.insert({key, ft_locate(value)});
+		// ft_prt_locate()
 		// i++;
-		// if (i == 4)
-		// 	break;
-		// std::cout << line << std::endl;
+		// if (i == 3)
+			// break;
+	}
+	
+	std::map<std::string, Location>::iterator it;
+	for (it = server._config.begin(); it != server._config.end(); i++)
+	{
+		std::cout << it->first << std::endl;
+		// std::cout << it->second << std::endl;
 	}
 	input_file.close();
-	return (0);
+	return (0);	
 }
-

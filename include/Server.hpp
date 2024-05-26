@@ -3,6 +3,7 @@
 
 #	include <iostream>
 #	include <string>
+#	include <cstring>
 #	include <sys/socket.h>
 #	include <netinet/in.h>
 #	include <stdio.h>
@@ -24,8 +25,11 @@ class Server{
     	socklen_t _addrlen;
 		int _server_port;
 		std::map<std::string, Location> _config;
-
+		// If it don't have location set default
+		// std::string / Location fill root
+		//    /redir Location fill root return
 		Server(int port);
+		Server();
 		~Server();
 
 		class PortNotExist: public std::exception{

@@ -46,6 +46,8 @@ void Server::send_response(const char *response, int client_fd)
 char *Server::PortNotExist::what() const throw(){
 	return ("Your port is not in range of 0 - 65535");
 }
+
+
 std::string Server::errorPage(int error_code)
 {
 	std::string body;
@@ -91,7 +93,7 @@ std::string Server::classify_request(Request &request)
 	
 
 	
-	
+	Location location;
 	response = create_response(body, request, location);
 	return (response);	
 }
