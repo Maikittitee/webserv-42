@@ -25,12 +25,19 @@ Request* mock_file_request(void)
 
 }
 
-Location *mock_location(void)
+std::map<std::string, Location> mock_location(void)
 {
-	Location *ret = new Location();
-	ret->cgiPass = false;
-	ret->cliBodySize = 100000000;
-	return (ret);
+	Location def;
+	def.cliBodySize = 2000;
+	def.root = "docs/myPage";
+	def.index.insert(def.index.end(), "index.html");
+	def.index.insert(def.index.end(), "index.htm");
+	def.allowMethod.insert(def.allowMethod.end(), GET);
+	def.allowMethod.insert(def.allowMethod.end(), POST);
+	def.allowMethod.insert(def.allowMethod.end(), DELETE);
+
+
+
 }
 
 
