@@ -65,24 +65,12 @@ std::map<std::string, Location> mock_location(void)
 	ret.insert(std::pair<std::string, Location>("/blog", blog));	
 	ret.insert(std::pair<std::string, Location>("/images", images));	
 	ret.insert(std::pair<std::string, Location>("/cgi-bin", cgi_bin));	
-	
+
 	return (ret);
 
 }
 
 
-
-// int	main()
-// {
-// 	Server server(8384);
-// 	Request *req = mock_file_request();
-// 	Location *loc = mock_location();
-
-// 	server.classify_request(*req, *loc);
-// 	// std::cout << "bp2\n";
-
-
-// }
 
 int	main()
 {
