@@ -24,8 +24,18 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 	// is allow mathod => N:405
 	if (!is_allow_method(request._method, conf))
 		_return_code = 405;
-		
+
 	//	is path => add index
+	if (conf.autoIndex && request._path[request._path.size() - 1] == '/'){
+		std::string tmp_file;
+		for (int i = 0; i < conf.index.size(); i++){
+			tmp_file = request._path + conf.index[i];
+			if (access(tmp_file.c_str(), F_OK) == 0){
+				request._path = tmp_file;
+				break;
+			}
+		}
+	}
 	
 	//	is access file => N:404
 	if (access(request._path.c_str(), F_OK) < 0){
