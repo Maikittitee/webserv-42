@@ -12,9 +12,9 @@
 # include "Request.hpp"
 # include "Location.hpp"
 
-class Request;
+// class Request;
 
-class Location;
+// class Location;
 
 class Response{
 	public:

@@ -75,24 +75,30 @@ std::map<std::string, Location> mock_location(void)
 int	main()
 {
 	Server server(8384);
-	char buffer[1024];
-	Request *req = mock_file_request();
+	// char buffer[1024];
+	// Request *req = mock_file_request();
 	server._config = mock_location();
 
+	// std::cout << server._config.begin()->first;
+	for(std::map<std::string, Location >::const_iterator it = server._config.begin(); it != server._config.end(); ++it){
+		// std::cout << "bp1" << std::endl; 
+		std::cout << it->first << std::endl;
+		std::cout << it->second << std::endl;
+	}
 	// parsing config here
 
-	server.run_server();
-	read(server._client_fd, buffer, 1024 - 1);
+	// server.run_server();
+	// read(server._client_fd, buffer, 1024 - 1);
 
 	// parsing request here
 
-	printf("this is request message\n");
-	printf("%s\n", buffer);
+	// printf("this is request message\n");
+	// printf("%s\n", buffer);
 
 	// cgi & responce here
-	std::string response = server.rout(*req);
-	server.send_response(response.c_str(), server._client_fd);
-	printf("send response\n");
+	// std::string response = server.rout(*req);
+	// server.send_response(response.c_str(), server._client_fd);
+	// printf("send response\n");
 
     return 0;
 }
