@@ -19,6 +19,7 @@ struct return_t {
 
 class Location{
 	public:
+		Location();
 		bool						cgiPass;
 		bool						autoIndex;
 		std::vector<t_method>		allowMethod;
@@ -26,6 +27,21 @@ class Location{
 		std::string					root;
 		std::vector<std::string>	index;
 		return_t					ret;
+
+		Location(const Location &other):cgiPass(other.cgiPass), autoIndex(other.autoIndex), allowMethod(other.allowMethod), cliBodySize(other.cliBodySize), root(other.root), index(other.index), ret(other.ret){}
+		
+		Location operator= (const Location &rhs){
+			if (this == &rhs)
+				return *this;
+			cgiPass = rhs.cgiPass;
+			autoIndex = rhs.autoIndex;
+			allowMethod = rhs.allowMethod;
+			cliBodySize = rhs.cliBodySize;
+			root = rhs.root ;
+			index = rhs.index;
+			ret = rhs.ret;
+			return *this;
+		}
 
 };
 
