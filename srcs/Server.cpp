@@ -1,6 +1,6 @@
 #include "../include/Server.hpp"
 
-Server::Server(int port){
+Server::Server(int port, char **env){
 	if (port < 0 || port > 65535)
 		throw PortNotExist();
 	else
@@ -9,6 +9,7 @@ Server::Server(int port){
     _address.sin_addr.s_addr = INADDR_ANY;
     _address.sin_port = htons(_server_port[0]);
 	_addrlen = sizeof(_address);
+	_env = env;
 }
 
 Server::~Server (void) {
@@ -61,7 +62,22 @@ std::string Server::errorPage(int error_code)
 
 std::string Server::do_cgi(Request &request)
 {
-	// pass
+	int fd[2];
+	int pid;
+
+	pipe(fd);
+
+	pid = fork();
+	if (pid == 0){
+		char **arg = (char **)malloc(sizeof(char *) * 2);
+		arg[0] = "/bin/ls";
+		arg[1] = NULL;
+		execve(arg[0], arg, _env);
+	}
+	waitpid(pid ,NULL, NULL);
+
+	
+	
 	return ("cgiiiiii");
 }
 

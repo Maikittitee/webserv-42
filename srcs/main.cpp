@@ -72,9 +72,9 @@ std::map<std::string, Location> mock_location(void)
 
 
 
-int	main()
+int	main(int ac, char **av, char **env)
 {
-	Server server(8384);
+	Server server(8384, env);
 	// char buffer[1024];
 	// Request *req = mock_file_request();
 	server._config = mock_location();

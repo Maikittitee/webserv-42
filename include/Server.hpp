@@ -30,8 +30,8 @@ class Server{
 		std::vector<int> _server_port;
 		std::map<std::string, Location> _config; 
 		Mime _mime;
-
-		Server(int port);
+		char **_env;
+		Server(int port, char **env);
 		~Server();
 
 		class PortNotExist: public std::exception{
