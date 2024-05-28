@@ -72,13 +72,19 @@ std::string Server::do_cgi(Request &request)
 		char **arg = (char **)malloc(sizeof(char *) * 2);
 		arg[0] = "/bin/ls";
 		arg[1] = NULL;
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
+		close(fd[0]);
 		execve(arg[0], arg, _env);
 	}
-	waitpid(pid ,NULL, NULL);
+	// waitpid(pid ,NULL, NULL);
+	dup2(fd[0], STDIN_FILENO);
+	close(fd[1]);
+	close(fd[0]);
 
-	
-	
-	return ("cgiiiiii");
+	char buffer[1024];
+	read(STDIN_FILENO, buffer, 1024);	
+	return (std::string(buffer));
 }
 
 std::string Server::rout(Request &request)
