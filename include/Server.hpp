@@ -28,9 +28,7 @@ class Server{
 		struct sockaddr_in _address;
     	socklen_t _addrlen;
 		std::vector<int> _server_port;
-
 		std::map<std::string, Location> _config; 
-		
 		Mime _mime;
 
 		Server(int port);
@@ -43,15 +41,8 @@ class Server{
 		bool run_server();
 		std::string rout(Request &request);
 		std::string do_cgi(Request &request);
-			
 		std::string errorPage(int error_code);
-
-
-
-
 		void send_response(const char *response, int client_fd);
-		
-
 		std::string method_get(Request &request);
 };
 
