@@ -38,3 +38,19 @@ void	replace_str(std::string &str, std::string s1, std::string s2)
 		index = found_pos + s2.length();
 	}
 }
+
+
+std::ostream &operator << (std::ostream &os, bool var)
+{
+	if (var)
+		os << "true";
+	else 
+		os << "false";
+	return (os);
+
+}
+
+std::ostream &operator << (std::ostream &os, t_method method)
+{
+
+}
