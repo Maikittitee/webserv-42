@@ -27,7 +27,7 @@ class Server{
 		int _server_fd;
 		struct sockaddr_in _address;
     	socklen_t _addrlen;
-		int _server_port;
+		std::vector<int> _server_port;
 
 		std::map<std::string, Location> _config; 
 		
