@@ -45,7 +45,7 @@ void Server::send_response(const char *response, int client_fd)
 }
 
 char *Server::PortNotExist::what() const throw(){
-	return ("Your port is not in range of 0 - 65535");
+	return ((char *)"Your port is not in range of 0 - 65535");
 }
 std::string Server::errorPage(int error_code)
 {
@@ -70,7 +70,7 @@ std::string Server::do_cgi(Request &request)
 	pid = fork();
 	if (pid == 0){
 		char **arg = (char **)malloc(sizeof(char *) * 2);
-		arg[0] = "/bin/ls";
+		arg[0] = (char *)"/bin/ls";
 		arg[1] = NULL;
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
