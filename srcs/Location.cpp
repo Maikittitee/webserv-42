@@ -37,8 +37,8 @@ std::ostream& operator<<(std::ostream &os, const std::vector<std::string>& eiei)
 
 std::ostream& operator<<(std::ostream& os, const Location& location)
 {
-	os << "cgi: " << location.cgiPass << std::endl;
-	os << "autoIndex: " << location.autoIndex << std::endl;
+	os << "cgi: " << std::boolalpha << location.cgiPass << std::endl;
+	os << "autoIndex: " << std::boolalpha << location.autoIndex << std::endl;
 	// os << "allowMethod: " << location.allowMethod << std::endl;
 	os << "cliBodySize: " << location.cliBodySize << std::endl;
 	os << "root: " << location.root << std::endl;

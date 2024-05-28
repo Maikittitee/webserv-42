@@ -19,5 +19,4 @@ void	replace_str(std::string &str, std::string s1, std::string s2);
 #endif
 
 
-std::ostream &operator << (std::ostream &os, bool var);
-std::ostream &operator << (std::ostream &os, t_method method);
+std::ostream &operator << (std::ostream &os, const t_method &method);

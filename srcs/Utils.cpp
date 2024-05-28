@@ -40,17 +40,17 @@ void	replace_str(std::string &str, std::string s1, std::string s2)
 }
 
 
-std::ostream &operator << (std::ostream &os, bool var)
-{
-	if (var)
-		os << "true";
-	else 
-		os << "false";
-	return (os);
+// std::ostream &operator << (std::ostream &os, const bool &var)
+// {
+// 	if (var)
+// 		os << "true";
+// 	else 
+// 		os << "false";
+// 	return (os);
 
-}
+// }
 
-std::ostream &operator << (std::ostream &os, t_method method)
+std::ostream &operator << (std::ostream &os, const t_method &method)
 {
 	switch (method)
 	{
