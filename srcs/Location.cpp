@@ -39,14 +39,14 @@ std::ostream& operator<<(std::ostream& os, const Location& location)
 {
 	os << "cgi: " << std::boolalpha << location.cgiPass << std::endl;
 	os << "autoIndex: " << std::boolalpha << location.autoIndex << std::endl;
-	// os << "allowMethod: " << location.allowMethod << std::endl;
+	os << "allowMethod: " << location.allowMethod << std::endl;
 	os << "cliBodySize: " << location.cliBodySize << std::endl;
 	os << "root: " << location.root << std::endl;
-	// os << "index: " << location.index << std::endl;
-	// if (!location.ret.have)
-	// 	os << "no return" << std::endl;
-	// else 
-	// 	os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
+	os << "index: " << location.index << std::endl;
+	if (!location.ret.have)
+		os << "no return" << std::endl;
+	else 
+		os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
 	return (os);
 
 }

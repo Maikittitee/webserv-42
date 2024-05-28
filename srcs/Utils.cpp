@@ -73,4 +73,5 @@ std::ostream &operator << (std::ostream &os, const t_method &method)
 			os << "not a method";
 			break;
 	}
+	return (os);
 }
