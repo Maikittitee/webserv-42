@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/26 15:33:46 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/29 16:33:18 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,17 @@
 #include <iostream>
 #include <cstring>
 #include "../include/Server.hpp"
+
+
+Server::Server()
+{
+	
+}
+
+Server::~Server()
+{
+	
+}
 
 std::string	ft_trim(std::string line, char c)
 {
@@ -109,6 +120,7 @@ std::string	ft_trim_ispace(std::string line)
 	}
 	return (sp_line);	
 }
+
 bool	ft_getlocate(std::string key, std::string value, std::string sp_line)
 {
 	bool locate;
@@ -144,31 +156,33 @@ void	ft_prt_locate(Location location)
 	// std::cout << 
 }
 
-Location	ft_init_locate(void)
-{
-	Location	locate;
+// Location	ft_init_locate(void)
+// {
+// 	Location	locate;
 	
-	locate.cgiPass = 0;
-	locate.autoIndex = 0;
-	locate.cliBodySize = 0;
-	locate.root = "";
-	locate.ret = {0, 0, ""};
-	return (locate);
-}
-Location	ft_locate(std::string value)
-{
-	Location location;
+// 	locate.cgiPass = 0;
+// 	locate.autoIndex = 0;
+// 	locate.cliBodySize = 0;
+// 	locate.root = "";
+// 	locate.ret = {0, 0, ""};
+// 	return (locate);
+// }
 
-	// location.autoIndex = stoi(value);
-	location = ft_init_locate();
-	// if (value == "cgiPass")
-		// location.cgiPass = value;
-	// location
+
+// Location	ft_locate(std::string value)
+// {
+// 	Location location;
+
+// 	// location.autoIndex = stoi(value);
+// 	location = ft_init_locate();
+// 	// if (value == "cgiPass")
+// 		// location.cgiPass = value;
+// 	// location
 	
-	return (location);
-}
+// 	return (location);
+// }
 
-int	parsing_config(Server server, int ac, char **av)
+int	parsing_config(int ac, char **av)
 {
 	std::string	line;
 	std::string	file;
@@ -176,10 +190,9 @@ int	parsing_config(Server server, int ac, char **av)
 	std::string	value;
 	std::string	sp_line;
 	bool		locate;
-	Location	location;
+	// Location	location;
+	Server		server;
 	
-	// server._client_fd = 505;
-	// std::cout << "Error page : " << server._client_fd << std::endl; 
 	// server._config["name"] = Location.
 	// std::cout << "parsing config" << std::endl;	
 	if (ac != 2)
@@ -194,8 +207,6 @@ int	parsing_config(Server server, int ac, char **av)
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		// write new code for trim isspace
-		// key = "";
-		// value = "";
 		// std::cout << key << " | " << value << std::endl;
 		sp_line = ft_trim_ispace(line);
 		// std::cout << "|" << sp_line << "|" << std::endl;
@@ -210,21 +221,31 @@ int	parsing_config(Server server, int ac, char **av)
 		// std::cout << "[value] : |" << value  << "|" << std::endl;
 		// if (ft_check_locate(key) == true && locate == true) // check prob word of locate
 			// locate = ft_getlocate(key, value, sp_line);
-		std::cout << key << " : " << value << std::endl;
-		// server._config[key] = ft_locate(value);
+		// std::cout << key << " : " << value << std::endl;
+		// server._config[key] = Location(value);
+		server._config.insert(std::pair<std::string, Location>(key, Location(value)));
 		// server._config.insert({key, ft_locate(value)});
 		// ft_prt_locate()
 		// i++;
 		// if (i == 3)
 			// break;
 	}
-	
+	// for (const auto& pair : server._config)
+	// {
+    //     // std::cout << pair.first << '\n';
+    //     std::cout << pair.first << " => " << pair.second ;
+    // }
+
 	std::map<std::string, Location>::iterator it;
-	for (it = server._config.begin(); it != server._config.end(); i++)
+	for (it = server._config.begin(); it != server._config.end(); it++)
 	{
-		std::cout << it->first << std::endl;
-		// std::cout << it->second << std::endl;
+		std::cout << it->first << it->second;
 	}
 	input_file.close();
 	return (0);	
+}
+
+int main(int ac, char **av)
+{
+	parsing_config(ac, av);	
 }
