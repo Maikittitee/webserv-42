@@ -31,9 +31,7 @@ bool Server::run_server(void)
 	if (listen(_server_fd, 3) < 0){
 		perror("listen failed");
 	}
-	std::cout << "bp2" << std::endl;
 	_client_fd = accept(_server_fd, (struct sockaddr*)&_address, &_addrlen);
-	std::cout << "bp3" << std::endl;
 	if (_client_fd < 0){
 		perror("accept failed");
 	}
