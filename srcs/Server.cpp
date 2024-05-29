@@ -117,14 +117,30 @@ static std::vector<std::string> get_keys(std::map<std::string, Location> map)
 	return (ret);
 }
 
+static int get_match_length(std::string target, std::string src)
+{
+	int cnt = 0;
+	int i = 0;
+	while (i < target.size() && i < src.size()){
+		if (target[i] == src[i])
+			cnt += 1;
+		else
+			return (cnt);
+	}
+	return (cnt);
+
+}
+
 Location& Server::select_location(Request &request)
 {
 	std::string target_path = request._path;
 	std::vector<std::string> rout_paths = get_keys(_config);
 	std::vector<int> acc_length;
-	int				i = 0;
+	
+	int	i = 0;
 	while (i < rout_paths.size()){
-		
+		acc_length.insert(acc_length.end(), get_match_length(target_path, rout_paths[i]));
+		i++;
 
 	}
 	
