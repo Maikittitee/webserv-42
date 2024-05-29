@@ -38,3 +38,29 @@ void	replace_str(std::string &str, std::string s1, std::string s2)
 		index = found_pos + s2.length();
 	}
 }
+
+std::ostream &operator << (std::ostream &os, const t_method &method)
+{
+	switch (method)
+	{
+		case ELSE:
+			os << "ELSE";
+			break;
+		case GET:
+			os << "GET";
+			break;
+		case POST:
+			os << "POST";
+			break;
+		case DELETE:
+			os << "DELETE";
+			break;
+		case HEAD:
+			os << "HEAD";
+			break;
+		default:
+			os << "not a method";
+			break;
+	}
+	return (os);
+}
