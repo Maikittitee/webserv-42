@@ -141,9 +141,8 @@ Location& Server::select_location(Request &request)
 	while (i < rout_paths.size()){
 		acc_length.insert(acc_length.end(), get_match_length(target_path, rout_paths[i]));
 		i++;
-
 	}
-	
-
-
+	int index =std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
+	std::cout << "index of " << request._path << " is " << index << std::endl; 
+	return (_config[rout_paths[index]])
 }

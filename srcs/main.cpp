@@ -79,12 +79,6 @@ int	main(int ac, char **av, char **env)
 	// Request *req = mock_file_request();
 	server._config = mock_location();
 
-	// std::cout << server._config.begin()->first;
-	for(std::map<std::string, Location >::const_iterator it = server._config.begin(); it != server._config.end(); ++it){
-		// std::cout << "bp1" << std::endl; 
-		std::cout << it->first << std::endl;
-		std::cout << it->second << std::endl;
-	}
 	// parsing config here
 
 	// server.run_server();
