@@ -68,15 +68,15 @@ void Response::genarate_header(void)
 	header << " ";
 	header << status_def();
 	header << "\r\n";
-	header <<  "Content-Type: ";
-	header << _content_type;
-	header << "\r\n";
 	header << "Date: "; 
 	header << get_date();
 	header << "\r\n";
-	header << "Content-Length: ";
-	header << strlen(_body.c_str());
+	header <<  "Content-Type: ";
+	header << "text/html";
 	header << "\r\n";
+	// header << "Content-Length: ";
+	// header << strlen(_body.c_str());
+	// header << "\r\n";
 
 	this->_header = header.str();
 

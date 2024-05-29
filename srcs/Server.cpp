@@ -70,9 +70,10 @@ std::string Server::do_cgi(Request &request)
 
 	pid = fork();
 	if (pid == 0){
-		char **arg = (char **)malloc(sizeof(char *) * 2);
-		arg[0] = (char *)"/bin/ls";
-		arg[1] = NULL;
+		char **arg = (char **)malloc(sizeof(char *) * 3);
+		arg[0] = (char *)request._path.c_str();
+		arg[1] = (char *)request._query_string.c_str();
+		arg[2] = NULL;
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
 		close(fd[0]);
