@@ -17,7 +17,8 @@ Request* mock_file_request(void)
 	// for example
 	// GET /docs/test.html HTTP/1.1
 	ret->_method = GET;
-	ret->_path = "/cgi-bin/hello.py";
+	// ret->_path = "/cgi-bin/hello.py";
+	ret->_path = "/test.html";
 	ret->_http_version = "HTTP/1.1";
 
 	ret->_body = "";

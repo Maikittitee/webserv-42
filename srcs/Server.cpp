@@ -104,6 +104,7 @@ std::string Server::rout(Request &request)
 		response.set_body(errorPage(response._return_code));
 	if (response._return_code < 0) {// incase cgi => redirect to do cgi
 		response._return_code = 200;
+		response.cgiPass = true;
 		response.set_body(do_cgi(request));
 	}
 	response.genarate_header();
