@@ -21,6 +21,7 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 
 	_return_code = 200;
 	request._path = conf.root + request._path;
+	replace_str(request._path, "//", "/");
 	std::cout << "request path: " << request._path << std::endl;
 	std::cout << "location: " << std::endl;
 	std::cout << conf;
