@@ -61,7 +61,7 @@ std::string Server::errorPage(int error_code)
 	return (body);
 }
 
-std::string Server::classify_request(Request &request)
+std::string Server::do_cgi(Request &request)
 {
 	std::string response;
 	
@@ -98,28 +98,20 @@ std::string Server::classify_request(Request &request)
 	return (response);	
 }
 
-std::string Server::create_response(std::string body, Request &request, Location &location)
+std::string Server::rout(Request &request)
 {
-	int content_length = strlen(body.c_str());
-	std::string content_type = "text/html";
-	std::string response;
-	
-	// content_type = mime_decoder();
+	Response response;
 
-	response = request._http_version + " " + std::to_string(location.ret.code) + " " + location.ret.text + "\r\n";
-	response += "Content-Type: " + content_type + "\r\n";
-	response += "Content-Length: " + std::to_string(content_length) + "\r\n";
-	
-	response += "\r\n";
-	response += body;
+	// find config;
 
-	std::cout << "-++++++++++\n";
-	std::cout << response; 
+	// 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
 
-
-	return (response);
-
-
-
-
+	// send request and target config to response;
+	response.receive_request(request, /* mock -> */ _config.begin()->second);
+	if (response._return_code >= 400) // incase error => redirect to error file
+		response.set_body(errorPage(response._return_code));
+	if (response._return_code < 0) // incase cgi => redirect to do cgi
+		response.set_body(do_cgi(request));
+	response.genarate_header();
+	return (response.get_response_text());	
 }

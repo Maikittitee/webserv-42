@@ -8,6 +8,7 @@
 #include "../include/Server.hpp"
 #include "../include/Location.hpp"
 #include "../include/Request.hpp"
+#include "../include/Response.hpp"
 
 Request* mock_file_request(void)
 {
@@ -24,11 +25,49 @@ Request* mock_file_request(void)
 
 }
 
-Location *mock_location(void)
+std::map<std::string, Location> mock_location(void)
 {
-	Location *ret = new Location();
-	ret->cgiPass = false;
+	Location def;
+	def.cliBodySize = 2000;
+	def.root = "docs/myPage";
+	def.index.insert(def.index.end(), "index.html");
+	def.index.insert(def.index.end(), "index.htm");
+	def.allowMethod.insert(def.allowMethod.end(), GET);
+	def.allowMethod.insert(def.allowMethod.end(), POST);
+	def.allowMethod.insert(def.allowMethod.end(), DELETE);
+	def.autoIndex = false;
+	def.cgiPass = false;
+	def.ret.have = false;
+
+	
+	Location r(def);
+	Location redir(def);
+	
+	redir.ret = (return_t){true, 301, "/sample.html"};
+	
+	Location blog(def);
+	blog.autoIndex = true;
+
+	Location images(def);
+	images.index.clear();
+	images.index.insert(images.index.end(), "Cat03.jpg");
+	images.index.insert(images.index.end(), "test.png");
+
+	Location cgi_bin(def);
+	cgi_bin.autoIndex = true;
+	cgi_bin.cliBodySize = 5000;
+
+	std::map<std::string, Location> ret;
+
+	ret.insert(std::pair<std::string, Location>("def", def));	
+	ret.insert(std::pair<std::string, Location>("/", r));	
+	ret.insert(std::pair<std::string, Location>("/redir", redir));	
+	ret.insert(std::pair<std::string, Location>("/blog", blog));	
+	ret.insert(std::pair<std::string, Location>("/images", images));	
+	ret.insert(std::pair<std::string, Location>("/cgi-bin", cgi_bin));	
+
 	return (ret);
+
 }
 
 

@@ -12,6 +12,11 @@
 #	include <unistd.h>
 #	include "Location.hpp"
 #	include "Request.hpp"
+#	include "Mime.hpp"
+#	include "Response.hpp"
+#	include <time.h>
+
+class Mime;
 
 class Request;
 
@@ -37,9 +42,9 @@ class Server{
 		};
 
 		bool run_server();
-		std::string classify_request(Request &request);
-		std::string create_response(std::string body, Request &request,Location &location);
-		
+		std::string rout(Request &request);
+		std::string do_cgi(Request &request);
+			
 		std::string errorPage(int error_code);
 
 
