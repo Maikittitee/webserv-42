@@ -17,7 +17,7 @@ Request* mock_file_request(void)
 	// for example
 	// GET /docs/test.html HTTP/1.1
 	ret->_method = GET;
-	ret->_path = "/redir/test.html";
+	ret->_path = "/test.html";
 	ret->_http_version = "HTTP/1.1";
 
 	ret->_body = "";
@@ -29,7 +29,7 @@ std::map<std::string, Location> mock_location(void)
 {
 	Location def;
 	def.cliBodySize = 2000;
-	def.root = "docs/myPage";
+	def.root = "docs";
 	def.index.insert(def.index.end(), "index.html");
 	def.index.insert(def.index.end(), "index.htm");
 	def.allowMethod.insert(def.allowMethod.end(), GET);
@@ -54,7 +54,7 @@ std::map<std::string, Location> mock_location(void)
 	images.index.insert(images.index.end(), "test.png");
 
 	Location cgi_bin(def);
-	cgi_bin.autoIndex = true;
+	cgi_bin.cgiPass = true;
 	cgi_bin.cliBodySize = 5000;
 
 	std::map<std::string, Location> ret;

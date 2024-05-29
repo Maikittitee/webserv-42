@@ -20,6 +20,10 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 	std::string body;
 
 	_return_code = 200;
+	request._path = conf.root + request._path;
+	std::cout << "request path: " << request._path << std::endl;
+	std::cout << "location: " << std::endl;
+	std::cout << conf;
 	
 	// is allow mathod => N:405
 	if (!is_allow_method(request._method, conf))

@@ -93,18 +93,18 @@ std::string Server::rout(Request &request)
 	Response response;
 
 	// find config;
-	std::cout << "bp4" << std::endl;
 	Location target_location = select_location(request);	
-	std::cout << "bp5" << std::endl;
 
 	// 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
 
 	// send request and target config to response;
-	response.receive_request(request, /* mock -> */ _config.begin()->second);
+	response.receive_request(request, target_location);
 	if (response._return_code >= 400) // incase error => redirect to error file
 		response.set_body(errorPage(response._return_code));
-	if (response._return_code < 0) // incase cgi => redirect to do cgi
+	if (response._return_code < 0) {// incase cgi => redirect to do cgi
+		response._return_code = 200;
 		response.set_body(do_cgi(request));
+	}
 	response.genarate_header();
 	return (response.get_response_text());	
 }
