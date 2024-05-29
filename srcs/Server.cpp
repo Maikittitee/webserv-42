@@ -144,5 +144,5 @@ Location& Server::select_location(Request &request)
 	}
 	int index =std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
 	std::cout << "index of " << request._path << " is " << index << std::endl; 
-	return (_config[rout_paths[index]])
+	return (_config[rout_paths[index]]);
 }
