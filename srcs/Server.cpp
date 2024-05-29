@@ -31,8 +31,9 @@ bool Server::run_server(void)
 	if (listen(_server_fd, 3) < 0){
 		perror("listen failed");
 	}
-
+	std::cout << "bp2" << std::endl;
 	_client_fd = accept(_server_fd, (struct sockaddr*)&_address, &_addrlen);
+	std::cout << "bp3" << std::endl;
 	if (_client_fd < 0){
 		perror("accept failed");
 	}
@@ -92,7 +93,9 @@ std::string Server::rout(Request &request)
 	Response response;
 
 	// find config;
+	std::cout << "bp4" << std::endl;
 	Location target_location = select_location(request);	
+	std::cout << "bp5" << std::endl;
 
 	// 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
 
@@ -126,6 +129,7 @@ static int get_match_length(std::string target, std::string src)
 			cnt += 1;
 		else
 			return (cnt);
+		i++;
 	}
 	return (cnt);
 
@@ -141,8 +145,12 @@ Location& Server::select_location(Request &request)
 	while (i < rout_paths.size()){
 		acc_length.insert(acc_length.end(), get_match_length(target_path, rout_paths[i]));
 		i++;
+		std::cout << i << std::endl;
 	}
-	int index =std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
-	std::cout << "index of " << request._path << " is " << index << std::endl; 
+	std::cout << "bp7" << std::endl;
+	auto index = std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
+	if (rout_paths[index].size() > acc_length[index])
+		return (_config["/"]);
+	std::cout << "rout of  " << request._path << " is " << rout_paths[index]  << std::endl; 
 	return (_config[rout_paths[index]]);
 }

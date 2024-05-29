@@ -17,7 +17,7 @@ Request* mock_file_request(void)
 	// for example
 	// GET /docs/test.html HTTP/1.1
 	ret->_method = GET;
-	ret->_path = "docs/test.html";
+	ret->_path = "/redir/test.html";
 	ret->_http_version = "HTTP/1.1";
 
 	ret->_body = "";
@@ -61,10 +61,10 @@ std::map<std::string, Location> mock_location(void)
 
 	ret.insert(std::pair<std::string, Location>("def", def));	
 	ret.insert(std::pair<std::string, Location>("/", r));	
-	ret.insert(std::pair<std::string, Location>("/redir", redir));	
-	ret.insert(std::pair<std::string, Location>("/blog", blog));	
-	ret.insert(std::pair<std::string, Location>("/images", images));	
-	ret.insert(std::pair<std::string, Location>("/cgi-bin", cgi_bin));	
+	ret.insert(std::pair<std::string, Location>("/redir/", redir));	
+	ret.insert(std::pair<std::string, Location>("/blog/", blog));	
+	ret.insert(std::pair<std::string, Location>("/images/", images));	
+	ret.insert(std::pair<std::string, Location>("/cgi-bin/", cgi_bin));	
 
 	return (ret);
 
@@ -75,23 +75,28 @@ std::map<std::string, Location> mock_location(void)
 int	main(int ac, char **av, char **env)
 {
 	Server server(8384, env);
-	// char buffer[1024];
-	// Request *req = mock_file_request();
+	char buffer[1024];
+	Request *req = mock_file_request();
 	server._config = mock_location();
 
+	std::cout << "bp1" << std::endl;
 	// parsing config here
 
-	// server.run_server();
-	// read(server._client_fd, buffer, 1024 - 1);
+	if (server.run_server())
+		std::cout << "run server ok" << std::endl;
+	std::cout << "ye mae" << std::endl;
+	read(server._client_fd, buffer, 1024 - 1);
 
 	// parsing request here
 
-	// printf("this is request message\n");
-	// printf("%s\n", buffer);
+	printf("this is request message\n");
+	printf("%s\n", buffer);
 
 	// cgi & responce here
-	// std::string response = server.rout(*req);
-	// server.send_response(response.c_str(), server._client_fd);
+	std::string response = server.rout(*req);
+	std::cout << "----------------" << std::endl;
+	std::cout << response << std::endl;
+	server.send_response(response.c_str(), server._client_fd);
 	// printf("send response\n");
 
     return 0;
