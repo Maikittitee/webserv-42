@@ -41,6 +41,7 @@ class Server{
 		bool run_server();
 		std::string rout(Request &request);
 		std::string do_cgi(Request &request);
+		Location& select_location(Request &request);
 		std::string errorPage(int error_code);
 		void send_response(const char *response, int client_fd);
 		std::string method_get(Request &request);

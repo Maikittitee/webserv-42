@@ -92,6 +92,7 @@ std::string Server::rout(Request &request)
 	Response response;
 
 	// find config;
+	Location target_location = select_location(request);	
 
 	// 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
 
@@ -103,4 +104,30 @@ std::string Server::rout(Request &request)
 		response.set_body(do_cgi(request));
 	response.genarate_header();
 	return (response.get_response_text());	
+}
+
+static std::vector<std::string> get_keys(std::map<std::string, Location> map)
+{
+	std::vector<std::string> ret;
+	std::map<std::string, Location>::const_iterator iter;
+	while (iter != map.end()){
+		ret.insert(ret.end(), iter->first);
+		iter++;
+	}
+	return (ret);
+}
+
+Location& Server::select_location(Request &request)
+{
+	std::string target_path = request._path;
+	std::vector<std::string> rout_paths = get_keys(_config);
+	std::vector<int> acc_length;
+	int				i = 0;
+	while (i < rout_paths.size()){
+		
+
+	}
+	
+
+
 }
