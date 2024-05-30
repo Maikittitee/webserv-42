@@ -2,8 +2,9 @@
 #	define SERVER_HPP
 
 #	include <iostream>
+#	include <vector>
 #	include <string>
-#	include <cstring>
+#	include <string.h>
 #	include <sys/socket.h>
 #	include <netinet/in.h>
 #	include <stdio.h>
@@ -28,13 +29,11 @@ class Server{
 		int _server_fd;
 		struct sockaddr_in _address;
     	socklen_t _addrlen;
-		int _server_port;
-		std::map<std::string, Location> _config;
-		// If it don't have location set default
-		// std::string / Location fill root
-		//    /redir Location fill root return
-		Server(int port);
-		Server();
+		std::vector<int> _server_port;
+		std::map<std::string, Location> _config; 
+		Mime _mime;
+		char **_env;
+		Server(int port, char **env);
 		~Server();
 
 		class PortNotExist: public std::exception{
@@ -44,15 +43,9 @@ class Server{
 		bool run_server();
 		std::string rout(Request &request);
 		std::string do_cgi(Request &request);
-			
+		Location& select_location(Request &request);
 		std::string errorPage(int error_code);
-
-
-
-
 		void send_response(const char *response, int client_fd);
-		
-
 		std::string method_get(Request &request);
 };
 

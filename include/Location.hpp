@@ -8,10 +8,11 @@
 #	include <stdio.h>
 #	include <stdlib.h>
 #	include <unistd.h>
+#	include "Server.hpp"
 #	include "Utils.hpp"
 class Server;
 
-int	parsing_config(Server server, int ac, char **av);
+int	parsing_config(int ac, char **av, char **env);
 std::string	ft_trim(std::string line, char c);
 bool	ft_check_extension(char	*file);
 std::string	ft_getvalue(std::string key, std::string line);
@@ -32,17 +33,20 @@ struct return_t {
 	std::string	text;	// Option
 };
 
-
 class Location{
 	public:
+
 		Location();
+		Location(std::string name);
+		std::string name;		
 		bool						cgiPass;
 		bool						autoIndex;
-		// std::vector<t_method>		allowMethod;
+		std::vector<t_method>		allowMethod;
 		uint64_t					cliBodySize;
 		std::string					root;
-		// std::vector<std::string>	index;
+		std::vector<std::string>	index;
 		return_t					ret;
+		int							port;
 
 		Location(const Location &other):cgiPass(other.cgiPass), autoIndex(other.autoIndex), allowMethod(other.allowMethod), cliBodySize(other.cliBodySize), root(other.root), index(other.index), ret(other.ret){}
 		
@@ -58,7 +62,12 @@ class Location{
 			ret = rhs.ret;
 			return *this;
 		}
-
+		// Overload the << operator to print Location objects
+		friend std::ostream& operator<<(std::ostream& os, const Location& loc)
+		{
+			os << "Port : " << loc.port ;
+   		    return os;
+    	} 
 };
 
 #endif

@@ -1,14 +1,15 @@
 #include "../include/Server.hpp"
 
-Server::Server(int port){
+Server::Server(int port, char **env){
 	if (port < 0 || port > 65535)
 		throw PortNotExist();
 	else
-		_server_port = port;
+		_server_port.insert(_server_port.end(), port);
 	_address.sin_family = AF_INET;
     _address.sin_addr.s_addr = INADDR_ANY;
-    _address.sin_port = htons(_server_port);
+    _address.sin_port = htons(_server_port[0]);
 	_addrlen = sizeof(_address);
+	_env = env;
 }
 
 Server::~Server (void) {
@@ -43,9 +44,9 @@ void Server::send_response(const char *response, int client_fd)
 	send(client_fd, response, strlen(response), 0);
 }
 
-// char *Server::PortNotExist::what() const throw(){
-// 	return ("Your port is not in range of 0 - 65535");
-// }
+char *Server::PortNotExist::what() const throw(){
+	return ((char *)"Your port is not in range of 0 - 65535");
+}
 
 
 std::string Server::errorPage(int error_code)
@@ -63,39 +64,30 @@ std::string Server::errorPage(int error_code)
 
 std::string Server::do_cgi(Request &request)
 {
-	std::string response;
-	
-	std::string body;
-	
-	// find config associate with the request
+	int fd[2];
+	int pid;
 
-	auto conf = _config.find(request._path);
+	pipe(fd);
 
-	// is_path match in config; => N:404
-	if (conf == _config.end())
-		body = errorPage(404);
-	
-	// is allow mathod => N:405
+	pid = fork();
+	if (pid == 0){
+		char **arg = (char **)malloc(sizeof(char *) * 3);
+		arg[0] = (char *)request._path.c_str();
+		arg[1] = (char *)request._query_string.c_str();
+		arg[2] = NULL;
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
+		close(fd[0]);
+		execve(arg[0], arg, _env);
+	}
+	// waitpid(pid ,NULL, NULL);
+	dup2(fd[0], STDIN_FILENO);
+	close(fd[1]);
+	close(fd[0]);
 
-	// is cgi => y:do cgi
-
-	// is path
-	//	is path => add index
-
-	//	is access file => N:404
-
-	//	body = readfile and \r\n
-
-	// is cliBodySize => 413
-
-
-
-	
-
-	
-	Location location;
-	response = create_response(body, request, location);
-	return (response);	
+	char buffer[1024];
+	read(STDIN_FILENO, buffer, 1024);	
+	return (std::string(buffer));
 }
 
 std::string Server::rout(Request &request)

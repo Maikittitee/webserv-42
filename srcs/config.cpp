@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/29 16:33:18 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/05/30 14:27:07 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,9 @@
 #include <cstring>
 #include "../include/Server.hpp"
 
+Location::Location(){}
 
-Server::Server()
-{
-	
-}
-
-Server::~Server()
-{
-	
-}
+Location::Location(std::string name){}
 
 std::string	ft_trim(std::string line, char c)
 {
@@ -32,9 +25,7 @@ std::string	ft_trim(std::string line, char c)
 	size_t	end;
 
 	start = line.find_first_not_of(c);
-	// std::cout << "start : " << start << std::endl;
 	end = line.find_last_not_of(c);
-	// std::cout << "end : " << end << std::endl;
 	
 	// std::string::npos is position that string doesn't match
 	// end != 0 -> checks if there are any non-key characters at the end of the string.
@@ -46,6 +37,7 @@ std::string	ft_trim(std::string line, char c)
 		return ("");
 	return (line);	
 }
+
 bool	ft_check_extension(char	*file)
 {
 	char *tmp;
@@ -55,6 +47,7 @@ bool	ft_check_extension(char	*file)
 		return (true);
 	return (false);
 }
+
 std::string	ft_getvalue(std::string key, std::string line)
 {
 	int			i;
@@ -66,8 +59,6 @@ std::string	ft_getvalue(std::string key, std::string line)
 		return("");
 	while (line[i])
 	{
-		// while (isspace(line[i])) // escape space
-		// 	i++;
 		while (line[i] == key[i]) // escape key
 			i++;
 		while (line[i] && isspace(line[i]))
@@ -128,10 +119,6 @@ bool	ft_getlocate(std::string key, std::string value, std::string sp_line)
 	locate = true;
 	if (key != "location")
 		return (false);
-	// std::cout << "[key_locate]   : |" << key << "|" << std::endl;
-	// std::cout << "[value_locate] : |" << value  << "|" << std::endl;
-	// std::cout << "sp_line : " << sp_line << std::endl;
-	
 	// if check key == gzip , include -> link to other function
 	if (key == "}") 
 		locate = false;
@@ -182,7 +169,7 @@ void	ft_prt_locate(Location location)
 // 	return (location);
 // }
 
-int	parsing_config(int ac, char **av)
+int	parsing_config(int ac, char **av, char **env)
 {
 	std::string	line;
 	std::string	file;
@@ -191,7 +178,7 @@ int	parsing_config(int ac, char **av)
 	std::string	sp_line;
 	bool		locate;
 	// Location	location;
-	Server		server;
+	Server		server(50, env);
 	
 	// server._config["name"] = Location.
 	// std::cout << "parsing config" << std::endl;	
@@ -207,9 +194,7 @@ int	parsing_config(int ac, char **av)
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		// write new code for trim isspace
-		// std::cout << key << " | " << value << std::endl;
 		sp_line = ft_trim_ispace(line);
-		// std::cout << "|" << sp_line << "|" << std::endl;
 		key = ft_getkey(sp_line);
 		// if (key == "location")
 		// 	locate = true;
@@ -222,30 +207,23 @@ int	parsing_config(int ac, char **av)
 		// if (ft_check_locate(key) == true && locate == true) // check prob word of locate
 			// locate = ft_getlocate(key, value, sp_line);
 		// std::cout << key << " : " << value << std::endl;
-		// server._config[key] = Location(value);
 		server._config.insert(std::pair<std::string, Location>(key, Location(value)));
-		// server._config.insert({key, ft_locate(value)});
 		// ft_prt_locate()
 		// i++;
 		// if (i == 3)
 			// break;
 	}
-	// for (const auto& pair : server._config)
-	// {
-    //     // std::cout << pair.first << '\n';
-    //     std::cout << pair.first << " => " << pair.second ;
-    // }
-
 	std::map<std::string, Location>::iterator it;
 	for (it = server._config.begin(); it != server._config.end(); it++)
 	{
-		std::cout << it->first << it->second;
+		std::cout << it->first << it->second << std::endl;
+		// std::cout << it->first;
 	}
 	input_file.close();
 	return (0);	
 }
 
-int main(int ac, char **av)
+int main(int ac, char **av, char **env)
 {
-	parsing_config(ac, av);	
+	parsing_config(ac, av, env);	
 }
