@@ -23,6 +23,10 @@ class Location;
 
 class Server{
 	public:
+		std::string							name; //? server_name
+		std::string							ipAddr; //? listen could be ip address or port
+		std::string							port; //? listen
+
 		int _client_fd;
 		int _server_fd;
 		struct sockaddr_in _address;
