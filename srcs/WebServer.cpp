@@ -54,6 +54,27 @@ bool WebServer::initServer(std::vector<Server> &servers)
 		// Logger::isLog(INFO) && Logger::log(GRN, "Success to create server fd: ", servs[i].sockFd);
 		this->_servers.push_back(servers[i]);
 	}
+	return (true);
+}
 
+void	WebServer::_init_fds(void)
+{
+
+	_max_fd = 0;
+	int	iter_fd;
+	FD_ZERO(&_read_fds);
+	FD_ZERO(&_write_fds);
+	for (size_t i = 0; i < _servers.size(); i++) {
+		iter_fd = _servers[i]._server_fd; 
+		FD_SET(iter_fd, &_read_fds); // server's connection fd -add-into-> read fd set
+		if (iter_fd > _max_fd)
+			_max_fd = iter_fd; // update max fd
+	}
+
+}
+
+bool WebServer::runServer(void)
+{
+	init_fds();
 
 }

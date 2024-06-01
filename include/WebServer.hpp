@@ -13,6 +13,8 @@
 
 class Server;
 
+class Client;
+
 class WebServer{
 	public:
 		WebServer();
@@ -20,10 +22,17 @@ class WebServer{
 		bool	initServer(std::vector<Server> &servers);
 		bool	runServer(void);
 		bool	downServer(void);
-
 		bool	_setSockAddr(struct addrinfo & sockAddr, Server & serv);
 		bool	_setOptSock(int &sockFd);
-		std::vector<Server> _servers;					
+		void	_init_fds(void);
+
+
+
+		std::vector<Server> _servers;
+		std::map<int, Client> _clients;
+		fd_set 	_read_fds;
+		fd_set	_write_fds;
+		int		_max_fd;
 
 
 
