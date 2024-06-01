@@ -75,6 +75,20 @@ void	WebServer::_init_fds(void)
 
 bool WebServer::runServer(void)
 {
-	init_fds();
+	_init_fds();
+	while (true)
+	{
+		// select 
+		// if time out -> 
+		// if select error ->
+
+		// loop every fd
+		// if read 
+		// 		if new connection -> accept
+		// 		else -> parsing request
+		// else if write
+		//		send response
+
+	}
 
 }
