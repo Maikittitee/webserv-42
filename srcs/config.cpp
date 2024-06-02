@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/02 16:00:12 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/02 16:31:44 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,10 +251,10 @@ int	parsing_config(int ac, char **av, char **env)
 	std::map<std::string, Location>::iterator it;
 	for (it = server._config.begin(); it != server._config.end(); it++)
 	{
-		std::cout << it->first << ":" <<  it->second << std::endl;
+		// std::cout << it->first << ":" <<  it->second << std::endl;
 		// std::cout << it->first << ":" <<  it->second.first << std::endl;
 		
-		// std::cout << it->first << std::endl;
+		std::cout << it->first << std::endl;
 	}
 	input_file.close();
 	return (0);	
@@ -263,4 +263,5 @@ int	parsing_config(int ac, char **av, char **env)
 int main(int ac, char **av, char **env)
 {
 	parsing_config(ac, av, env);	
+	return (0);	
 }

@@ -72,7 +72,6 @@ std::map<std::string, Location> mock_location(void)
 
 
 
-<<<<<<< HEAD
 // int	main()
 // {
 // 	Server server(8384);
@@ -92,29 +91,14 @@ std::map<std::string, Location> mock_location(void)
 	// Request *req = mock_file_request();
 	// Location *loc = mock_location();
 	// char *msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\nContent-Length: 214\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Hello World</title>\n</head>\n<body>\n<h1>Hello, World!</h1>\n</body>\n</html>\n\0";
-=======
-int	main(int ac, char **av, char **env)
-{
-	Server server(8384, env);
-	char buffer[1024];
-	Request *req = mock_file_request();
-	server._config = mock_location();
->>>>>>> c69c8bf033e6cc4b41c283586de6e42f285f1806
 
-	std::cout << "bp1" << std::endl;
+	// std::cout << "bp1" << std::endl;
 	// parsing config here
 	// parsing_config(server , ac, av);
 	// server.run_server();
 	// read(server._client_fd, buffer, 1024 - 1);
 
-<<<<<<< HEAD
 	// // parsing request here
-=======
-	if (server.run_server())
-		std::cout << "run server ok" << std::endl;
-	std::cout << "ye mae" << std::endl;
-	read(server._client_fd, buffer, 1024 - 1);
->>>>>>> c69c8bf033e6cc4b41c283586de6e42f285f1806
 
 	// printf("this is request message\n");
 	// printf("%s\n", buffer);
@@ -124,17 +108,5 @@ int	main(int ac, char **av, char **env)
 	// server.send_response(response.c_str(), server._client_fd);
 	// printf("send response\n");
 
-<<<<<<< HEAD
     // return 0;
 // }
-=======
-	// cgi & responce here
-	std::string response = server.rout(*req);
-	std::cout << "----------------" << std::endl;
-	std::cout << response << std::endl;
-	server.send_response(response.c_str(), server._client_fd);
-	// printf("send response\n");
-
-    return 0;
-}
->>>>>>> c69c8bf033e6cc4b41c283586de6e42f285f1806

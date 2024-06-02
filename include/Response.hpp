@@ -14,7 +14,7 @@
 
 // class Request;
 
-// class Location;
+class Location;
 
 class Response{
 	public:

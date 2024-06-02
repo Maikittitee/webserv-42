@@ -150,7 +150,7 @@ Location& Server::select_location(Request &request)
 		std::cout << i << std::endl;
 	}
 	std::cout << "bp7" << std::endl;
-	auto index = std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
+	// auto index = std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
 	if (rout_paths[index].size() > acc_length[index])
 		return (_config["/"]);
 	std::cout << "rout of  " << request._path << " is " << rout_paths[index]  << std::endl; 
