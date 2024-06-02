@@ -112,25 +112,25 @@ std::map<std::string, Location> mock_location(void)
 // }
 
 
-int main(int ac, char **av, char **env)
-{
-	// parsing_config(ac, av, env);	
-	// Server ();
-	Location location;
+// int main(int ac, char **av, char **env)
+// {
+// 	// parsing_config(ac, av, env);	
+// 	// Server ();
+// 	Location location;
 
-	std::map<std::string, Location> _config;
+// 	std::map<std::string, Location> _config;
 
-	_config = mock_location(); 
+// 	_config = mock_location(); 
 
-	// location.port = 80;
-	// _config.insert(std::pair<std::string, Location>("key", location));
+// 	// location.port = 80;
+// 	// _config.insert(std::pair<std::string, Location>("key", location));
 
-	std::map<std::string, Location>::iterator it;
-	for (it = _config.begin(); it != _config.end(); it++)
-	{
-		std::cout << it->first << std::endl;
-		std::cout <<  it->second << std::endl;
-		// std::cout << "[test_print] client_max : " << it->second._client_max << std::endl;
-	}
-	return (0);	
-}
+// 	std::map<std::string, Location>::iterator it;
+// 	for (it = _config.begin(); it != _config.end(); it++)
+// 	{
+// 		std::cout << it->first << std::endl;
+// 		std::cout <<  it->second << std::endl;
+// 		// std::cout << "[test_print] client_max : " << it->second._client_max << std::endl;
+// 	}
+// 	return (0);	
+// }

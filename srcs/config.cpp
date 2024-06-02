@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ktunchar <ktunchar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/02 23:12:55 by ktunchar         ###   ########.fr       */
+/*   Updated: 2024/06/02 23:19:28 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,18 +28,18 @@
 
 std::ostream& operator<<(std::ostream& os, const Location& location)
 {
-	os << "cgi: " << std::boolalpha << location.cgiPass << std::endl;
-	os << "autoIndex: " << std::boolalpha << location.autoIndex << std::endl;
-	// os << "allowMethod: " << location.allowMethod << std::endl;
+	// os << "cgi: " << std::boolalpha << location.cgiPass << std::endl;
+	// os << "autoIndex: " << std::boolalpha << location.autoIndex << std::endl;
+	// // os << "allowMethod: " << location.allowMethod << std::endl;
 	
-	os << "cliBodySize : " << location.cliBodySize << std::endl;
+	os << "cliBodySize : " << location._client_max << std::endl;
 	
-	os << "root: " << location.root << std::endl;
-	// os << "index: " << location.index << std::endl;
-	if (!location.ret.have)
-		os << "no return" << std::endl;
-	else 
-		os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
+// 	os << "root: " << location.root << std::endl;
+// 	// os << "index: " << location.index << std::endl;
+// 	if (!location.ret.have)
+// 		os << "no return" << std::endl;
+// 	else 
+// 		os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
 	return (os);
 }
 
@@ -258,8 +258,8 @@ int	parsing_config(int ac, char **av, char **env)
 
 		if (key == "client_max_body_size")
 		{
-			// location._client_max = ft_stoi(value);
-			// std::cout << "{client_max :} " << location._client_max << std::endl;
+			location._client_max = ft_stoi(value);
+			std::cout << "{client_max :} " << location._client_max << std::endl;
 			// auto check = server._config.insert(std::pair<std::string, Location>(key, location));
 			auto check = server._config.insert(std::pair<std::string, Location>(key, location));
 			// if (check.second) 
@@ -289,13 +289,9 @@ int	parsing_config(int ac, char **av, char **env)
 	return (0);	
 }
 
-// int main(int ac, char **av, char **env)
-// {
-// 	// parsing_config(ac, av, env);	
-// 	// Server ();
-// 	Location Location;
+int main(int ac, char **av, char **env)
+{
+	parsing_config(ac, av, env);	
 
-// 	std::map<std::string, Location> _config; 
-
-// 	return (0);	
-// }
+	return (0);	
+}
