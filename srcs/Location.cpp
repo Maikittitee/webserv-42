@@ -1,6 +1,9 @@
 #include "../include/Location.hpp"
 
-Location::Location(void){}
+Location::Location(void) : _client_max(3) {}
+// Location::Location(void) {}
+
+// Location::Location() : _client_max(3) {}
 
 Location::Location(const Location &other):cgiPass(other.cgiPass), autoIndex(other.autoIndex), allowMethod(other.allowMethod), cliBodySize(other.cliBodySize), root(other.root), index(other.index), ret(other.ret){}
 
@@ -17,22 +20,22 @@ Location& Location::operator= (const Location &rhs){
 			return *this;
 		}
 
-std::ostream& operator<<(std::ostream &os, const std::vector<t_method>& eiei)
-{
-	for (int i = 0; i < eiei.size(); i++){
-		os << eiei[i] << ", ";
-	}
-	os << std::endl;
-	return (os);
-}
-std::ostream& operator<<(std::ostream &os, const std::vector<std::string>& eiei)
-{
-	for (int i = 0; i < eiei.size(); i++){
-		os << eiei[i] << ", ";
-	}
-	os << std::endl;
-	return (os);
-}
+// std::ostream& operator<<(std::ostream &os, const std::vector<t_method>& eiei)
+// {
+// 	for (int i = 0; i < eiei.size(); i++){
+// 		os << eiei[i] << ", ";
+// 	}
+// 	os << std::endl;
+// 	return (os);
+// }
+// std::ostream& operator<<(std::ostream &os, const std::vector<std::string>& eiei)
+// {
+// 	for (int i = 0; i < eiei.size(); i++){
+// 		os << eiei[i] << ", ";
+// 	}
+// 	os << std::endl;
+// 	return (os);
+// }
 
 
 // std::ostream& operator<<(std::ostream& os, const Location& location)

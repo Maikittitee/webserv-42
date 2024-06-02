@@ -12,10 +12,10 @@ public:
     Location(int p, const std::string& n) : port(p), name(n) {}
 
     // Overload the << operator to print Location objects
-    friend std::ostream& operator<<(std::ostream& os, const Location& loc) {
-        os << "Port: " << loc.port << ", Name: " << loc.name;
-        return os;
-    }
+    // friend std::ostream& operator<<(std::ostream& os, const Location& loc) {
+    //     os << "Port: " << loc.port << ", Name: " << loc.name;
+    //     return os;
+    // }
 };
 
 int main() {

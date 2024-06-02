@@ -6,19 +6,19 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/02 16:31:44 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/02 17:23:26 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fstream>
 #include <iostream>
 #include <cstring>
+#include <utility>
 #include "../include/Server.hpp"
 
-Location::Location(){}
+// Location::Location(){}
 
-Location::Location(std::string name){}
-
+// Location::Location(std::string name){}
 std::string	ft_trim(std::string line, char c)
 {
 	size_t	start;
@@ -230,15 +230,21 @@ int	parsing_config(int ac, char **av, char **env)
 		// if (ft_check_locate(key) ==etrue && locate == true) // check prob word of locate
 			// locate = ft_getlocate(key, value, sp_line);
 		// std::cout << key << " : " << value << std::endl;
+		// myMap.insert(make_pair(first_name, make_pair(middle_name, last_name)));
+
 		if (key == "client_max_body_size")
 		{
 			location._client_max = ft_stoi(value);
 			std::cout << "{client_max :} " << location._client_max << std::endl;
+			// auto check = server._config.insert(std::pair<std::string, Location>(key, location));
+			auto check = server._config.insert(std::pair<std::string, Location>(key, location));
+			if (check.second) 
+				std::cout << "[Inside loop] : " << server._config["client_max_body_size"]._client_max << std::endl;
+				// std::cout << "[Inside loop] : " << check->se << std::endl;
 		}
 		// if (key == "listen")
 		// 	location._listen = ft_stoi(value);
 		// std::map<std::string, Location>:: check;
-		auto check = server._config.insert(std::pair<std::string, Location>(key, location));
 		// if (check.second)
 			// std::cout << "cf : " << check.second << std::endl;
 			
@@ -252,9 +258,8 @@ int	parsing_config(int ac, char **av, char **env)
 	for (it = server._config.begin(); it != server._config.end(); it++)
 	{
 		// std::cout << it->first << ":" <<  it->second << std::endl;
-		// std::cout << it->first << ":" <<  it->second.first << std::endl;
-		
-		std::cout << it->first << std::endl;
+		// std::cout << it->first << ":" <<  it->second.first;
+		std::cout << "[test_print] client_max : " << it->second._client_max << std::endl;
 	}
 	input_file.close();
 	return (0);	

@@ -46,8 +46,6 @@ void Server::send_response(const char *response, int client_fd)
 char *Server::PortNotExist::what() const throw(){
 	return ((char *)"Your port is not in range of 0 - 65535");
 }
-
-
 std::string Server::errorPage(int error_code)
 {
 	std::string body;
@@ -150,7 +148,7 @@ Location& Server::select_location(Request &request)
 		std::cout << i << std::endl;
 	}
 	std::cout << "bp7" << std::endl;
-	// auto index = std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
+	auto index = std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
 	if (rout_paths[index].size() > acc_length[index])
 		return (_config["/"]);
 	std::cout << "rout of  " << request._path << " is " << rout_paths[index]  << std::endl; 

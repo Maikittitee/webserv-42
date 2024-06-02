@@ -57,9 +57,10 @@ class Location{
 
 
 		// Overload the << operator to print Location objects
+		// std::ostream& operator<<(std::ostream& os, const Location& loc)
 		friend std::ostream& operator<<(std::ostream& os, const Location& loc)
 		{
-			os << loc._client_max << std::endl ;
+			os << "[client_max] : " << loc._client_max << std::endl ;
    		    return os;
     	}
 		// std::ostream& operator<<(std::ostream& os, const Location& location)
@@ -77,5 +78,13 @@ class Location{
 		// 	return (os);
 };
 
+// friend std::ostream& operator<<(std::ostream& os, const Location& loc)
+
+// friend std::ostream& operator<<(std::ostream& os, const Location& loc)
+// std::ostream& operator<<(std::ostream& os, const Location& loc)
+// {
+// 	os << "[client_max] : " << loc._client_max << std::endl ;
+//    	return os;
+// }
 #endif
 

@@ -4,6 +4,7 @@
 #	include <iostream>
 #	include <string>
 #	include <fstream>
+#	include <algorithm> 
 
 typedef enum e_method{
 			ELSE,
