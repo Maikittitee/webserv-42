@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/02 17:23:26 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/02 23:04:34 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,34 @@
 #include <cstring>
 #include <utility>
 #include "../include/Server.hpp"
+#include "../include/Location.hpp"
 
 // Location::Location(){}
 
 // Location::Location(std::string name){}
+// friend std::ostream& operator<<(std::ostream& os, const Location& loc)
+// {
+// 	os << "[client_max] : " << loc._client_max << std::endl ;
+//    	return os;
+// }
+
+std::ostream& operator<<(std::ostream& os, const Location& location)
+{
+	os << "cgi: " << std::boolalpha << location.cgiPass << std::endl;
+	os << "autoIndex: " << std::boolalpha << location.autoIndex << std::endl;
+	// os << "allowMethod: " << location.allowMethod << std::endl;
+	
+	os << "cliBodySize : " << location._client_max << std::endl;
+	
+	os << "root: " << location.root << std::endl;
+	// os << "index: " << location.index << std::endl;
+	if (!location.ret.have)
+		os << "no return" << std::endl;
+	else 
+		os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
+	return (os);
+}
+
 std::string	ft_trim(std::string line, char c)
 {
 	size_t	start;
@@ -234,12 +258,13 @@ int	parsing_config(int ac, char **av, char **env)
 
 		if (key == "client_max_body_size")
 		{
-			location._client_max = ft_stoi(value);
-			std::cout << "{client_max :} " << location._client_max << std::endl;
+			// location._client_max = ft_stoi(value);
+			// std::cout << "{client_max :} " << location._client_max << std::endl;
 			// auto check = server._config.insert(std::pair<std::string, Location>(key, location));
 			auto check = server._config.insert(std::pair<std::string, Location>(key, location));
-			if (check.second) 
-				std::cout << "[Inside loop] : " << server._config["client_max_body_size"]._client_max << std::endl;
+			// if (check.second) 
+				// std::cout << "[Inside loop] : " << server._config["client_max_body_size"] << std::endl;
+				// std::cout << "[Inside loop] : " << server._config["client_max_body_size"]._client_max << std::endl;
 				// std::cout << "[Inside loop] : " << check->se << std::endl;
 		}
 		// if (key == "listen")
@@ -257,16 +282,20 @@ int	parsing_config(int ac, char **av, char **env)
 	std::map<std::string, Location>::iterator it;
 	for (it = server._config.begin(); it != server._config.end(); it++)
 	{
-		// std::cout << it->first << ":" <<  it->second << std::endl;
-		// std::cout << it->first << ":" <<  it->second.first;
-		std::cout << "[test_print] client_max : " << it->second._client_max << std::endl;
+		std::cout << it->first << " : " <<  it->second << std::endl;
+		// std::cout << "[test_print] client_max : " << it->second._client_max << std::endl;
 	}
 	input_file.close();
 	return (0);	
 }
 
-int main(int ac, char **av, char **env)
-{
-	parsing_config(ac, av, env);	
-	return (0);	
-}
+// int main(int ac, char **av, char **env)
+// {
+// 	// parsing_config(ac, av, env);	
+// 	// Server ();
+// 	Location Location;
+
+// 	std::map<std::string, Location> _config; 
+
+// 	return (0);	
+// }

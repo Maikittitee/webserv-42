@@ -22,10 +22,18 @@ bool	ft_getlocate(std::string key, std::string value, std::string sp_line);
 bool	ft_check_locate(std::string key);
 
 
-// typedef struct parsing
-// {
-
-// } ps;
+typedef struct s_dfconf
+{
+	int client_max_body_size;
+	int listen;
+	
+	std::string	server_name;
+	std::string root;
+	
+	std::vector<std::string> index;
+	std::vector<std::string> limit_except;
+	std::vector<std::string> error_page;
+} p_dfconf;
 
 struct return_t {
 	bool		have;	// if there is a return 1 (true)
@@ -58,11 +66,11 @@ class Location{
 
 		// Overload the << operator to print Location objects
 		// std::ostream& operator<<(std::ostream& os, const Location& loc)
-		friend std::ostream& operator<<(std::ostream& os, const Location& loc)
-		{
-			os << "[client_max] : " << loc._client_max << std::endl ;
-   		    return os;
-    	}
+		// friend std::ostream& operator<<(std::ostream& os, const Location& loc)
+		// {
+		// 	os << "[client_max] : " << loc._client_max << std::endl ;
+   		//     return os;
+    	// }
 		// std::ostream& operator<<(std::ostream& os, const Location& location)
 		// {
 		// 	os << "cgi: " << std::boolalpha << location.cgiPass << std::endl;

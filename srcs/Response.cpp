@@ -24,7 +24,7 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 	replace_str(request._path, "//", "/");
 	std::cout << "request path: " << request._path << std::endl;
 	std::cout << "location: " << std::endl;
-	std::cout << conf;
+	// std::cout << conf;
 	
 	// is allow mathod => N:405
 	if (!is_allow_method(request._method, conf))
