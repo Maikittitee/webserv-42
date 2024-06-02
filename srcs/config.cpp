@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ktunchar <ktunchar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/02 23:04:34 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/02 23:12:55 by ktunchar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream& os, const Location& location)
 	os << "autoIndex: " << std::boolalpha << location.autoIndex << std::endl;
 	// os << "allowMethod: " << location.allowMethod << std::endl;
 	
-	os << "cliBodySize : " << location._client_max << std::endl;
+	os << "cliBodySize : " << location.cliBodySize << std::endl;
 	
 	os << "root: " << location.root << std::endl;
 	// os << "index: " << location.index << std::endl;

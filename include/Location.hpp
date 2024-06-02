@@ -86,7 +86,7 @@ class Location{
 		// 	return (os);
 };
 
-// friend std::ostream& operator<<(std::ostream& os, const Location& loc)
+std::ostream& operator<<(std::ostream& os, const Location& loc);
 
 // friend std::ostream& operator<<(std::ostream& os, const Location& loc)
 // std::ostream& operator<<(std::ostream& os, const Location& loc)
