@@ -15,11 +15,6 @@ typedef enum e_method{
 			NONE
 } t_method;
 
-typedef enum e_requestErrorCode{
-			SUCESS_REQUEST
-			BAD_REQUESTLINE
-} t_reqErr;
-
 typedef enum e_version{
 	HTTP09, // HTTP/0.9
 	HTTP10, // HTTP/1.0

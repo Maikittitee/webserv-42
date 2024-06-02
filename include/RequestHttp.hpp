@@ -6,47 +6,51 @@
 #	include <sys/socket.h>
 #	include <netinet/in.h>
 #	include <stdio.h>
-#	include <tuple>
 #	include <stdlib.h>
 #	include <unistd.h>
+#	include <vector>
+#	include <map>
 #	include "Utils.hpp"
 
 typedef enum e_requestErrorCode{
-			SUCESS_REQUEST
-			EMPTHY_REQUEST
-			INVALID_METHOD
-			BAD_REQUESTLINE
-			METHOD_OUTOFRANGE
-			BAD_HEADERFIELD
+			SUCESS_REQUEST,
+			EMPTHY_REQUEST,
+			INVALID_METHOD,
+			BAD_REQUESTLINE,
+			METHOD_OUTOFRANGE,
+			BAD_HEADERFIELD,
 			BAD_HTTPREQUEST
 } t_reqErr;
 
-class Request{
+class RequestHttp{
 	public:
 
 		// Constructor and Destructor
-		Request( void );
-		Request(std::string request);
-		~Request( void ) {}
+		RequestHttp( void );
+		RequestHttp(std::string request);
+		~RequestHttp( void )
+		{
+			
+		}
 
 		// Getter
-		t_method&		getMethod( void )
+		t_method	getMethod( void )
 		{
 			return _method;
 		}
-		std::string&	getPath( void ) 
+		std::string	getPath( void )
 		{
 			return _path;
 		}
-		std::string&	getHttpVersion( void )
+		t_version	getHttpVersion( void )
 		{
 			return _http_version;
 		}
-		std::string&	getBody( void )
+		std::string	getBody( void )
 		{
 			return _body;
 		}
-		std::string&	getQueryString( void )
+		std::string	getQueryString( void )
 		{
 			return _query_string;
 		}

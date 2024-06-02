@@ -1,16 +1,15 @@
-#include "Request.hpp"
+#include "RequestHttp.hpp"
 
-Request::Request():
+RequestHttp::RequestHttp():
 _lineIndex(0),
-_path(""),
-_http_version(""),
-_body(""),
-_query_string(""),
 _reqErr(SUCESS_REQUEST),
 _method(NONE),
+_path(""),
+_http_version(HTTP00),
+_body(""),
+_query_string(""),
 write_fd(-1)
 {
-	request_v.clear();
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
 	_method_map["DELETE"] = DELETE;
@@ -18,53 +17,50 @@ write_fd(-1)
 	_method_map["HEAD"] = HEAD;
 }
 
-Request::Request(std::string request):
+RequestHttp::RequestHttp(std::string request):
 _lineIndex(0),
-_path(""),
-_http_version(""),
-_body(""),
-_query_string(""),
 _reqErr(SUCESS_REQUEST),
 _method(NONE),
+_path(""),
+_http_version(HTTP00),
+_body(""),
+_query_string(""),
 write_fd(-1)
 {
-	request_v.clear();
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
 	_method_map["DELETE"] = DELETE;
 	_method_map["PUT"] = PUT;
 	_method_map["HEAD"] = HEAD;
 	if(!_collectRequestToVector(request))
-		_reqErrMsg(_reqErr);
+		_reqErrMsg();
 	if(!_readRequestLine())
-		_reqErrMsg(_reqErr);
+		_reqErrMsg();
 	if(!_readRequestHeaderField())
-		_reqErrMsg(_reqErr);
-	_readRequestMassageBody()
+		_reqErrMsg();
+	_readRequestMassageBody();
 }
 
-bool	Request::_collectRequestToVector(std::string &request)
+bool	RequestHttp::_collectRequestToVector(std::string &request)
 {
-	std::istringstream	iss_request(request);
 	std::string 		line;
 
-	if (!request)
+	if (request.empty())
 	{
 		_reqErr = EMPTHY_REQUEST;
 		return false;
 	}
-	while (std::getline(iss_request, line))
-		request_v.push_back(line);
-	_trimSpaceWordVector(request_v);
+	request_v = lineToVector(request);
+    std::vector<std::string>::iterator it;
 	return true;
 }
 
-bool 	Request::_readRequestLine( void )
+bool 	RequestHttp::_readRequestLine( void )
 {
 	std::string					req_l;
 	std::vector<std::string>	word_v;
 
-	req_l = request_v[lineIndex];
+	req_l = request_v[_lineIndex];
 	word_v = splitToVector(req_l, ' ');
 	if (word_v.size() != 3)
 	{
@@ -75,18 +71,19 @@ bool 	Request::_readRequestLine( void )
 	if(!_methodCheckNCollect(word_v[0]))
 		return (false);
 	_path = word_v[1];
-	if(_httpVersionCheckNCollect(word_v[2]))
+	_collectQuery(word_v[1]);
+	if(!_httpVersionCheckNCollect(word_v[2]))
 		return (false);
-	lineIndex++;
+	_lineIndex++;
 	return true;
 }
 
-bool	Request::_methodCheckNCollect(std::string &methodInput)
+bool	RequestHttp::_methodCheckNCollect(std::string &methodInput)
 {
 	std::map<std::string, int>::iterator it = _method_map.find(methodInput);
 	if (it != _method_map.end())
 	{
-		_method = _method_map[methodInput]
+		_method = static_cast<t_method>(_method_map[methodInput]);
 		return (true);
 	}
 	else
@@ -95,15 +92,15 @@ bool	Request::_methodCheckNCollect(std::string &methodInput)
 	return (false);
 }
 
-bool	Request::_httpVersionCheckNCollect(std::string word)
+bool	RequestHttp::_httpVersionCheckNCollect(std::string word)
 {
 	std::vector<std::string>	version_v;
 
-	version_v = splitToVector(req_l, '/');
+	version_v = splitToVector(word, '/');
 	_trimSpaceWordVector(version_v);
 	if(version_v[0] != "HTTP")
 	{
-		_reqErr = BAD_HTTPREQUEST
+		_reqErr = BAD_HTTPREQUEST;
 		return (false);
 	}
 	if(version_v[1] == "0.9")
@@ -117,15 +114,15 @@ bool	Request::_httpVersionCheckNCollect(std::string word)
 	return (true);
 }
 
-bool	Request::_readRequestHeaderField( void )
+bool	RequestHttp::_readRequestHeaderField( void )
 {
 	std::string					header_l;
 	std::vector<std::string>	word_v;
 
-	while(lineIndex < request_v.size() && request_v[lineIndex] != "/n") 
+	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
 	{
-		header_l = request_v[lineIndex];
-		word_v = splitToVector(req_l, ':');
+		header_l = request_v[_lineIndex];
+		word_v = splitToVector(header_l, ':');
 		if (word_v.size() > 2)
 		{
 			_reqErr = BAD_HEADERFIELD;
@@ -133,27 +130,41 @@ bool	Request::_readRequestHeaderField( void )
 		}
 		_trimSpaceWordVector(word_v);
 		_headerField_map[word_v[0]] = word_v[1];
-		lineIndex++;
+		_lineIndex++;
 	}
+	_lineIndex++;
+	return true;
 }
 
-void	Request::_trimSpaceWordVector(std::vector<std::string> &word_v)
+void	RequestHttp::_trimSpaceWordVector(std::vector<std::string> &word_v)
 {
-	for (std::string& word : word_v)
-		trimTrailingSpaces(trimLeadingSpaces(word));
+    for (std::vector<std::string>::iterator it = word_v.begin(); it != word_v.end(); ++it)
+    {
+        std::string &word = *it;
+		trimLeadingSpaces(word);
+        trimTrailingSpaces(word);
+    }
 }
 
-void	Request::_readRequestMassageBody( void )
+void	RequestHttp::_readRequestMassageBody( void )
 {
-	while(lineIndex < request_v.size()) 
+	while(_lineIndex < request_v.size()) 
 	{
-		collectQuery(request_v[lineIndex]);
-		_body +=  request_v[lineIndex]
-		lineIndex++;
+		_body +=  request_v[_lineIndex];
+		_lineIndex++;
 	}	
 }
 
-int		Request::_reqErrMsg( void )
+void	RequestHttp::_collectQuery(std::string path_l)
+{
+	size_t 		start = path_l.find('?', 0) + 1;
+
+	std::cout << "start = " << start << "\n";
+	if (start != std::string::npos)
+		_query_string = path_l.substr(start, path_l.length());
+}
+
+int		RequestHttp::_reqErrMsg( void )
 {
 	if (_reqErr == EMPTHY_REQUEST)
 	{
@@ -180,6 +191,5 @@ int		Request::_reqErrMsg( void )
 		std::cout << "ERROR: BAD HEADER FIELD" << std::endl;
 		return (1);
 	}
-	std::cout << "SUCESS REQUEST" << std::endl;
 	return (0);
 }
