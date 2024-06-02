@@ -39,6 +39,10 @@ class Location{
 		Location();
 		Location(std::string name);
 		std::string name;		
+		std::string value_lc;		
+		int	_client_max;	
+		int	_listen;	
+
 		bool						cgiPass;
 		bool						autoIndex;
 		std::vector<t_method>		allowMethod;
@@ -62,10 +66,12 @@ class Location{
 			ret = rhs.ret;
 			return *this;
 		}
+
+
 		// Overload the << operator to print Location objects
 		friend std::ostream& operator<<(std::ostream& os, const Location& loc)
 		{
-			os << "Port : " << loc.port ;
+			os << loc._client_max << std::endl ;
    		    return os;
     	} 
 };

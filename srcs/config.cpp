@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/30 14:27:07 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/02 16:00:12 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,31 @@ void	ft_prt_locate(Location location)
 // 	return (location);
 // }
 
+int	ft_stoi(std::string str)
+{
+	int	i;
+    int sym;
+    int res;
+
+	i = 0;
+    sym = 1;
+    res = 0;
+	while (isspace(str[i]))
+        i++;
+    if (str[i] == '-' || str[i] == '+')
+    {
+        if (str[i] == '-')
+            sym = -1;
+        i++;
+    }
+    while (str[i] >= '0' && str[i] <= '9')
+    {
+        res = (res * 10) + (str[i] - '0');
+        i++;
+    }
+    return (res * sym);
+}
+
 int	parsing_config(int ac, char **av, char **env)
 {
 	std::string	line;
@@ -177,7 +202,7 @@ int	parsing_config(int ac, char **av, char **env)
 	std::string	value;
 	std::string	sp_line;
 	bool		locate;
-	// Location	location;
+	Location	location;
 	Server		server(50, env);
 	
 	// server._config["name"] = Location.
@@ -202,22 +227,34 @@ int	parsing_config(int ac, char **av, char **env)
 			continue;
 		else
 			value = ft_getvalue(key, sp_line);
-		// std::cout << "[key]   : |" << key << "|" << std::endl;
-		// std::cout << "[value] : |" << value  << "|" << std::endl;
-		// if (ft_check_locate(key) == true && locate == true) // check prob word of locate
+		// if (ft_check_locate(key) ==etrue && locate == true) // check prob word of locate
 			// locate = ft_getlocate(key, value, sp_line);
 		// std::cout << key << " : " << value << std::endl;
-		server._config.insert(std::pair<std::string, Location>(key, Location(value)));
-		// ft_prt_locate()
+		if (key == "client_max_body_size")
+		{
+			location._client_max = ft_stoi(value);
+			std::cout << "{client_max :} " << location._client_max << std::endl;
+		}
+		// if (key == "listen")
+		// 	location._listen = ft_stoi(value);
+		// std::map<std::string, Location>:: check;
+		auto check = server._config.insert(std::pair<std::string, Location>(key, location));
+		// if (check.second)
+			// std::cout << "cf : " << check.second << std::endl;
+			
+		// // std::cout << server._config["autoindexPort"] << std::endl;
 		// i++;
 		// if (i == 3)
-			// break;
+		// 	break;
 	}
+	
 	std::map<std::string, Location>::iterator it;
 	for (it = server._config.begin(); it != server._config.end(); it++)
 	{
-		std::cout << it->first << it->second << std::endl;
-		// std::cout << it->first;
+		std::cout << it->first << ":" <<  it->second << std::endl;
+		// std::cout << it->first << ":" <<  it->second.first << std::endl;
+		
+		// std::cout << it->first << std::endl;
 	}
 	input_file.close();
 	return (0);	
