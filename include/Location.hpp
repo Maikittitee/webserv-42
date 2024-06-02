@@ -70,10 +70,5 @@ class Location{
 };
 
 #endif
-std::ostream& operator<<(std::ostream &os, const std::vector<t_method>& eiei);
-std::ostream& operator<<(std::ostream &os, const std::vector<std::string>& eiei);
-
-
-std::ostream& operator<<(std::ostream& os, const Location& location);
 
 #endif
