@@ -20,6 +20,11 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 	std::string body;
 
 	_return_code = 200;
+	request._path = conf.root + request._path;
+	replace_str(request._path, "//", "/");
+	std::cout << "request path: " << request._path << std::endl;
+	std::cout << "location: " << std::endl;
+	std::cout << conf;
 	
 	// is allow mathod => N:405
 	if (!is_allow_method(request._method, conf))
@@ -54,7 +59,7 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 	}
 }
 
-void Response::genarate_header(void)
+void Response::genarate_header()
 {
 	std::stringstream header;
 
@@ -63,15 +68,17 @@ void Response::genarate_header(void)
 	header << " ";
 	header << status_def();
 	header << "\r\n";
-	header <<  "Content-Type: ";
-	header << _content_type;
-	header << "\r\n";
 	header << "Date: "; 
 	header << get_date();
 	header << "\r\n";
-	header << "Content-Length: ";
-	header << strlen(_body.c_str());
-	header << "\r\n";
+	if (!cgiPass){
+		header <<  "Content-Type: ";
+		header << "text/html";
+		header << "\r\n";
+	}
+	// header << "Content-Length: ";
+	// header << strlen(_body.c_str());
+	// header << "\r\n";
 
 	this->_header = header.str();
 
@@ -91,7 +98,8 @@ std::string Response::get_response_text(void)
 	std::stringstream response;
 
 	response << _header;
-	response << "\r\n";
+	if (!cgiPass)
+		response << "\r\n";
 	response << _body;
 
 	return (response.str());

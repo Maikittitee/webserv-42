@@ -31,7 +31,6 @@ bool Server::run_server(void)
 	if (listen(_server_fd, 3) < 0){
 		perror("listen failed");
 	}
-
 	_client_fd = accept(_server_fd, (struct sockaddr*)&_address, &_addrlen);
 	if (_client_fd < 0){
 		perror("accept failed");
@@ -95,15 +94,65 @@ std::string Server::rout(Request &request)
 	Response response;
 
 	// find config;
+	Location target_location = select_location(request);	
 
 	// 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
 
 	// send request and target config to response;
-	response.receive_request(request, /* mock -> */ _config.begin()->second);
+	response.receive_request(request, target_location);
 	if (response._return_code >= 400) // incase error => redirect to error file
 		response.set_body(errorPage(response._return_code));
-	if (response._return_code < 0) // incase cgi => redirect to do cgi
+	if (response._return_code < 0) {// incase cgi => redirect to do cgi
+		response._return_code = 200;
+		response.cgiPass = true;
 		response.set_body(do_cgi(request));
+	}
 	response.genarate_header();
 	return (response.get_response_text());	
+}
+
+static std::vector<std::string> get_keys(std::map<std::string, Location> map)
+{
+	std::vector<std::string> ret;
+	std::map<std::string, Location>::const_iterator iter;
+	while (iter != map.end()){
+		ret.insert(ret.end(), iter->first);
+		iter++;
+	}
+	return (ret);
+}
+
+static int get_match_length(std::string target, std::string src)
+{
+	int cnt = 0;
+	int i = 0;
+	while (i < target.size() && i < src.size()){
+		if (target[i] == src[i])
+			cnt += 1;
+		else
+			return (cnt);
+		i++;
+	}
+	return (cnt);
+
+}
+
+Location& Server::select_location(Request &request)
+{
+	std::string target_path = request._path;
+	std::vector<std::string> rout_paths = get_keys(_config);
+	std::vector<int> acc_length;
+	
+	int	i = 0;
+	while (i < rout_paths.size()){
+		acc_length.insert(acc_length.end(), get_match_length(target_path, rout_paths[i]));
+		i++;
+		std::cout << i << std::endl;
+	}
+	std::cout << "bp7" << std::endl;
+	auto index = std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
+	if (rout_paths[index].size() > acc_length[index])
+		return (_config["/"]);
+	std::cout << "rout of  " << request._path << " is " << rout_paths[index]  << std::endl; 
+	return (_config[rout_paths[index]]);
 }
