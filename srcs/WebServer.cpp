@@ -59,9 +59,9 @@ bool WebServer::initServer(std::vector<Server> &servers)
 
 void	WebServer::_init_fds(void)
 {
+	int	iter_fd;
 
 	_max_fd = 0;
-	int	iter_fd;
 	FD_ZERO(&_read_fds);
 	FD_ZERO(&_write_fds);
 	for (size_t i = 0; i < _servers.size(); i++) {
@@ -79,6 +79,7 @@ bool WebServer::runServer(void)
 	while (true)
 	{
 		// select 
+		int status = select(_max_fd, &_read_fds, &_write_fds, &_timeOut);
 		// if time out -> 
 		// if select error ->
 

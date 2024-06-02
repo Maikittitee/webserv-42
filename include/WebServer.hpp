@@ -33,6 +33,7 @@ class WebServer{
 		fd_set 	_read_fds;
 		fd_set	_write_fds;
 		int		_max_fd;
+		struct timeval			_timeOut;
 
 
 
