@@ -35,8 +35,6 @@ struct return_t {
 
 class Location{
 	public:
-<<<<<<< HEAD
-
 		Location();
 		Location(std::string name);
 		std::string name;		
@@ -44,9 +42,6 @@ class Location{
 		int	_client_max;	
 		int	_listen;	
 
-=======
-		Location(void);
->>>>>>> c69c8bf033e6cc4b41c283586de6e42f285f1806
 		bool						cgiPass;
 		bool						autoIndex;
 		std::vector<t_method>		allowMethod;
@@ -71,4 +66,3 @@ class Location{
 
 #endif
 
-#endif
