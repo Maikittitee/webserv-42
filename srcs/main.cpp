@@ -10,9 +10,9 @@
 #include "../include/Request.hpp"
 #include "../include/Response.hpp"
 
-Request* mock_file_request(void)
-{
-	Request *ret = new Request();
+// Request* mock_file_request(void)
+// {
+// 	Request *ret = new Request();
 
 	// for example
 	ret->_method = GET;
@@ -20,10 +20,10 @@ Request* mock_file_request(void)
 	ret->_path = "/test.html";
 	ret->_http_version = "HTTP/1.1";
 
-	ret->_body = "";
-	return (ret);
+// 	ret->_body = "";
+// 	return (ret);
 
-}
+// }
 
 std::map<std::string, Location> mock_location(void)
 {
