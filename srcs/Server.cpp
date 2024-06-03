@@ -1,6 +1,9 @@
 #include "../include/Server.hpp"
 Server::Server(void)
 {
+	name = "localhost"; //? server_name
+	ipAddr = "0.0.0.0"; //? listen could be ip address or port
+	port = "80";
 
 }
 
@@ -14,6 +17,7 @@ Server::Server(int port, char **env){
 Server::~Server (void) {
 	close(_server_fd);
 }
+
 
 void Server::send_response(const char *response, int client_fd)
 {

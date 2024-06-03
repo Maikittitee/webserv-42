@@ -9,11 +9,12 @@
 # include "Server.hpp"
 # include <netinet/in.h>
 # include <netdb.h>
-# include <fcntl.h> 
+# include <fcntl.h>
+# include "Client.hpp" 
 
 class Server;
 
-// class Client;
+class Client;
 
 class WebServer{
 	public:
@@ -29,7 +30,7 @@ class WebServer{
 
 
 		std::vector<Server> _servers;
-		// std::map<int, Client> _clients;
+		std::map<int, Client> _clients;
 		fd_set 	_read_fds;
 		fd_set	_write_fds;
 		int		_max_fd;
