@@ -1,5 +1,9 @@
 #include "../include/WebServer.hpp"
 
+WebServer::WebServer(){}
+
+WebServer::~WebServer(){}
+
 bool	WebServer::_setSockAddr(struct addrinfo & sockAddr, Server & serv) {
 	int	status;
 	struct addrinfo	hints;
@@ -77,17 +81,34 @@ void	WebServer::_init_fds(void)
 
 bool WebServer::runServer(void)
 {
+	fd_set tmp_read_fds;
+	fd_set tmp_write_fds;
+
 	_init_fds();
 	while (true)
 	{
+		tmp_read_fds = _read_fds;
+		tmp_write_fds = _write_fds;
 		// select 
-		int status = select(_max_fd, &_read_fds, &_write_fds, NULL, &_timeOut);
+		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, &_timeOut);
 		if (status == 0)
 			std::cout << "Time out" << std::endl;
-		else if (status == -1)
+		else if (status == -1){
 			std::cerr << "select error " << std::endl;
-		else
-			std::cout << "fd is " << status << std::endl;
+			return (false);
+		}
+		for (int fd = 0; fd < _max_fd; fd++){
+			if (FD_ISSET(fd, &_read_fds))
+			{
+				if (fd == _servers.begin()->_server_fd)
+					
+					std::cout << "accept" << std::endl;
+				else
+					std::cout << "not match " << std::endl;
+
+			}
+		}
+		
 		// if time out -> 
 		// if select error ->
 

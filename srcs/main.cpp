@@ -9,6 +9,7 @@
 #include "../include/Location.hpp"
 #include "../include/Request.hpp"
 #include "../include/Response.hpp"
+#include "../include/WebServer.hpp"
 
 Request* mock_file_request(void)
 {
@@ -76,8 +77,10 @@ Server *mock_server(void)
 	Server *serv = new Server();
 	serv->name = "localhost";
 	serv->ipAddr = "0.0.0.0";
-	serv->port = 6969;
+	serv->port = "6969";
 	serv->_config = mock_location();
+
+	return (serv);
 
 }
 
@@ -86,7 +89,14 @@ int	main(int ac, char **av, char **env)
 {
 	std::vector<Server> servs;
 	servs.push_back(*mock_server());
-	
+
+	WebServer webserver;
+
+	webserver.initServer(servs);
+	webserver.runServer();
+
+
+			
 
     return 0;
 }
