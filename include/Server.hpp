@@ -23,18 +23,15 @@ class Location;
 
 class Server{
 	public:
+		int _server_fd;
 		std::string							name; //? server_name
 		std::string							ipAddr; //? listen could be ip address or port
 		std::string							port; //? listen
-
-		int _client_fd;
-		int _server_fd;
-		struct sockaddr_in _address;
-    	socklen_t _addrlen;
-		std::vector<int> _server_port;
+		
 		std::map<std::string, Location> _config; 
 		Mime _mime;
 		char **_env;
+		Server();
 		Server(int port, char **env);
 		~Server();
 
@@ -42,13 +39,11 @@ class Server{
 			char *what() const throw();
 		};
 
-		bool run_server();
 		std::string rout(Request &request);
 		std::string do_cgi(Request &request);
 		Location& select_location(Request &request);
 		std::string errorPage(int error_code);
 		void send_response(const char *response, int client_fd);
-		std::string method_get(Request &request);
 };
 
 #endif

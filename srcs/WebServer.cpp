@@ -12,6 +12,8 @@ bool	WebServer::_setSockAddr(struct addrinfo & sockAddr, Server & serv) {
 	hints.ai_addr = NULL;
 	hints.ai_canonname = NULL;
 	hints.ai_next = NULL;
+	_timeOut.tv_sec = 5;
+	_timeOut.tv_usec = 0;
 	status = getaddrinfo(serv.ipAddr.c_str(), serv.port.c_str(), &hints, &sockAddrTemp);
 	if (status != 0) {
 		return false;
@@ -79,7 +81,13 @@ bool WebServer::runServer(void)
 	while (true)
 	{
 		// select 
-		int status = select(_max_fd, &_read_fds, &_write_fds, &_timeOut);
+		int status = select(_max_fd, &_read_fds, &_write_fds, NULL, &_timeOut);
+		if (status == 0)
+			std::cout << "Time out" << std::endl;
+		else if (status == -1)
+			std::cerr << "select error " << std::endl;
+		else
+			std::cout << "fd is " << status << std::endl;
 		// if time out -> 
 		// if select error ->
 
@@ -91,5 +99,6 @@ bool WebServer::runServer(void)
 		//		send response
 
 	}
+	return (true);
 
 }

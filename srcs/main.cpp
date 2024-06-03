@@ -71,33 +71,22 @@ std::map<std::string, Location> mock_location(void)
 }
 
 
+Server *mock_server(void)
+{
+	Server *serv = new Server();
+	serv->name = "localhost";
+	serv->ipAddr = "0.0.0.0";
+	serv->port = 6969;
+	serv->_config = mock_location();
+
+}
+
 
 int	main(int ac, char **av, char **env)
 {
-	Server server(8384, env);
-	char buffer[1024];
-	Request *req = mock_file_request();
-	server._config = mock_location();
-
-	std::cout << "bp1" << std::endl;
-	// parsing config here
-
-	if (server.run_server())
-		std::cout << "run server ok" << std::endl;
-	std::cout << "ye mae" << std::endl;
-	read(server._client_fd, buffer, 1024 - 1);
-
-	// parsing request here
-
-	printf("this is request message\n");
-	printf("%s\n", buffer);
-
-	// cgi & responce here
-	std::string response = server.rout(*req);
-	std::cout << "----------------" << std::endl;
-	std::cout << response << std::endl;
-	server.send_response(response.c_str(), server._client_fd);
-	// printf("send response\n");
+	std::vector<Server> servs;
+	servs.push_back(*mock_server());
+	
 
     return 0;
 }
