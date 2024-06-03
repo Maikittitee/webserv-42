@@ -74,4 +74,28 @@ void	trimSpaces(std::string& str)
 {
     trimLeadingSpaces(str);
     trimTrailingSpaces(str);
+std::ostream &operator << (std::ostream &os, const t_method &method)
+{
+	switch (method)
+	{
+		case ELSE:
+			os << "ELSE";
+			break;
+		case GET:
+			os << "GET";
+			break;
+		case POST:
+			os << "POST";
+			break;
+		case DELETE:
+			os << "DELETE";
+			break;
+		case HEAD:
+			os << "HEAD";
+			break;
+		default:
+			os << "not a method";
+			break;
+	}
+	return (os);
 }
