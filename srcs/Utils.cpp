@@ -39,6 +39,7 @@ void	replace_str(std::string &str, std::string s1, std::string s2)
 	}
 }
 
+
 std::vector<std::string> splitToVector(const std::string& str, char delimiter) 
 {
     std::vector<std::string> tokens;
@@ -74,6 +75,8 @@ void	trimSpaces(std::string& str)
 {
     trimLeadingSpaces(str);
     trimTrailingSpaces(str);
+}
+
 std::ostream &operator << (std::ostream &os, const t_method &method)
 {
 	switch (method)
