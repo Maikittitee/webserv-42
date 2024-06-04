@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/04 22:24:24 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/04 22:34:29 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,10 +106,7 @@ void	ft_print_vec(std::vector<std::string> vec)
 	// size_t len = vec.size();
 	// std::cout << "len : " << len << std::endl;
 	for (int i = 0; i < vec.size(); i++)
-	{
-		// if(!vec[i].empty())
         	std::cout << i << "|" << vec[i] << "|" << std::endl;
-	}
 }
 
 
@@ -304,17 +301,17 @@ void	ft_prt_locate(Location location)
 	// std::cout << 
 }
 
-// Location	ft_init_locate(void)
-// {
-// 	Location	locate;
+Location	ft_init_locate(void)
+{
+	Location	locate;
 	
-// 	locate.cgiPass = 0;
-// 	locate.autoIndex = 0;
-// 	locate.cliBodySize = 0;
-// 	locate.root = "";
-// 	locate.ret = {0, 0, ""};
-// 	return (locate);
-// }
+	locate.cgiPass = 0;
+	locate.autoIndex = 0;
+	locate.cliBodySize = 0;
+	locate.root = "";
+	locate.ret = {0, 0, ""};
+	return (locate);
+}
 
 
 // Location	ft_locate(std::string value)
@@ -415,8 +412,6 @@ int	parsing_config(int ac, char **av, char **env)
 		// write new code for trim isspace
 		sp_line = ft_trim_ispace(line);
 		key = ft_getkey(sp_line);
-		// if (key == "location")
-		// 	locate = true;
 		if (key.empty())
 			continue;
 		else
@@ -426,6 +421,8 @@ int	parsing_config(int ac, char **av, char **env)
 			locate = LOCATION;
 		if (locate == DEFAULT1)
 			ft_get_default_conf(df, key, value);
+		if (locate == LOCATION)	
+			
 		i++;
 		if (i == 8)
 			break;

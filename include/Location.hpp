@@ -91,19 +91,16 @@ class Location{
 	public:
 		Location();
 		Location(std::string name);
-		std::string name;		
-		std::string value_lc;		
 		// int	_client_max;	
-		int	_listen;	
 
+		std::string					root;
+		return_t					ret;
+		bool						autoIndex;
 		bool						cgiPass;
 		uint64_t					cliBodySize;
-		bool						autoIndex;
+
 		std::vector<t_method>		allowMethod;
-		std::string					root;
 		std::vector<std::string>	index;
-		return_t					ret;
-		int							port;
 
 		Location(const Location &other);
 		Location& operator= (const Location &rhs);
