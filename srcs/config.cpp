@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/04 22:19:03 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/04 22:24:24 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,66 +140,40 @@ std::vector<std::string>    ft_split(std::string str)
 
 void	ft_fillvector(std::vector<std::string> src, std::vector<std::string> &des)
 {
-	// int i;
-
-	// i = 0;
-	// if (des[0] == "")
-	// 	i = 1;
-	// std::cout << "i : " << i << std::endl;
-	if (des[0].empty())
+	if (des[0].empty()) // check bacuse init des = "" 
 		des.pop_back();
 	for (int i = 0; i < src.size(); i++)
-	{
 		des.push_back(src[i]);
-	}
 }
 
 void	ft_get_default_conf(t_dfconf &df, std::string key, std::string value)
 {
-	// t_dfconf	df;
 	std::vector<std::string> vec;
 
-	// vec.push_back("");
 	if (key == "client_max_body_size")
-	{
 		df.cliBodySize = ft_stouint(value);
-	}
 	else if (key == "listen")
-	{
 		df.listen = ft_stouint(value);
-	}
-	// if (key == "server_name")
 	else if (key == "server_name")
-	{
-		// std::cout << "value_servername : " << value << std::endl;
 		df.server_name = value;
-	}
 	else if (key == "root")
-	{
 		df.root = value;
-	}
 	else if (key == "index")
 	{
 		vec = ft_split(value);
 		// ft_print_vec(vec);
 		ft_fillvector(vec, df.index);
-		
 	}
 	else if (key == "limit_except")
 	{
 		vec = ft_split(value);
 		ft_fillvector(vec, df.limit_except);
-		
 	}
 	else if (key == "error_page")
 	{
 		vec = ft_split(value);
 		ft_fillvector(vec, df.error_page);
-		
 	}
-
-	// location.insert(std::pair<std::string, Dfconf>("default", df));
-	// return (df);
 }
 
 
@@ -456,6 +430,7 @@ int	parsing_config(int ac, char **av, char **env)
 		if (i == 8)
 			break;
 	}
+	// fill data in map
 	ft_print_df_conf(df);
 	
 	exit(0);		
