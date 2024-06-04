@@ -165,21 +165,9 @@ int main(int ac, char **av, char **env)
 					read(fd, buffer, 1024);
 					std::cout << buffer << std::endl;
 					FD_CLR(fd, &current);
-
 				}
 			}
 
 		}
-
-		
 	}
-
-
-
-
-
-	
-
-
-
 }

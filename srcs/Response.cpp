@@ -31,7 +31,7 @@ void	Response::receive_request(Request &request, Location &conf) // for body and
 		_return_code = 405;
 
 	//	is path => add index
-	if (conf.autoIndex && request._path[request._path.size() - 1] == '/'){
+	if (request._path[request._path.size() - 1] == '/'){
 		std::string tmp_file;
 		for (int i = 0; i < conf.index.size(); i++){
 			tmp_file = request._path + conf.index[i];
