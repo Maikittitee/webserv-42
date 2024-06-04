@@ -68,13 +68,13 @@ bool WebServer::runServer(void)
 	
 	fd_set tmp_read_fds;
 	char buffer[1024];
-	// fd_set tmp_write_fds;
+	fd_set tmp_write_fds;
 
 	_init_fds();
 	while (true)
 	{
 		tmp_read_fds = _read_fds;
-		// tmp_write_fds = _write_fds;
+		tmp_write_fds = _write_fds;
 		
 		int status = select(_max_fd + 1, &tmp_read_fds, NULL, NULL, NULL);
 		if (status == -1){
@@ -84,7 +84,7 @@ bool WebServer::runServer(void)
 		for (int fd = 0; fd <= _max_fd; fd++){
 			if (FD_ISSET(fd, &tmp_read_fds))
 			{
-				if (fd == _servers.begin()->_server_fd) // is match listen fd of server (handshake)
+				if (_is_match_server(fd)) 				// is match listen fd of server (handshake)
 				{
 					// accept connection (server keep client obj, keep fd of data transfer)
 					Client client;
@@ -101,10 +101,22 @@ bool WebServer::runServer(void)
 					FD_CLR(fd, &_read_fds);
 				}
 			}
+			// if (FD_ISSET(fd, &tmp_write_fds)){
+
+			// }
 		}
 	}
 	return (true);
 
+}
+
+bool	WebServer::_is_match_server(int fd)
+{
+	for (int i = 0; i < _servers.size(); i++){
+		if (_servers[i]._server_fd == fd)
+			return (true);
+	}
+	return (false);
 }
 
 void	WebServer::_init_fds(void)
