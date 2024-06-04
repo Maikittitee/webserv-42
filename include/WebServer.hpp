@@ -22,6 +22,8 @@ class WebServer{
 		bool	_set_fd(int fd, fd_set &set);
 		bool	_clear_fd(int fd, fd_set &set);
 		bool	_is_match_server(int fd);
+		bool	_accept_connection(int server_fd);
+		Server *_get_server(int fd);
 
 		char *buffer;
 		std::vector<Server> _servers;

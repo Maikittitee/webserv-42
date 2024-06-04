@@ -85,13 +85,7 @@ bool WebServer::runServer(void)
 			if (FD_ISSET(fd, &tmp_read_fds))
 			{
 				if (_is_match_server(fd)) 				// is match listen fd of server (handshake)
-				{
-					// accept connection (server keep client obj, keep fd of data transfer)
-					Client client;
-					client.fd = accept(fd, (sockaddr *)&client.addr, &client.addrLen);
-					_clients.insert(std::pair<int, Client>(client.fd, client));
-					_set_fd(client.fd, _read_fds);
-				}
+					_accept_connection(fd);
 				else
 				{
 					// parsing request here
@@ -148,4 +142,33 @@ bool	WebServer::_clear_fd(int fd, fd_set &set) {
 	if (fd == _max_fd)
 		_max_fd--;
 	return (true);
+}
+
+Server *WebServer::_get_server(int fd)
+{
+	for (int i = 0; i < _servers.size(); i++){
+		if (_servers[i]._server_fd == fd)
+			return (&(_servers[i]));
+	}
+	return (NULL);
+}
+
+bool	WebServer::_accept_connection(int server_fd)
+{
+	Client new_client;
+
+	new_client.fd = accept(server_fd, (sockaddr *)&new_client.addr, &new_client.addrLen);
+	if (new_client.fd < 0){
+		std::cerr << "cannot accept connection." << std::endl;
+		return (false);
+	}
+	_clients.insert(std::pair<int, Client>(new_client.fd, new_client));
+	new_client.server = _get_server(server_fd);
+	if (!new_client.server){
+		std::cerr << "server not found" << std::endl;
+		return (false);
+	}
+	_set_fd(new_client.fd, _read_fds);
+	return (true);
+
 }
