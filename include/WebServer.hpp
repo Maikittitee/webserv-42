@@ -23,7 +23,7 @@ class WebServer{
 		bool	initServer(std::vector<Server> &servers);
 		bool	runServer(void);
 		bool	downServer(void);
-		bool	_setSockAddr(struct addrinfo & sockAddr, Server & serv);
+		bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server & serv);
 		bool	_setOptSock(int &sockFd);
 		void	_init_fds(void);
 		bool	_set_fd(int fd, fd_set &set);

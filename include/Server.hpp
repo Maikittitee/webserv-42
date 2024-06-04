@@ -26,7 +26,7 @@ class Server{
 		int _server_fd;
 		std::string							name; //? server_name
 		std::string							ipAddr; //? listen could be ip address or port
-		std::string							port; //? listen
+		int									port; //? listen
 		
 		std::map<std::string, Location> _config; 
 		Mime _mime;

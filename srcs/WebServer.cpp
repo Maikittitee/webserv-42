@@ -4,26 +4,13 @@ WebServer::WebServer(){}
 
 WebServer::~WebServer(){}
 
-bool	WebServer::_setSockAddr(struct addrinfo & sockAddr, Server & serv) {
-	int	status;
-	struct addrinfo	hints;
-	struct addrinfo	*sockAddrTemp;
+bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server & serv) {
+	
+	bzero(&addr, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr.sin_port = htons(serv.port);
 
-	memset(&hints, 0, sizeof(hints));	// Set all member to empty
-	hints.ai_family = AF_INET;			// Allow IPv4 Protocol
-	hints.ai_socktype = SOCK_STREAM;	// Stream socket are socket type for support TCP or SCTP
-	hints.ai_protocol = IPPROTO_TCP;	// TCP Protocol
-	hints.ai_addr = NULL;
-	hints.ai_canonname = NULL;
-	hints.ai_next = NULL;
-	_timeOut.tv_sec = 5;
-	_timeOut.tv_usec = 0;
-	status = getaddrinfo(serv.ipAddr.c_str(), serv.port.c_str(), &hints, &sockAddrTemp);
-	if (status != 0) {
-		return false;
-	}
-	sockAddr = *sockAddrTemp;
-	freeaddrinfo(sockAddrTemp);
 	return true;
 }
 
@@ -40,28 +27,32 @@ bool	WebServer::_setOptSock(int &sockFd) {
 
 bool WebServer::initServer(std::vector<Server> &servers)
 {
-	struct addrinfo	sockAddr;
+	struct sockaddr_in	sockAddr;
+	socklen_t addr_len = sizeof(sockAddr);
 	for (int i = 0; i < servers.size(); i++){
 		if (_setSockAddr(sockAddr, servers[i]) == 0)
 			std::cerr << "setup socket failed" << std::endl;
-		servers[i]._server_fd = socket(sockAddr.ai_family, sockAddr.ai_socktype, sockAddr.ai_protocol);
-		std::cout << "server fd: " << servers[i]._server_fd << std::endl;
+
+		// get server fd
+		servers[i]._server_fd = socket(AF_INET, SOCK_STREAM, 0);
 		if (servers[i]._server_fd < 0)
 			std::cerr << "create socket failed" << std::endl;
+
+		// set non blocking	
 		if (fcntl(servers[i]._server_fd, F_SETFL, O_NONBLOCK) < 0)
 			std::cout << "non-blocking failed" << std::endl;
+		
 		if (_setOptSock(servers[i]._server_fd) == 0)
 			std::cerr << "setup socket option failed" << std::endl;
+		
 		// Bind the socket to the specified address and port
-		if (bind(servers[i]._server_fd, sockAddr.ai_addr, sockAddr.ai_addrlen) < 0)
+		if (bind(servers[i]._server_fd, (sockaddr *)&sockAddr, addr_len) < 0)
 			std::cerr << "bilded failed" << std::endl;
+		
 		// Prepare socket for incoming connection
 		if (listen(servers[i]._server_fd, 512) < 0)
 			std::cout << "listen failded" << std::endl;
 
-		if (int client_fd = accept(servers[i]._server_fd, NULL, NULL) < 0)
-			std::cerr << "client accept failed" << std::endl;
-		// Logger::isLog(INFO) && Logger::log(GRN, "Success to create server fd: ", servs[i].sockFd);
 		std::cout << "create server success fd: " << servers[i]._server_fd << std::endl;
 		this->_servers.push_back(servers[i]);
 	}
