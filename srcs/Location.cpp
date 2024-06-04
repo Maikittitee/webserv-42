@@ -1,7 +1,7 @@
 #include "../include/Location.hpp"
 
-Location::Location(void) : _client_max(3) {}
-// Location::Location(void) {}
+// Location::Location(void) : _client_max(3) {}
+Location::Location(void) {}
 
 // Location::Location() : _client_max(3) {}
 
