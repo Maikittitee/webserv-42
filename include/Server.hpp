@@ -1,19 +1,11 @@
 #ifndef SERVER_HPP
 #	define SERVER_HPP
 
-#	include <iostream>
-#	include <string>
-#	include <sys/socket.h>
-#	include <netinet/in.h>
-#	include <stdio.h>
-#	include <map>
-#	include <stdlib.h>
-#	include <unistd.h>
+#	include "Common.hpp"
 #	include "Location.hpp"
 #	include "Request.hpp"
 #	include "Mime.hpp"
 #	include "Response.hpp"
-#	include <time.h>
 
 class Mime;
 

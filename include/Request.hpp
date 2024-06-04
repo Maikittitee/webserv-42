@@ -1,14 +1,7 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
-#	include <iostream>
-#	include <string>
-#	include <sys/socket.h>
-#	include <netinet/in.h>
-#	include <stdio.h>
-#	include <tuple>
-#	include <stdlib.h>
-#	include <unistd.h>
+#	include "Common.hpp"
 #	include "Utils.hpp"
 
 

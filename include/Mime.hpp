@@ -1,9 +1,7 @@
 #ifndef MIME_HPP
 # define MIME_HPP
 
-# include <map>
-# include <iostream>
-# include <string>
+# include "Common.hpp"
 
 class Mime{
 	public:

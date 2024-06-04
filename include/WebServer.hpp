@@ -1,15 +1,8 @@
 #ifndef WEBSERVER_HPP
 # define WEBSERVER_HPP
 
-# include <iostream>
-// # include <stdio.h>
-# include <sys/socket.h>	// Socket Programming
-// # include <arpa/inet.h>	// inet_ntoa TODO : not allow to use
-# include <sys/select.h>	
+# include "Common.hpp"
 # include "Server.hpp"
-# include <netinet/in.h>
-# include <netdb.h>
-# include <fcntl.h>
 # include "Client.hpp" 
 
 class Server;
@@ -30,6 +23,7 @@ class WebServer{
 
 
 
+		char *buffer;
 		std::vector<Server> _servers;
 		std::map<int, Client> _clients;
 		fd_set 	_read_fds;

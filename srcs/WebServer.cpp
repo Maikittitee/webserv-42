@@ -103,8 +103,9 @@ bool WebServer::runServer(void)
 		for (int fd = 0; fd <= _max_fd; fd++){
 			if (FD_ISSET(fd, &tmp_read_fds))
 			{
-				if (fd == _servers.begin()->_server_fd)
+				if (fd == _servers.begin()->_server_fd) // is match listen fd of server (handshake)
 				{
+					// accept connection (server keep client obj, keep fd of data transfer)
 					Client client;
 					client.fd = accept(fd, (sockaddr *)&client.addr, &client.addrLen);
 					_clients.insert(std::pair<int, Client>(client.fd, client));
@@ -112,6 +113,8 @@ bool WebServer::runServer(void)
 				}
 				else
 				{
+					// parsing request here
+					// pasing only header and keep open fd
 					read(fd, buffer, 1024);
 					std::cout << buffer << std::endl;
 					FD_CLR(fd, &_read_fds);
