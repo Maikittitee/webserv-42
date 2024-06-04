@@ -16,4 +16,6 @@
 # include <unistd.h>
 # include <fstream>
 
+# define BUFFERSIZE 65535
+
 #endif

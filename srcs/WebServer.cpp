@@ -1,8 +1,12 @@
 #include "../include/WebServer.hpp"
 
-WebServer::WebServer(){}
+WebServer::WebServer(){
+	buffer = new char[BUFFERSIZE];
+}
 
-WebServer::~WebServer(){}
+WebServer::~WebServer(){
+	delete[] buffer;
+}
 
 bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server &serv) {
 	
@@ -58,29 +62,6 @@ bool WebServer::initServer(std::vector<Server> &servers)
 	return (true);
 }
 
-void	WebServer::_init_fds(void)
-{
-	int	iter_fd;
-
-	_max_fd = 0;
-	FD_ZERO(&_read_fds);
-	FD_ZERO(&_write_fds);
-	for (size_t i = 0; i < _servers.size(); i++) {
-		iter_fd = _servers[i]._server_fd; 
-		_set_fd(iter_fd, _read_fds);
-	}
-
-}
-
-bool WebServer::_set_fd(int fd, fd_set &set)
-{
-	FD_SET(fd, &set);
-	if (fd > _max_fd)
-		_max_fd =  fd;
-
-	return (true);
-
-}
 
 bool WebServer::runServer(void)
 {
@@ -94,7 +75,7 @@ bool WebServer::runServer(void)
 	{
 		tmp_read_fds = _read_fds;
 		// tmp_write_fds = _write_fds;
-		// select 
+		
 		int status = select(_max_fd + 1, &tmp_read_fds, NULL, NULL, NULL);
 		if (status == -1){
 			std::cerr << "select error " << std::endl;
@@ -124,4 +105,35 @@ bool WebServer::runServer(void)
 	}
 	return (true);
 
+}
+
+void	WebServer::_init_fds(void)
+{
+	int	iter_fd;
+
+	_max_fd = 0;
+	FD_ZERO(&_read_fds);
+	FD_ZERO(&_write_fds);
+	for (size_t i = 0; i < _servers.size(); i++) {
+		iter_fd = _servers[i]._server_fd; 
+		_set_fd(iter_fd, _read_fds);
+	}
+
+}
+
+bool WebServer::_set_fd(int fd, fd_set &set)
+{
+	FD_SET(fd, &set);
+	if (fd > _max_fd)
+		_max_fd =  fd;
+
+	return (true);
+
+}
+
+bool	WebServer::_clear_fd(int fd, fd_set &set) {
+	FD_CLR(fd, &set);
+	if (fd == _max_fd)
+		_max_fd--;
+	return (true);
 }

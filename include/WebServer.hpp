@@ -20,8 +20,7 @@ class WebServer{
 		bool	_setOptSock(int &sockFd);
 		void	_init_fds(void);
 		bool	_set_fd(int fd, fd_set &set);
-
-
+		bool	_clear_fd(int fd, fd_set &set);
 
 		char *buffer;
 		std::vector<Server> _servers;
