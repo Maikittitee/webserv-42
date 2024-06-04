@@ -77,10 +77,18 @@ void	WebServer::_init_fds(void)
 	FD_ZERO(&_write_fds);
 	for (size_t i = 0; i < _servers.size(); i++) {
 		iter_fd = _servers[i]._server_fd; 
-		FD_SET(iter_fd, &_read_fds); // server's connection fd -add-into-> read fd set
-		if (iter_fd > _max_fd)
-			_max_fd = iter_fd; // update max fd
+		_set_fd(iter_fd, _read_fds);
 	}
+
+}
+
+bool WebServer::_set_fd(int fd, fd_set &set)
+{
+	FD_SET(fd, &set);
+	if (fd > _max_fd)
+		_max_fd =  fd;
+
+	return (true);
 
 }
 

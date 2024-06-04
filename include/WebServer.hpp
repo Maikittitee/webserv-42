@@ -26,6 +26,7 @@ class WebServer{
 		bool	_setSockAddr(struct addrinfo & sockAddr, Server & serv);
 		bool	_setOptSock(int &sockFd);
 		void	_init_fds(void);
+		bool	_set_fd(int fd, fd_set &set);
 
 
 
