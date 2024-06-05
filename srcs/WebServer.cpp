@@ -103,6 +103,7 @@ bool	WebServer::_send_response(int fd)
 	Server *server = client->server;
 
 	std::string msg = server->rout(*client->request);
+	// CGI work here
 
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
@@ -201,10 +202,13 @@ bool WebServer::_parsing_request(int client_fd)
 {
 	Client *client = _get_client(client_fd);
 	Server *server = client->server;
+
 	read(client_fd, buffer, BUFFERSIZE);
 	std::cout << GRN << buffer << RESET << std::endl;
+
 	Request *request = mock_file_request(); // change to p'tew parsing request na krab
 	client->request = request;
+
 	_clear_fd(client_fd, _read_fds);
 	_set_fd(client_fd, _write_fds);
 	return (true);

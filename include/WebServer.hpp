@@ -4,10 +4,13 @@
 # include "Common.hpp"
 # include "Server.hpp"
 # include "Client.hpp" 
+# include "CGI.hpp"
 
 class Server;
 
 class Client;
+
+class CGI;
 
 class WebServer{
 	public:
@@ -37,6 +40,7 @@ class WebServer{
 		fd_set					_write_fds;
 		char					*buffer;
 		int						_max_fd;
+		CGI						_cgi;
 
 
 
