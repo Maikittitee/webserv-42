@@ -83,7 +83,7 @@ bool WebServer::runServer(void)
 		for (int fd = 0; fd <= _max_fd; fd++){
 			if (FD_ISSET(fd, &tmp_read_fds))
 			{
-				if (_is_match_server(fd)) 				// is match listen fd of server (handshake)
+				if (_is_match_server(fd)) 	// is match listen fd of server (handshake)
 					_accept_connection(fd);
 				else
 					_parsing_request(fd);
@@ -103,6 +103,7 @@ bool	WebServer::_send_response(int fd)
 	Server *server = client->server;
 
 	std::string msg = server->rout(*client->request);
+	// CGI work here
 
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
@@ -201,10 +202,13 @@ bool WebServer::_parsing_request(int client_fd)
 {
 	Client *client = _get_client(client_fd);
 	Server *server = client->server;
+
 	read(client_fd, buffer, BUFFERSIZE);
 	std::cout << GRN << buffer << RESET << std::endl;
+
 	Request *request = mock_file_request(); // change to p'tew parsing request na krab
 	client->request = request;
+
 	_clear_fd(client_fd, _read_fds);
 	_set_fd(client_fd, _write_fds);
 	return (true);
