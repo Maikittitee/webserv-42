@@ -83,7 +83,7 @@ bool WebServer::runServer(void)
 		for (int fd = 0; fd <= _max_fd; fd++){
 			if (FD_ISSET(fd, &tmp_read_fds))
 			{
-				if (_is_match_server(fd)) 				// is match listen fd of server (handshake)
+				if (_is_match_server(fd)) 	// is match listen fd of server (handshake)
 					_accept_connection(fd);
 				else
 					_parsing_request(fd);

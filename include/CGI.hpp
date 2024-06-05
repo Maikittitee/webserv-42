@@ -20,7 +20,8 @@ class CGI{
 		
 		Response response;
 
-		Response &rout(Client &client, Server &server);
+		bool rout(Client &client, Server &server);
+		std::string	get_response(void);
 };
 
 
