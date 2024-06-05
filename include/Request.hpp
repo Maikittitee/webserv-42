@@ -5,8 +5,6 @@
 #	include "Utils.hpp"
 
 
-
-
 class Request{
 	public:
 		Request(std::string request){};

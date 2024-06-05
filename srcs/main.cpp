@@ -12,7 +12,6 @@
 #include "../include/WebServer.hpp"
 
 
-
 std::map<std::string, Location> mock_location(void)
 {
 	Location def;

@@ -9,6 +9,8 @@ typedef enum e_method{
 			POST,
 			DELETE,
 			HEAD,
+			PUT,
+			NONE
 } t_method;
 
 bool	readFile(std::string &buff, std::string const &filename);
