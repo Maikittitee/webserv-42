@@ -32,7 +32,7 @@ typedef struct s_dfconf
 	uint64_t	listen;
 	std::string	server_name;
 	std::string	root;
-	
+		
 	std::vector<std::string> index;
 	std::vector<std::string> limit_except;
 	std::vector<std::string> error_page;
@@ -49,20 +49,19 @@ class Server{
 		
 
 		// keep key and value of default conf
-		t_dfconf df;
+		u_int64_t			listen;
+		std::string			server_name;
+		std::vector<std::string>	error_page;
+		// t_dfconf df;
 		// t_dfconf df;
 
-		// std::map<std::string, t_test > tmp;
-		
-
-		//Default
-		// std::map<std::string, dfconf> df_config;
 		
 		//Location
 		std::map<std::string, Location> _config;
 		// p_dfconf			df; 
 		Mime				_mime;
 		char				**_env;
+		Server();
 		Server(int port, char **env);
 		~Server();
 

@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/04 22:34:29 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/05 23:51:49 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,6 @@
 #include <utility>
 #include "../include/Server.hpp"
 #include "../include/Location.hpp"
-
-
-// Dfconf::Dfconf(){}
-// Dfconf::~Dfconf(){}
-
-
-std::ostream& operator<<(std::ostream& os, const t_dfconf& df)
-{
-	// os << "cgi: " << std::boolalpha << location.cgiPass << std::endl;
-	os << "cliBodySize : " << df.cliBodySize << std::endl;
-	os << "listen : " << df.listen << std::endl;
-	os << "server_name : " << df.server_name << std::endl;
-	os << "root : " << df.root << std::endl;
-	
-// 	// os << "index: " << location.index << std::endl;
-// 	if (!location.ret.have)
-// 		os << "no return" << std::endl;
-// 	else 
-// 		os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
-	return (os);
-}
-
 
 std::ostream& operator<<(std::ostream& os, const Location& location)
 {
@@ -56,27 +34,6 @@ std::ostream& operator<<(std::ostream& os, const Location& location)
 // 		os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
 	return (os);
 }
-
-
-
-
-
-// std::ostream& operator<<(std::ostream& os, const Dfconf& df)
-// {
-// 	os << "cliBodySize : " << df.cliBodySize << std::endl;
-// 	os << "listen : " << std::boolalpha << df.listen << std::endl;
-// 	os << "server_name : " << std::boolalpha << df.server_name << std::endl;
-// 	os << "root: " << df.root << std::endl;
-	
-	
-// 	// os << "allowMethod: " << df.allowMethod << std::endl;
-// 	// os << "index: " << df.index << std::endl;
-// 	// if (!df.ret.have)
-// 		// os << "no return" << std::endl;
-// 	// else 
-// 		// os << "return: " << df.ret.code << " " << df.ret.text << std::endl;
-// 	return (os);
-// }
 
 uint64_t	ft_stouint(std::string str)
 {
@@ -109,7 +66,6 @@ void	ft_print_vec(std::vector<std::string> vec)
         	std::cout << i << "|" << vec[i] << "|" << std::endl;
 }
 
-
 std::vector<std::string>    ft_split(std::string str)
 {
     int i;
@@ -134,45 +90,6 @@ std::vector<std::string>    ft_split(std::string str)
     }
     return (res);
 }
-
-void	ft_fillvector(std::vector<std::string> src, std::vector<std::string> &des)
-{
-	if (des[0].empty()) // check bacuse init des = "" 
-		des.pop_back();
-	for (int i = 0; i < src.size(); i++)
-		des.push_back(src[i]);
-}
-
-void	ft_get_default_conf(t_dfconf &df, std::string key, std::string value)
-{
-	std::vector<std::string> vec;
-
-	if (key == "client_max_body_size")
-		df.cliBodySize = ft_stouint(value);
-	else if (key == "listen")
-		df.listen = ft_stouint(value);
-	else if (key == "server_name")
-		df.server_name = value;
-	else if (key == "root")
-		df.root = value;
-	else if (key == "index")
-	{
-		vec = ft_split(value);
-		// ft_print_vec(vec);
-		ft_fillvector(vec, df.index);
-	}
-	else if (key == "limit_except")
-	{
-		vec = ft_split(value);
-		ft_fillvector(vec, df.limit_except);
-	}
-	else if (key == "error_page")
-	{
-		vec = ft_split(value);
-		ft_fillvector(vec, df.error_page);
-	}
-}
-
 
 std::string	ft_trim(std::string line, char c)
 {
@@ -292,13 +209,24 @@ bool	ft_check_locate(std::string key)
 	return (false);
 }
 
+void	ft_prt_server(Server sv)
+{
+	
+	std::cout << GRN << "SERVER : " << sv.server_name << RESET << std::endl ;
+	std::cout << "server_name : " << sv.server_name << std::endl;
+	std::cout << "listen : " << sv.listen << std::endl;
+	std::cout << "error_page : " << std::endl;
+	ft_print_vec(sv.error_page);
+	
+	// ft_prt_locate(sv._config);
+}
+
 void	ft_prt_locate(Location location)
 {
 	std::cout << "cgiPass : " << location.cgiPass << std::endl;
 	std::cout << "autoIndex :" << location.autoIndex << std::endl;
 	std::cout << "cliBodySize : " << location.cliBodySize << std::endl;
 	std::cout << "root : " << location.root << std::endl;
-	// std::cout << 
 }
 
 Location	ft_init_locate(void)
@@ -312,20 +240,6 @@ Location	ft_init_locate(void)
 	locate.ret = {0, 0, ""};
 	return (locate);
 }
-
-
-// Location	ft_locate(std::string value)
-// {
-// 	Location location;
-
-// 	// location.autoIndex = stoi(value);
-// 	location = ft_init_locate();
-// 	// if (value == "cgiPass")
-// 		// location.cgiPass = value;
-// 	// location
-	
-// 	return (location);
-// }
 
 int	ft_stoi(std::string str)
 {
@@ -351,7 +265,6 @@ int	ft_stoi(std::string str)
     }
     return (res * sym);
 }
-
 
 t_dfconf	ft_init_stuct(void)
 {
@@ -392,11 +305,12 @@ int	parsing_config(int ac, char **av, char **env)
 	std::string	key;
 	std::string	value;
 	std::string	sp_line;
-	t_dfconf	df;
 	bool		locate;
 	Location	location;
-	Server		server(50, env);
-	df = ft_init_stuct();
+	// Server		server(50, env);
+	Server		server;
+	std::vector<std::string> vec;
+	// df = ft_init_stuct();
 	
 	if (ac != 2)
 		return(std::cerr << "Error : Expected 2 arguments" << std::endl, 0);
@@ -419,17 +333,19 @@ int	parsing_config(int ac, char **av, char **env)
 		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
 		if (key.find('/') != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
 			locate = LOCATION;
-		if (locate == DEFAULT1)
-			ft_get_default_conf(df, key, value);
-		if (locate == LOCATION)	
-			
+		if (key == "listen")
+			server.listen = ft_stoi(value);
+		else if (key == "server_name")
+			server.server_name = value;
+		else if (key == "error_page")
+			server.error_page = ft_split(value);
+		// if (locate == LOCATION)	
+		// 	ft_
 		i++;
 		if (i == 8)
 			break;
 	}
-	// fill data in map
-	ft_print_df_conf(df);
-	
+	ft_prt_server(server);
 	exit(0);		
 
 	

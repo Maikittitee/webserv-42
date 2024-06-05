@@ -1,5 +1,31 @@
 #include "../include/Server.hpp"
 
+std::ostream& operator<<(std::ostream& os, const Server& sv)
+{
+	// os << "cgi: " << std::boolalpha << location.cgiPass << std::endl;
+	os << "listen : " << sv.listen << std::endl;
+	os << "server_name : " << sv.server_name << std::endl;
+	os << "[";
+    for (size_t i = 0; i < sv.error_page.size(); ++i)
+	{
+        os << sv.error_page[i];
+        if (i != sv.error_page.size() - 1)
+		{
+            os << ", ";
+        }
+    }
+    os << "]";
+	
+	// os << "error_page : " << sv.error_page << std::endl;
+	
+// 	// os << "index: " << location.index << std::endl;
+// 	if (!location.ret.have)
+// 		os << "no return" << std::endl;
+// 	else 
+// 		os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
+	return (os);
+}
+
 Server::Server(int port, char **env){
 	if (port < 0 || port > 65535)
 		throw PortNotExist();
@@ -13,30 +39,34 @@ Server::Server(int port, char **env){
 }
 
 Server::~Server (void) {
-	close(_client_fd);
+	// close(_client_fd);
 	close(_server_fd);
 }
 
-bool Server::run_server(void)
-{
-	_server_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (_server_fd < 0){
-		perror("socket failed");
-	}
+Server::Server(){}
 
-	if (bind(_server_fd, (struct sockaddr*)&_address, sizeof(_address)) < 0){
-		perror("bind failed");
-	}
 
-	if (listen(_server_fd, 3) < 0){
-		perror("listen failed");
-	}
-	_client_fd = accept(_server_fd, (struct sockaddr*)&_address, &_addrlen);
-	if (_client_fd < 0){
-		perror("accept failed");
-	}
-	return (true);
-}
+
+// bool Server::run_server(void)
+// {
+// 	_server_fd = socket(AF_INET, SOCK_STREAM, 0);
+// 	if (_server_fd < 0){
+// 		perror("socket failed");
+// 	}
+
+// 	if (bind(_server_fd, (struct sockaddr*)&_address, sizeof(_address)) < 0){
+// 		perror("bind failed");
+// 	}
+
+// 	if (listen(_server_fd, 3) < 0){
+// 		perror("listen failed");
+// 	}
+// 	_client_fd = accept(_server_fd, (struct sockaddr*)&_address, &_addrlen);
+// 	if (_client_fd < 0){
+// 		perror("accept failed");
+// 	}
+// 	return (true);
+// }
 
 void Server::send_response(const char *response, int client_fd)
 {

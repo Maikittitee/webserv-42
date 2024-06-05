@@ -1,7 +1,18 @@
 #include "../include/Location.hpp"
 
 // Location::Location(void) : _client_max(3) {}
-Location::Location(void) {}
+Location::Location(void) 
+{
+	cgiPass = 0;
+	autoIndex = 0;
+	allowMethod.clear();
+	cliBodySize = 5000;
+	root = "";
+	index.clear();
+	ret.have = false;
+	ret.code = 0;
+	ret.text = "";
+}
 
 // Location::Location() : _client_max(3) {}
 

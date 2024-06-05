@@ -5,6 +5,7 @@
 
 # include <iostream>
 # include <string>
+# include <string.h>
 # include <time.h>
 # include <sstream>
 #include <unistd.h>
