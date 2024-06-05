@@ -38,4 +38,6 @@ class Server{
 		void send_response(const char *response, int client_fd);
 };
 
+std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map);
+
 #endif

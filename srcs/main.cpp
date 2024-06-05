@@ -66,13 +66,8 @@ Server *mock_server(void)
 	serv->ipAddr = "0.0.0.0";
 	serv->port = 6969;
 	serv->_config = mock_location();
-	std::map<std::string, Location>::const_iterator it;
-	for (it = serv->_config.begin(); it != serv->_config.end(); it++)
-	{
-		std::cout << it->first << std::endl;
-		std::cout << it->second << std::endl;
-	}
 
+	std::cout << serv->_config << std::endl;
 	return (serv);
 
 }

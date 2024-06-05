@@ -148,3 +148,14 @@ Location& Server::select_location(Request &request)
 	std::cout << "rout of  " << request._path << " is " << rout_paths[index]  << std::endl; 
 	return (_config[rout_paths[index]]);
 }
+
+std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map)
+{
+	std::map<std::string, Location>::const_iterator it;
+	for (it = map.begin(); it != map.end(); it++)
+	{
+		os << it->first << std::endl;
+		os << it->second << std::endl;
+	}
+	return (os);
+}

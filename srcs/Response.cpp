@@ -64,9 +64,9 @@ void Response::genarate_header()
 	std::stringstream header;
 
 	header << "HTTP/1.1 ";
-	header << _return_code;
+	header << 200;
 	header << " ";
-	header << status_def();
+	header << "OK";
 	header << "\r\n";
 	header << "Date: "; 
 	header << get_date();
