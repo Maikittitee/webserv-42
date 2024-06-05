@@ -1,9 +1,7 @@
 #ifndef WS_UTILS_HPP
 # define WS_UTILS_HPP
 
-#	include <iostream>
-#	include <string>
-#	include <fstream>
+# 	include "Common.hpp"
 
 typedef enum e_method{
 			ELSE,
