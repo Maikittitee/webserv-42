@@ -15,6 +15,8 @@
 # include <sstream>
 # include <unistd.h>
 # include <fstream>
+# include <vector>
+# include "Color.hpp"
 
 # define BUFFERSIZE 65535
 

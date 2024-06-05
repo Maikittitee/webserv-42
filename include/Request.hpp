@@ -18,7 +18,7 @@ class Request{
 		std::string _http_version;	
 		std::string _body;
 		std::string _query_string;
-		int			write_fd;
+		int			fd;
 };
 
 

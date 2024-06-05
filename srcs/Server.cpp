@@ -1,4 +1,5 @@
 #include "../include/Server.hpp"
+
 Server::Server(void)
 {
 	name = "localhost"; //? server_name
@@ -72,20 +73,22 @@ std::string Server::rout(Request &request)
 {
 	Response response;
 
-	// find config;
-	Location target_location = select_location(request);	
+	// // find config;
+	// std::cout << "bp1" << std::endl;
+	// Location target_location = select_location(request);	
+	// std::cout << "bp2" << std::endl;
 
-	// 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
-
-	// send request and target config to response;
-	response.receive_request(request, target_location);
-	if (response._return_code >= 400) // incase error => redirect to error file
-		response.set_body(errorPage(response._return_code));
-	if (response._return_code < 0) {// incase cgi => redirect to do cgi
-		response._return_code = 200;
-		response.cgiPass = true;
-		response.set_body(do_cgi(request));
-	}
+	// // 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
+	// // send request and target config to response;
+	// response.receive_request(request, target_location);
+	// if (response._return_code >= 400) // incase error => redirect to error file
+	// 	response.set_body(errorPage(response._return_code));
+	// if (response._return_code < 0) {// incase cgi => redirect to do cgi
+	// 	response._return_code = 200;
+	// 	response.cgiPass = true;
+	// 	response.set_body(do_cgi(request));
+	// }
+	response.set_body(response.get_body_from_file("docs/test.html"));
 	response.genarate_header();
 	return (response.get_response_text());	
 }
@@ -119,7 +122,17 @@ static int get_match_length(std::string target, std::string src)
 Location& Server::select_location(Request &request)
 {
 	std::string target_path = request._path;
-	std::vector<std::string> rout_paths = get_keys(_config);
+	std::cout << "bp3" << std::endl;
+	std::vector<std::string> rout_paths;
+	std::cout << "bp4" << std::endl;
+	std::map<std::string, Location>::const_iterator it;
+	for (it = _config.begin(); it != _config.end(); it++)
+	{
+		std::cout << it->first << std::endl;
+		std::cout << it->second << std::endl;
+	}
+	rout_paths = get_keys(_config);
+	std::cout << "bp5" << std::endl;
 	std::vector<int> acc_length;
 	
 	int	i = 0;

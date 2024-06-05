@@ -56,7 +56,7 @@ bool WebServer::initServer(std::vector<Server> &servers)
 		if (listen(servers[i]._server_fd, 512) < 0)
 			std::cout << "listen failded" << std::endl;
 
-		std::cout << "create server success fd: " << servers[i]._server_fd << std::endl;
+		std::cout << BLU "create server success fd: " << servers[i]._server_fd << RESET << std::endl;
 		this->_servers.push_back(servers[i]);
 	}
 	return (true);
@@ -67,7 +67,6 @@ bool WebServer::runServer(void)
 {
 	
 	fd_set tmp_read_fds;
-	char buffer[1024];
 	fd_set tmp_write_fds;
 
 	_init_fds();
@@ -76,9 +75,9 @@ bool WebServer::runServer(void)
 		tmp_read_fds = _read_fds;
 		tmp_write_fds = _write_fds;
 		
-		int status = select(_max_fd + 1, &tmp_read_fds, NULL, NULL, NULL);
+		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, NULL);
 		if (status == -1){
-			std::cerr << "select error " << std::endl;
+			std::cerr << RED << "select error " << RESET << std::endl;
 			return (false);
 		}
 		for (int fd = 0; fd <= _max_fd; fd++){
@@ -87,19 +86,29 @@ bool WebServer::runServer(void)
 				if (_is_match_server(fd)) 				// is match listen fd of server (handshake)
 					_accept_connection(fd);
 				else
-				{
-					// parsing request here
-					// pasing only header and keep open fd
-					read(fd, buffer, 1024);
-					std::cout << buffer << std::endl;
-					FD_CLR(fd, &_read_fds);
-				}
+					_parsing_request(fd);
 			}
-			// if (FD_ISSET(fd, &tmp_write_fds)){
-
-			// }
+			else if (FD_ISSET(fd, &tmp_write_fds))
+				_send_response(fd);
+			continue;
 		}
 	}
+	return (true);
+
+}
+
+bool	WebServer::_send_response(int fd)
+{
+	Client *client = _get_client(fd);
+	Server *server = client->server;
+
+	std::string msg = server->rout(*client->request);
+
+	std::cout << BLU << "sending response:" << RESET << std::endl;
+	std::cout << YEL << msg << RESET << std::endl;
+	write(fd, msg.c_str(), msg.size());
+	_clear_fd(fd, _write_fds);
+	_clients.erase(fd);
 	return (true);
 
 }
@@ -159,16 +168,50 @@ bool	WebServer::_accept_connection(int server_fd)
 
 	new_client.fd = accept(server_fd, (sockaddr *)&new_client.addr, &new_client.addrLen);
 	if (new_client.fd < 0){
-		std::cerr << "cannot accept connection." << std::endl;
+		std::cerr << RED << "cannot accept connection." << RESET << std::endl;
 		return (false);
 	}
 	_clients.insert(std::pair<int, Client>(new_client.fd, new_client));
 	new_client.server = _get_server(server_fd);
 	if (!new_client.server){
-		std::cerr << "server not found" << std::endl;
+		std::cerr << RED << "server not found" << RESET << std::endl;
 		return (false);
 	}
+	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << new_client.fd << RESET << std::endl;
 	_set_fd(new_client.fd, _read_fds);
 	return (true);
+}
 
+Request* mock_file_request(void)
+{
+	Request *ret = new Request();
+
+	// for example
+	ret->_method = GET;
+	// ret->_path = "/cgi-bin/hello.py";
+	ret->_path = "/test.html";
+	ret->_http_version = "HTTP/1.1";
+
+	ret->_body = "";
+	return (ret);
+}
+
+bool WebServer::_parsing_request(int client_fd)
+{
+	Client *client = _get_client(client_fd);
+	Server *server = client->server;
+	read(client_fd, buffer, BUFFERSIZE);
+	std::cout << GRN << buffer << RESET << std::endl;
+	Request *request = mock_file_request(); // change to p'tew parsing request na krab
+	client->request = request;
+	_clear_fd(client_fd, _read_fds);
+	_set_fd(client_fd, _write_fds);
+	return (true);
+}
+
+Client* WebServer::_get_client(int fd)
+{
+	if (!_clients.count(fd))
+		return (NULL);
+	return (&_clients[fd]);
 }

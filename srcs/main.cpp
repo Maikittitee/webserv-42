@@ -11,20 +11,7 @@
 #include "../include/Response.hpp"
 #include "../include/WebServer.hpp"
 
-Request* mock_file_request(void)
-{
-	Request *ret = new Request();
 
-	// for example
-	ret->_method = GET;
-	// ret->_path = "/cgi-bin/hello.py";
-	ret->_path = "/test.html";
-	ret->_http_version = "HTTP/1.1";
-
-	ret->_body = "";
-	return (ret);
-
-}
 
 std::map<std::string, Location> mock_location(void)
 {
@@ -79,6 +66,12 @@ Server *mock_server(void)
 	serv->ipAddr = "0.0.0.0";
 	serv->port = 6969;
 	serv->_config = mock_location();
+	std::map<std::string, Location>::const_iterator it;
+	for (it = serv->_config.begin(); it != serv->_config.end(); it++)
+	{
+		std::cout << it->first << std::endl;
+		std::cout << it->second << std::endl;
+	}
 
 	return (serv);
 
