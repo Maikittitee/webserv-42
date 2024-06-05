@@ -107,7 +107,7 @@ bool	WebServer::_send_response(int fd)
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
-	close (fd);
+	close(fd);
 	_clear_fd(fd, _write_fds);
 	_clients.erase(fd);
 	return (true);
