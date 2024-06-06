@@ -17,6 +17,7 @@
 # include <fstream>
 # include <vector>
 # include "Color.hpp"
+# include <string.h>
 
 # define BUFFERSIZE 65535
 
