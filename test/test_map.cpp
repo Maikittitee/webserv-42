@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 15:09:58 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/05/25 21:54:07 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/06 14:09:49 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,20 @@ class Location{
 		// std::vector<t_method>		allowMethod;
 		uint64_t					cliBodySize;
 		std::string					root;
+		// Location(int port);
 		Location(int port);
+		Location();
+		~Location();
+		
 		// std::vector<std::string>	index;
 		// return_t					ret;
 
 };
 
 // Person(const std::string& name, int age) : name(name), age(age) {}
+
+Location::Location(){}
+Location::~Location(){}
 
 Location::Location(int port): port(port)
 {
@@ -44,13 +51,17 @@ int main()
     std::map<std::string, Location> cf;
     std::map<std::string, Location>::iterator it;
     //  std::map<std::string, int> cf_iter;
-     
-    cf["default"]  = Location(3);
-    cf["default"]  = Location(4);
-    for (it=cf.begin(); it!=cf.end(); ++it)
-	{
-		cout << it->first << " => " << it->second << '\n';
-	}
+    Location lc;
+
+	lc.port = 80;
+	
+    // cf["default"]  = Location(3);
+    // cf["default"]  = Location(4);
+	cf.insert(std::pair<std::string, Location>("key", lc));
+    // for (it=cf.begin(); it!=cf.end(); ++it)
+	// {
+	// 	cout << it->first << " => " << it->second << '\n';
+	// }
 }
 
 // #include <iostream>

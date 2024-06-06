@@ -46,15 +46,11 @@ class Server{
 		struct sockaddr_in	_address;
     	socklen_t			_addrlen;
 		std::vector<int>	_server_port;
-		
 
 		// keep key and value of default conf
 		u_int64_t			listen;
 		std::string			server_name;
 		std::vector<std::string>	error_page;
-		// t_dfconf df;
-		// t_dfconf df;
-
 		
 		//Location
 		std::map<std::string, Location> _config;

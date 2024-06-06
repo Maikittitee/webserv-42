@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/05 23:51:49 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/07 02:28:13 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,26 +187,40 @@ std::string	ft_trim_ispace(std::string line)
 	return (sp_line);	
 }
 
-bool	ft_getlocate(std::string key, std::string value, std::string sp_line)
+short	ft_getlocate(Location &location, std::string key, std::string value)
 {
-	bool locate;
-	
-	locate = true;
-	if (key != "location")
-		return (false);
-	// if check key == gzip , include -> link to other function
-	if (key == "}") 
-		locate = false;
-	return (locate);
-}
+	std::vector<std::string> sp;
 
-bool	ft_check_locate(std::string key)
-{
-	if (key == "root" || key == "return" \
-	|| key == "index" || key == "autoindex"
-	|| key == "cgi_pass" || key == "client_max_body_size")
-		return (true);
-	return (false);
+	sp.clear();
+	// std::cout << "key_locate : " << key << std::endl;
+	if (key == "root")
+		location.root = value;
+	else if (key == "client_max_body_size")
+		location.cliBodySize = ft_stouint(value);
+	else if (key == "cgi_pass")
+	{
+		if (value == "on")
+			location.cgiPass = ON;
+		else
+			location.cgiPass = OFF;
+	}
+	else if (key == "return")
+	{
+		sp = ft_split(value);
+		// std::cout << "sp[0] : " << sp[0] << std::endl;
+		// std::cout << "sp[1] : " << sp[1] << std::endl;
+		// exit(0);
+		location.ret.code  = true;
+		location.ret.code = ft_stoi(sp[0]);
+		location.ret.text = sp[1]; 
+	}
+	else if (key == "index")
+		location.index = ft_split(value);
+	else if (key == "autoindex")
+		location.autoIndex = ON;
+	else if (key == "}")
+		return (CLOSE_LOCATION);
+	return (BETWEEN_LOCATION);
 }
 
 void	ft_prt_server(Server sv)
@@ -221,24 +235,21 @@ void	ft_prt_server(Server sv)
 	// ft_prt_locate(sv._config);
 }
 
-void	ft_prt_locate(Location location)
+void	ft_prt_location(Location location)
 {
-	std::cout << "cgiPass : " << location.cgiPass << std::endl;
+	if (location.cgiPass == false)
+		std::cout << "cgiPass : " << "off" << std::endl;
+	else
+		std::cout << "cgiPass : " << "on" << std::endl;
 	std::cout << "autoIndex :" << location.autoIndex << std::endl;
 	std::cout << "cliBodySize : " << location.cliBodySize << std::endl;
 	std::cout << "root : " << location.root << std::endl;
-}
-
-Location	ft_init_locate(void)
-{
-	Location	locate;
-	
-	locate.cgiPass = 0;
-	locate.autoIndex = 0;
-	locate.cliBodySize = 0;
-	locate.root = "";
-	locate.ret = {0, 0, ""};
-	return (locate);
+	std::cout << "___________index___________" << std::endl;
+	for (int i = 0; i < location.index.size(); i++)
+	{
+		std::cout << location.index[i] << std::endl;
+	}
+	std::cout << "________________________________________________________________" << std::endl;
 }
 
 int	ft_stoi(std::string str)
@@ -266,21 +277,6 @@ int	ft_stoi(std::string str)
     return (res * sym);
 }
 
-t_dfconf	ft_init_stuct(void)
-{
-	t_dfconf df;
-
-	df.cliBodySize = 5000;
-	df.listen = 80;
-	df.server_name = "localhost";
-	df.root = "";
-	df.index.push_back("");
-	df.limit_except.push_back("");
-	df.error_page.push_back("");
-	
-	return (df);
-}
-
 void	ft_print_df_conf(t_dfconf df)
 {
 	std::cout << "cliBodySize : " << df.cliBodySize << std::endl;
@@ -298,6 +294,34 @@ void	ft_print_df_conf(t_dfconf df)
 	ft_print_vec(df.error_page);
 }
 
+Location	ft_init_location()
+{
+	Location location;
+
+	location.cgiPass = 0;
+	location.autoIndex = 0;
+	location.allowMethod.clear();
+	location.cliBodySize = 5000;
+	location.root = "";
+	location.index.clear();
+	location.ret.have = false;
+	location.ret.code = 0;
+	location.ret.text = "";
+	return (location);
+}
+
+void ft_prt_locate(short locate)
+{
+	if (locate == DEFAULT)
+		std::cout << "locate : DEDAULT" << std::endl;
+	else if (locate == START_LOCATION)
+		std::cout << "locate : START_DEDAULT" << std::endl;
+	else if (locate == BETWEEN_LOCATION)
+		std::cout << "locate : BETWEEN_DEDAULT" << std::endl;
+	else if (locate == CLOSE_LOCATION)
+		std::cout << "locate : CLOSE_DEDAULT" << std::endl;
+}
+
 int	parsing_config(int ac, char **av, char **env)
 {
 	std::string	line;
@@ -305,13 +329,14 @@ int	parsing_config(int ac, char **av, char **env)
 	std::string	key;
 	std::string	value;
 	std::string	sp_line;
-	bool		locate;
+	short		locate;
 	Location	location;
-	// Server		server(50, env);
+	std::string	tmp_key;
+	std::map<std::string, Location> _con;
 	Server		server;
 	std::vector<std::string> vec;
-	// df = ft_init_stuct();
 	
+	locate = DEFAULT;
 	if (ac != 2)
 		return(std::cerr << "Error : Expected 2 arguments" << std::endl, 0);
 	std::ifstream input_file(av[1]);
@@ -320,7 +345,6 @@ int	parsing_config(int ac, char **av, char **env)
 	if (ft_check_extension(av[1]) == false)
 		return (std::cerr << "Error : extension file" << std::endl, 0);
 	int i = 0;
-	locate = DEFAULT1;
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		// write new code for trim isspace
@@ -331,38 +355,60 @@ int	parsing_config(int ac, char **av, char **env)
 		else
 			value = ft_getvalue(key, sp_line);
 		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
-		if (key.find('/') != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
-			locate = LOCATION;
+		// if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
+		if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
+		{
+			if (!value.empty())
+			{
+				vec = ft_split(value);
+				tmp_key = vec[0];
+				std::cout << "|" << tmp_key << "|" << std::endl;
+			}	
+			locate = BETWEEN_LOCATION;
+		}	
 		if (key == "listen")
 			server.listen = ft_stoi(value);
 		else if (key == "server_name")
 			server.server_name = value;
 		else if (key == "error_page")
 			server.error_page = ft_split(value);
-		// if (locate == LOCATION)	
-		// 	ft_
-		i++;
-		if (i == 8)
-			break;
+		if (locate == BETWEEN_LOCATION)
+		{
+			locate = ft_getlocate(location, key, value);
+			// ft_prt_locate(locate);
+		}
+		// else if (locate == CLOSE_LOCATION)
+		if (locate == CLOSE_LOCATION)
+		{
+			ft_prt_location(location);
+			server._config.insert(std::pair<std::string, Location>(tmp_key, location));
+			location = ft_init_location();
+		}
 	}
-	ft_prt_server(server);
-	exit(0);		
-
-	
-	// std::map<std::string, t_dfconf>::iterator itd;
-	// std::map<std::string, Dfconf>::iterator itd;
-	// for (itd = df_conf.begin(); itd != df_conf.end(); itd++)
-	// {
-	// 	std::cout << itd->first << " : " <<  itd->second << std::endl;
-	// 	// std::cout << "[test_print] client_max : " << it->second._client_max << std::endl;
-	// }
-		
-	// std::map<std::string, Location>::iterator it;
-	// for (it = server._config.begin(); it != server._config.end(); it++)
-	// {
-	// 	std::cout << it->first << " : " <<  it->second << std::endl;
-	// 	// std::cout << "[test_print] client_max : " << it->second._client_max << std::endl;
-	// }
+	std::map<std::string, Location>::iterator it;
+	for (it = server._config.begin(); it != server._config.end(); it++)
+	{
+		if (it->second.cgiPass == true)
+			std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
+		else
+			std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
+		std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
+		std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
+		std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
+		std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
+		if (it->second.ret.have == HAVE)
+			std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
+		else
+			std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
+		if (it->second.autoIndex == ON)
+			std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
+		else
+			std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
+		for (int j= 0; j < it->second.index.size(); j++)
+			std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
+			
+		std::cout << std::endl;
+	}
 	input_file.close();
 	return (0);	
 }

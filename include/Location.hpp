@@ -15,8 +15,22 @@
 
 enum
 {
-	DEFAULT1,
-	LOCATION,
+	OFF,
+	ON
+};
+
+
+enum
+{
+	NOT_HAVE,
+	HAVE
+};
+
+enum
+{
+	DEFAULT,
+	START_LOCATION,
+	BETWEEN_LOCATION,
 	CLOSE_LOCATION
 };
 
@@ -44,6 +58,7 @@ class Location{
 
 };
 
+int	ft_stoi(std::string str);
 
 std::ostream& operator<<(std::ostream &os, const std::vector<t_method>& eiei);
 std::ostream& operator<<(std::ostream &os, const std::vector<std::string>& eiei);
