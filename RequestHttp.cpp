@@ -1,4 +1,4 @@
-#include "RequestHttp.hpp"
+#include "../include/RequestHttp.hpp"
 
 RequestHttp::RequestHttp():
 _lineIndex(0),
@@ -87,7 +87,7 @@ bool	RequestHttp::_methodCheckNCollect(std::string &methodInput)
 	std::map<std::string, int>::iterator it = _method_map.find(methodInput);
 	if (it != _method_map.end())
 	{
-		_method = _method_map[methodInput]
+		_method = _method_map[methodInput];
 		return (true);
 	}
 	else
