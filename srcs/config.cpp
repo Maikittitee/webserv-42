@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/07 17:22:36 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/07 21:17:33 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,13 @@ std::string	ft_getvalue(std::string key, std::string line)
 	value = "";
 	if (key == "}")
 		return("");
+	int len = line.size();
+	if (line[len - 1] == ';' || line[len - 1] == '}' || line[len - 1] == '{')
+	{
+		
+	}
+	else
+		return("false");
 	while (line[i])
 	{
 		while (line[i] == key[i]) // escape key
@@ -143,12 +150,6 @@ std::string	ft_getvalue(std::string key, std::string line)
 			value += line[i];
 			// value.append(sp_line[i]);
 			i++;
-			if (line[i] == '\0')
-			{
-				// std::cout << "Don't have semicolon" << std::endl;
-				return("false");
-				// break;
-			}
 		}
 		break;
 	}
@@ -329,7 +330,7 @@ void ft_prt_locate(short locate)
 		std::cout << "locate : CLOSE_DEDAULT" << std::endl;
 }
 
-int	parsing_config(int ac, char **av, char **env)
+int	parsing_config(int ac, char **av, int &tmp)
 {
 	std::string	line;
 	std::string	file;
@@ -343,6 +344,7 @@ int	parsing_config(int ac, char **av, char **env)
 	Server		server;
 	std::vector<std::string> vec;
 	
+	tmp = 10;
 	locate = DEFAULT;
 	if (ac != 2)
 		return(std::cerr << "Error : Expected 2 arguments" << std::endl, 0);
@@ -363,9 +365,9 @@ int	parsing_config(int ac, char **av, char **env)
 			value = ft_getvalue(key, sp_line);
 		if (value == "false")
 			return (-1);
-		i++;
-		if (i == 2)
-			exit(0);
+		// i++;
+		// if (i == 2)
+		// 	exit(0);
 		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
 		// if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
 	// 	if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
@@ -431,13 +433,15 @@ int	parsing_config(int ac, char **av, char **env)
 int main(int ac, char **av, char **env)
 {
 	std::string name;
-
+	int tmp_2 = 5;
+	int &tmp = tmp_2;
 	name = "false";	
-	if (parsing_config(ac, av, env) == -1)
+	if (parsing_config(ac, av, tmp) == -1)
 	{
 		std::cout << "Error" << std::endl;
 		return(1);	
 	}
-
+	std::cout << "tmp_nbr : " << std::endl;
+	std::cout << tmp << std::endl;
 	return (0);	
 }

@@ -12,13 +12,11 @@
 # include "Utils.hpp"
 # include "Color.hpp"
 
-
 enum
 {
 	OFF,
 	ON
 };
-
 
 enum
 {
@@ -39,7 +37,6 @@ struct return_t {
 	short int	code;	// Status Code
 	std::string	text;	// Option
 };
-
 
 class Location{
 	public:
