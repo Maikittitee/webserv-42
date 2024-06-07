@@ -25,6 +25,9 @@ class CGI{
 
 	private:
 		bool	_is_allow_method(t_method method, Server &server);
+		Location* _select_location(Request & , Server &);
+		Location* _compare_location(std::string str, std::map<std::string, Location> &conf);
+		std::string _get_only_path(std::string path);
 };
 
 

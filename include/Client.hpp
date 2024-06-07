@@ -20,6 +20,7 @@ class Client{
 		struct sockaddr_in	addr;
 		Server 				*server;
 		Request				*request;
+		Location			*location;
 
 };
 
