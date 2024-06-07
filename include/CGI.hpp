@@ -22,6 +22,9 @@ class CGI{
 
 		bool rout(Client &client, Server &server);
 		std::string	get_response(void);
+
+	private:
+		bool	_is_allow_method(t_method method, Server &server);
 };
 
 
