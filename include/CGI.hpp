@@ -23,7 +23,7 @@ class CGI{
 		bool rout(Client &client, Server &server);
 		std::string	get_response(void);
 
-	private:
+	// private:
 		bool	_is_allow_method(t_method method, Server &server);
 		Location* _select_location(Request & , Server &);
 		Location* _compare_location(std::string str, std::map<std::string, Location> &conf);

@@ -8,7 +8,7 @@ CGI::~CGI(void){}
 bool CGI::rout(Client &client, Server &server)
 {
 	client.location = _select_location(*client.request, server);
-	if (!_is_allow_method(client.request->_method, server))
+	// if (!_is_allow_method(client.request->_method, server))
 		// method not allow 
 
 
@@ -31,8 +31,11 @@ Location* CGI::_compare_location(std::string str, std::map<std::string, Location
 	std::map<std::string, Location>::iterator it;
 
 	for (it = conf.begin(); it != conf.end(); it++){
-		if (it->first == str)
+		if (it->first == str){
+			std::cout << YEL << "checked with " << it->first << RESET << std::endl;
 			return (&(it->second));
+
+		}
 	}
 	return (NULL);
 }
@@ -49,16 +52,21 @@ Location* CGI::_select_location(Request &request, Server &server)
 	std::string only_path = "/" + _get_only_path(request._path);
 	while (!match){
 		std::cout << YEL << "only_path is " <<  only_path << RESET << std::endl;
-		if (select_loc = _compare_location(only_path, server._config)){
+		if ((select_loc = _compare_location(only_path, server._config)) != NULL){
 			std::cout << YEL << "config match!" << RESET << std::endl;
 			match = true;
-			std::cout << *select_loc << std::endl;
+			// std::cout << *select_loc << std::endl;
 		}
 		else
 			only_path = _get_only_path(only_path);
+		if (only_path == ""){
+			std::cout << "/ ja" << std::endl;
+			select_loc = &server._config["/"];
+			break;
+		}
 
 	}
-
+	return (select_loc);
 }
 
 bool	CGI::_is_allow_method(t_method method, Server &server)
