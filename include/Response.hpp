@@ -2,12 +2,7 @@
 # define RESPONSE_HPP
 
 // to encapsulate data and pass it as a param before create response text
-
-# include <iostream>
-# include <string>
-# include <time.h>
-# include <sstream>
-#include <unistd.h>
+# include "Common.hpp"
 # include "Mime.hpp"
 # include "Request.hpp"
 # include "Location.hpp"
