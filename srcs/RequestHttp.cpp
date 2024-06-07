@@ -1,4 +1,4 @@
-#include "RequestHttp.hpp"
+#include "../include/RequestHttp.hpp"
 
 RequestHttp::RequestHttp():
 _lineIndex(0),
