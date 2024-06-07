@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/07 02:28:13 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/07 17:22:36 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,11 +137,18 @@ std::string	ft_getvalue(std::string key, std::string line)
 			i++;
 		while ((line[i] != '{' || line[i] != '}') && line[i])
 		{
+			// std::cout << "line[i]" << line[i] << std::endl;
 			if (line[i] == ';') // Don't forget to check in case it forget to fill ->  maybe use state 
 				break;
 			value += line[i];
 			// value.append(sp_line[i]);
 			i++;
+			if (line[i] == '\0')
+			{
+				// std::cout << "Don't have semicolon" << std::endl;
+				return("false");
+				// break;
+			}
 		}
 		break;
 	}
@@ -354,60 +361,68 @@ int	parsing_config(int ac, char **av, char **env)
 			continue;
 		else
 			value = ft_getvalue(key, sp_line);
+		if (value == "false")
+			return (-1);
+		i++;
+		if (i == 2)
+			exit(0);
 		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
 		// if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
-		if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
-		{
-			if (!value.empty())
-			{
-				vec = ft_split(value);
-				tmp_key = vec[0];
-				std::cout << "|" << tmp_key << "|" << std::endl;
-			}	
-			locate = BETWEEN_LOCATION;
-		}	
-		if (key == "listen")
-			server.listen = ft_stoi(value);
-		else if (key == "server_name")
-			server.server_name = value;
-		else if (key == "error_page")
-			server.error_page = ft_split(value);
-		if (locate == BETWEEN_LOCATION)
-		{
-			locate = ft_getlocate(location, key, value);
-			// ft_prt_locate(locate);
-		}
-		// else if (locate == CLOSE_LOCATION)
-		if (locate == CLOSE_LOCATION)
-		{
-			ft_prt_location(location);
-			server._config.insert(std::pair<std::string, Location>(tmp_key, location));
-			location = ft_init_location();
-		}
-	}
-	std::map<std::string, Location>::iterator it;
-	for (it = server._config.begin(); it != server._config.end(); it++)
-	{
-		if (it->second.cgiPass == true)
-			std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
-		else
-			std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
-		std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
-		std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
-		std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
-		std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
-		if (it->second.ret.have == HAVE)
-			std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
-		else
-			std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
-		if (it->second.autoIndex == ON)
-			std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
-		else
-			std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
-		for (int j= 0; j < it->second.index.size(); j++)
-			std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
+	// 	if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
+	// 	{
+	// 		if (!value.empty())
+	// 		{
+	// 			vec = ft_split(value);
+	// 			tmp_key = vec[0];
+	// 			std::cout << "|" << tmp_key << "|" << std::endl;
+	// 		}	
+	// 		locate = BETWEEN_LOCATION;
+	// 	}	
+	// 	if (key == "listen")
+	// 		server.listen = ft_stoi(value);
+	// 	else if (key == "server_name")
+	// 		server.server_name = value;
+	// 	else if (key == "error_page")
+	// 		server.error_page = ft_split(value);
+	// 	if (locate == BETWEEN_LOCATION)
+	// 	{
+	// 		locate = ft_getlocate(location, key, value);
+	// 		// ft_prt_locate(locate);
+	// 	}
+	// 	// else if (locate == CLOSE_LOCATION)
+	// 	if (locate == CLOSE_LOCATION)
+	// 	{
+	// 		// ft_prt_location(location);
+	// 		server._config.insert(std::pair<std::string, Location>(tmp_key, location));
+	// 		location = ft_init_location();
+	// 	}
+	// }
+	// /*
+	// 	PRINT MAP LOCATION
+	// */
+	// std::map<std::string, Location>::iterator it;
+	// for (it = server._config.begin(); it != server._config.end(); it++)
+	// {
+	// 	if (it->second.cgiPass == true)
+	// 		std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
+	// 	else
+	// 		std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
+	// 	std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
+	// 	std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
+	// 	std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
+	// 	std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
+	// 	if (it->second.ret.have == HAVE)
+	// 		std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
+	// 	else
+	// 		std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
+	// 	if (it->second.autoIndex == ON)
+	// 		std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
+	// 	else
+	// 		std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
+	// 	for (int j= 0; j < it->second.index.size(); j++)
+	// 		std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
 			
-		std::cout << std::endl;
+	// 	std::cout << std::endl;
 	}
 	input_file.close();
 	return (0);	
@@ -415,7 +430,14 @@ int	parsing_config(int ac, char **av, char **env)
 
 int main(int ac, char **av, char **env)
 {
-	parsing_config(ac, av, env);	
+	std::string name;
+
+	name = "false";	
+	if (parsing_config(ac, av, env) == -1)
+	{
+		std::cout << "Error" << std::endl;
+		return(1);	
+	}
 
 	return (0);	
 }
