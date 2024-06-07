@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/07 21:17:33 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/07 21:40:19 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,15 @@ uint64_t	ft_stouint(std::string str)
     return (res);
 }
 
-void	ft_print_vec(std::vector<std::string> vec)
+void	ft_print_vec_str(std::vector<std::string> vec)
+{
+	// size_t len = vec.size();
+	// std::cout << "len : " << len << std::endl;
+	for (int i = 0; i < vec.size(); i++)
+        	std::cout << i << "|" << vec[i] << "|" << std::endl;
+}
+
+void	ft_print_vec_uint(std::vector<uint64_t> vec)
 {
 	// size_t len = vec.size();
 	// std::cout << "len : " << len << std::endl;
@@ -238,7 +246,7 @@ void	ft_prt_server(Server sv)
 	std::cout << "server_name : " << sv.server_name << std::endl;
 	std::cout << "listen : " << sv.listen << std::endl;
 	std::cout << "error_page : " << std::endl;
-	ft_print_vec(sv.error_page);
+	ft_print_vec_str(sv.error_page);
 	
 	// ft_prt_locate(sv._config);
 }
@@ -293,13 +301,13 @@ void	ft_print_df_conf(t_dfconf df)
 	std::cout << "root : " << df.root << std::endl;	
 	
 	std::cout << "index : " << std::endl;
-	ft_print_vec(df.index);
+	ft_print_vec_str(df.index);
 	
 	std::cout << "limit_except : " << std::endl;
-	ft_print_vec(df.limit_except);
+	ft_print_vec_str(df.limit_except);
 	
 	std::cout << "error_page : " << std::endl;
-	ft_print_vec(df.error_page);
+	ft_print_vec_str(df.error_page);
 }
 
 Location	ft_init_location()
@@ -330,7 +338,7 @@ void ft_prt_locate(short locate)
 		std::cout << "locate : CLOSE_DEDAULT" << std::endl;
 }
 
-int	parsing_config(int ac, char **av, int &tmp)
+int	parsing_config(int ac, char **av, std::vector<uint64_t> &tmp_port)
 {
 	std::string	line;
 	std::string	file;
@@ -344,7 +352,7 @@ int	parsing_config(int ac, char **av, int &tmp)
 	Server		server;
 	std::vector<std::string> vec;
 	
-	tmp = 10;
+	// tmp = 10;
 	locate = DEFAULT;
 	if (ac != 2)
 		return(std::cerr << "Error : Expected 2 arguments" << std::endl, 0);
@@ -368,63 +376,67 @@ int	parsing_config(int ac, char **av, int &tmp)
 		// i++;
 		// if (i == 2)
 		// 	exit(0);
-		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
-		// if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
-	// 	if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
-	// 	{
-	// 		if (!value.empty())
-	// 		{
-	// 			vec = ft_split(value);
-	// 			tmp_key = vec[0];
-	// 			std::cout << "|" << tmp_key << "|" << std::endl;
-	// 		}	
-	// 		locate = BETWEEN_LOCATION;
-	// 	}	
-	// 	if (key == "listen")
-	// 		server.listen = ft_stoi(value);
-	// 	else if (key == "server_name")
-	// 		server.server_name = value;
-	// 	else if (key == "error_page")
-	// 		server.error_page = ft_split(value);
-	// 	if (locate == BETWEEN_LOCATION)
-	// 	{
-	// 		locate = ft_getlocate(location, key, value);
-	// 		// ft_prt_locate(locate);
-	// 	}
-	// 	// else if (locate == CLOSE_LOCATION)
-	// 	if (locate == CLOSE_LOCATION)
-	// 	{
-	// 		// ft_prt_location(location);
-	// 		server._config.insert(std::pair<std::string, Location>(tmp_key, location));
-	// 		location = ft_init_location();
-	// 	}
-	// }
-	// /*
-	// 	PRINT MAP LOCATION
-	// */
-	// std::map<std::string, Location>::iterator it;
-	// for (it = server._config.begin(); it != server._config.end(); it++)
-	// {
-	// 	if (it->second.cgiPass == true)
-	// 		std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
-	// 	else
-	// 		std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
-	// 	std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
-	// 	std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
-	// 	std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
-	// 	std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
-	// 	if (it->second.ret.have == HAVE)
-	// 		std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
-	// 	else
-	// 		std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
-	// 	if (it->second.autoIndex == ON)
-	// 		std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
-	// 	else
-	// 		std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
-	// 	for (int j= 0; j < it->second.index.size(); j++)
-	// 		std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
+		std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
+		if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
+		if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
+		{
+			if (!value.empty())
+			{
+				vec = ft_split(value);
+				tmp_key = vec[0];
+				std::cout << "|" << tmp_key << "|" << std::endl;
+			}	
+			locate = BETWEEN_LOCATION;
+		}	
+		if (key == "listen")
+		{
+			tmp_port.push_back(ft_stoi(value));
+		}
+			// server.listen = ft_stoi(value);
+		else if (key == "server_name")
+			server.server_name = value;
+		else if (key == "error_page")
+			server.error_page = ft_split(value);
+		if (locate == BETWEEN_LOCATION)
+		{
+			locate = ft_getlocate(location, key, value);
+			// ft_prt_locate(locate);
+		}
+		// else if (locate == CLOSE_LOCATION)
+		if (locate == CLOSE_LOCATION)
+		{
+			// ft_prt_location(location);
+			server._config.insert(std::pair<std::string, Location>(tmp_key, location));
+			location = ft_init_location();
+		}
+	}
+	
+	/*
+		PRINT MAP LOCATION
+	*/
+	std::map<std::string, Location>::iterator it;
+	for (it = server._config.begin(); it != server._config.end(); it++)
+	{
+		if (it->second.cgiPass == true)
+			std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
+		else
+			std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
+		std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
+		std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
+		std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
+		std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
+		if (it->second.ret.have == HAVE)
+			std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
+		else
+			std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
+		if (it->second.autoIndex == ON)
+			std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
+		else
+			std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
+		for (int j= 0; j < it->second.index.size(); j++)
+			std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
 			
-	// 	std::cout << std::endl;
+		std::cout << std::endl;
 	}
 	input_file.close();
 	return (0);	
@@ -435,13 +447,30 @@ int main(int ac, char **av, char **env)
 	std::string name;
 	int tmp_2 = 5;
 	int &tmp = tmp_2;
+	Server tmp_sv;
+	std::vector<uint64_t> tmp_port;
+	std::vector<Server> sv;
 	name = "false";	
-	if (parsing_config(ac, av, tmp) == -1)
+	// if (parsing_config(ac, av, tmp) == -1)
+	if (parsing_config(ac, av, tmp_port) == -1)
 	{
 		std::cout << "Error" << std::endl;
 		return(1);	
 	}
-	std::cout << "tmp_nbr : " << std::endl;
-	std::cout << tmp << std::endl;
+	for (int i = 0; i < tmp_port.size(); i++)
+	{
+		// sv.push_back(sv.t)
+		tmp_sv.listen = tmp_port[i];
+		sv.push_back(tmp_sv);
+		// std::cout << "port : " 
+	}
+	for (int i = 0; i < tmp_port.size(); i++)
+	{
+		ft_prt_server(sv[i]);
+	}
+	// ft_print_vec_uint(tmp_port);
+	
+	// std::cout << "tmp_nbr : " << std::endl;
+	// std::cout << tmp << std::endl;
 	return (0);	
 }
