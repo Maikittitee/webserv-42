@@ -57,6 +57,23 @@ std::vector<std::string> splitToVector(const std::string& str, char delimiter)
     return tokens;
 }
 
+std::vector<std::string> lineToVector(const std::string& str) 
+{
+    std::vector<std::string> tokens;
+    std::string::size_type start = 0;
+    std::string::size_type end = 0;
+
+    while ((end = str.find('\n', start)) != std::string::npos)
+	{
+        if (end != start)
+            tokens.push_back(str.substr(start, end - start));
+		else
+			tokens.push_back("\n");
+        start = end + 1;
+    }
+    return tokens;
+}
+
 void	trimLeadingSpaces(std::string& str) 
 {
 	size_t start = str.find_first_not_of(' ');
