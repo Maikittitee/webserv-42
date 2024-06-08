@@ -5,17 +5,52 @@ CGI::CGI(void){}
 CGI::~CGI(void){}
 
 
+
+
 bool CGI::rout(Client &client, Server &server)
 {
 	client.location = _select_location(*client.request, server);
-	if (!_is_allow_method(client.request->_method, client.location))
-		method not allow 
+	if (!_is_allow_method(client.request->_method, *client.location)) {
+		//method not allow 
+	}
+	if (client.location->ret.have){
+		// redirect
+		client.request->_path = client.location->ret.text;
+	}
+	if (client.request->_method == DELETE){
+		// delete file 
+	}
+	if (!client.location->autoIndex && _is_path(client.request->_path)){
+		std::string tmp_file;
+		for (int i = 0; i < client.location->index.size(); i++){
+			tmp_file = client.request->_path + client.location->index[i];
+			if (access(tmp_file.c_str(), F_OK) == 0){
+				client.request->_path = tmp_file;
+				break;
+			}
+		}
+	}
+	else{
+		// auto index
+	}
+
+
+
+	
+
 
 
 
 
 	return (true);
 
+}
+
+bool _is_path(std::string path)
+{
+	if (path[path.size() - 1] == '/')
+		return (true);
+	return (false);
 }
 
 std::string CGI::_get_only_path(std::string path)
