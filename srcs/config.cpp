@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/09 00:36:38 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/09 01:08:07 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -329,13 +329,24 @@ Location	ft_init_location()
 void ft_prt_locate(short locate)
 {
 	if (locate == DEFAULT)
-		std::cout << "locate : DEDAULT" << std::endl;
+		std::cout << "locate : DEFAULT" << std::endl;
 	else if (locate == START_LOCATION)
-		std::cout << "locate : START_DEDAULT" << std::endl;
+		std::cout << "locate : START_DEFAULT" << std::endl;
 	else if (locate == BETWEEN_LOCATION)
-		std::cout << "locate : BETWEEN_DEDAULT" << std::endl;
+		std::cout << "locate : BETWEEN_DEFAULT" << std::endl;
 	else if (locate == CLOSE_LOCATION)
-		std::cout << "locate : CLOSE_DEDAULT" << std::endl;
+		std::cout << "locate : CLOSE_DEFAULT" << std::endl;
+}
+
+bool ft_check_name(std::string key)
+{
+	if (key == "server" ||  key == "client_max_body_size" || key == "root" \
+				|| key == "index" || key == "limit_except" || key == "return" \
+				|| key == "autoindex" || key == "error_page" || key == "listen" \
+				|| key == "cgi_pass" || key == "location" || key == "server_name" \
+				|| key == "}" || key == "{" )
+		return (true);
+	return (false);
 }
 
 int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_port)
@@ -349,22 +360,20 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 	Location	location;
 	std::string	tmp_key;
 	std::map<std::string, Location> _con;
-	// Server		server;
 	std::vector<std::string> vec;
 	
-	// tmp = 10;
-	locate = DEFAULT;
 	if (ac != 2)
-		return(std::cerr << "Error : Expected 2 arguments" << std::endl, 0);
+		return(std::cerr << RED << "Error : Expected 2 arguments" << RESET << std::endl, 0);
 	std::ifstream input_file(av[1]);
 	if (input_file.is_open() == false)
-		return(std::cerr << "Error : Could not open file : " << av[1] << std::endl, 0);
+		return(std::cerr << RED << "Error : Could not open file : " << RESET << av[1] << std::endl, 0);
 	if (ft_check_extension(av[1]) == false)
-		return (std::cerr << "Error : extension file" << std::endl, 0);
+		return (std::cerr << RED << "Error : extension file" << RESET << std::endl, 0);
 	int i = 0;
 	int stage = 0;	
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
+		locate = DEFAULT;
 		// write new code for trim isspace
 		sp_line = ft_trim_ispace(line);
 		key = ft_getkey(sp_line);
@@ -374,10 +383,7 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 			value = ft_getvalue(key, sp_line);
 		if (value == "false")
 			return (-1);
-		// i++;
-		// if (i == 2)
-		// 	exit(0);
-		std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
+		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
 		// if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
 		// if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
@@ -399,11 +405,12 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 			}
 			tmp_port.push_back(ft_stoi(value));
 		}
-			// server.listen = ft_stoi(value);
 		else if (key == "server_name")
 			server.server_name = value;
 		else if (key == "error_page")
 			server.error_page = ft_split(value);
+		if (ft_check_name(key) == false)
+			std::cerr << RED << key << " is valid" << RESET << std::endl;	
 		if (locate == BETWEEN_LOCATION)
 		{
 			locate = ft_getlocate(location, key, value);
