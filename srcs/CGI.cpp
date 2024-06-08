@@ -8,8 +8,8 @@ CGI::~CGI(void){}
 bool CGI::rout(Client &client, Server &server)
 {
 	client.location = _select_location(*client.request, server);
-	// if (!_is_allow_method(client.request->_method, server))
-		// method not allow 
+	if (!_is_allow_method(client.request->_method, client.location))
+		method not allow 
 
 
 
@@ -69,9 +69,11 @@ Location* CGI::_select_location(Request &request, Server &server)
 	return (select_loc);
 }
 
-bool	CGI::_is_allow_method(t_method method, Server &server)
+bool	CGI::_is_allow_method(t_method method, Location &location)
 {
-	Location location = server._config["def"];
-
-	return (true);
+	for (int i = 0; i < location.allowMethod.size(); i++){
+		if (method == location.allowMethod[i])
+			return (true);
+	}
+	return (false);
 }

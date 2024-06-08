@@ -78,12 +78,8 @@ int	main(int ac, char **av, char **env)
 	servs.push_back(*mock_server());
 
 	WebServer webserver(servs);
-
 	webserver.runServer();
 	// std::cout << *webserver._cgi._select_location(request, servs[0]);
-
-
-			
 
     return 0;
 }
