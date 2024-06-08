@@ -45,7 +45,7 @@ class Server{
 		int					_server_fd;
 		struct sockaddr_in	_address;
     	socklen_t			_addrlen;
-		std::vector<int>	_server_port;
+		// std::vector<int>	_server_port;
 
 		// keep key and value of default conf
 		u_int64_t			listen;

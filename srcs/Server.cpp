@@ -26,24 +26,32 @@ std::ostream& operator<<(std::ostream& os, const Server& sv)
 	return (os);
 }
 
-Server::Server(int port, char **env){
-	if (port < 0 || port > 65535)
-		throw PortNotExist();
-	else
-		_server_port.insert(_server_port.end(), port);
-	_address.sin_family = AF_INET;
-    _address.sin_addr.s_addr = INADDR_ANY;
-    _address.sin_port = htons(_server_port[0]);
-	_addrlen = sizeof(_address);
-	_env = env;
-}
+// Server::Server(int port, char **env){
+// 	if (port < 0 || port > 65535)
+// 		throw PortNotExist();
+// 	else
+// 		_server_port.insert(_server_port.end(), port);
+// 	_address.sin_family = AF_INET;
+//     _address.sin_addr.s_addr = INADDR_ANY;
+//     _address.sin_port = htons(_server_port[0]);
+// 	_addrlen = sizeof(_address);
+// 	_env = env;
+// }
 
 Server::~Server (void) {
 	// close(_client_fd);
 	close(_server_fd);
 }
 
-Server::Server(){}
+Server::Server()
+{
+	std::string	name;
+
+	name = "localhost";
+	server_name = name;
+	error_page.clear();
+}
+
 
 
 

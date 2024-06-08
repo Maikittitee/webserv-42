@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/08 18:32:03 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/09 00:36:38 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,7 +242,7 @@ short	ft_getlocate(Location &location, std::string key, std::string value)
 void	ft_prt_server(Server sv)
 {
 	
-	std::cout << GRN << "SERVER : " << sv.server_name << RESET << std::endl ;
+	std::cout << GRN << "SERVER : " << RESET << std::endl;
 	std::cout << "server_name : " << sv.server_name << std::endl;
 	std::cout << "listen : " << sv.listen << std::endl;
 	std::cout << "error_page : " << std::endl;
@@ -362,6 +362,7 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 	if (ft_check_extension(av[1]) == false)
 		return (std::cerr << "Error : extension file" << std::endl, 0);
 	int i = 0;
+	int stage = 0;	
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		// write new code for trim isspace
@@ -377,8 +378,9 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 		// if (i == 2)
 		// 	exit(0);
 		std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
-		if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
-		if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
+		// if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
+		// if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
+		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		{
 			if (!value.empty())
 			{
@@ -387,9 +389,14 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 				std::cout << "|" << tmp_key << "|" << std::endl;
 			}	
 			locate = BETWEEN_LOCATION;
-		}	
+		}
 		if (key == "listen")
 		{
+			if (tmp_port[0] == 80 && stage == 0)
+			{
+				stage = 1;
+				tmp_port.pop_back();
+			}
 			tmp_port.push_back(ft_stoi(value));
 		}
 			// server.listen = ft_stoi(value);
@@ -480,6 +487,8 @@ int main(int ac, char **av, char **env)
 	Server sv_get;
 	std::vector<uint64_t> tmp_port;
 	std::vector<Server> sv;
+
+	tmp_port.push_back(80);
 	// if (parsing_config(ac, av, tmp) == -1)
 	if (parsing_config(ac, av, tmp_sv, tmp_port) == -1)
 	{
@@ -491,6 +500,8 @@ int main(int ac, char **av, char **env)
 		std::cerr << "Error : Same Port" << std::endl;
 		return (1);
 	}
+	// std::cout << "len : " << tmp_port.size() << std::endl;
+	// exit (0);
 	for (int i = 0; i < tmp_port.size(); i++)
 	{
 		sv_get = tmp_sv;
