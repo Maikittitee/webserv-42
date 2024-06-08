@@ -10,6 +10,11 @@ CGI::~CGI(void){}
 int CGI::rout(Client &client, Server &server)
 {
 	client.location = _select_location(*client.request, server);
+	if (!client.location)
+		std::cout << RED << "can't find matching location" << RESET << std::endl;
+	else {
+		std::cout << client.location;
+	}
 	if (!_is_allow_method(client.request->_method, *client.location)) {
 		return (403);
 		//method not allow 
@@ -32,11 +37,15 @@ int CGI::rout(Client &client, Server &server)
 			}
 		}
 	}
+	// check access
+	if (access(client.request->_path.c_str(), F_OK) != 0)
+		return (404);
 	if (client.location->autoIndex){
-		// auto index
+		// maybe send 1000
 	}
 	if (client.location->cgiPass){
 		// cgi
+		// send fd
 	}
 
 
@@ -50,7 +59,24 @@ int CGI::rout(Client &client, Server &server)
 
 }
 
-bool _is_path(std::string path)
+std::string CGI::readfile(std::string filename, Server &server, int return_code)
+{
+	Response response;
+
+	// mock
+	response._body = response.get_body_from_file("docs/test.html");
+	response.genarate_header();
+	return (response.get_response_text());
+	
+
+}
+		
+std::string CGI::readfile(int fd)
+{
+	return ("READFILE FROM FD");
+}
+
+bool CGI::_is_path(std::string path)
 {
 	if (path[path.size() - 1] == '/')
 		return (true);
@@ -60,22 +86,28 @@ bool _is_path(std::string path)
 std::string CGI::_get_only_path(std::string path)
 {
 	std::size_t found;
+	std::string str;
 
 	found = path.find_last_of("/\\");
-	return (path.substr(0, found));
+	str = path.substr(0, found);
+	std::cout << "cut " << str << std::endl;
+	return (str);
 }
 
 Location* CGI::_compare_location(std::string str, std::map<std::string, Location> &conf)
 {
 	std::map<std::string, Location>::iterator it;
 
+	std::cout << conf;
+	std::cout << "start compare" << std::endl;
 	for (it = conf.begin(); it != conf.end(); it++){
+		std::cout << "path checking" << it->first << std::endl;
 		if (it->first == str){
 			std::cout << YEL << "checked with " << it->first << RESET << std::endl;
 			return (&(it->second));
-
 		}
 	}
+	std::cout << "not match any location" << std::endl;
 	return (NULL);
 }
 
@@ -97,7 +129,12 @@ Location* CGI::_select_location(Request &request, Server &server)
 			// std::cout << *select_loc << std::endl;
 		}
 		else
+		{
+			std::cout << "renew" << std::endl;
 			only_path = _get_only_path(only_path);
+
+		}
+		std::cout << "after cut " << only_path << std::endl;
 		if (only_path == ""){
 			std::cout << "/ ja" << std::endl;
 			select_loc = &server._config["/"];

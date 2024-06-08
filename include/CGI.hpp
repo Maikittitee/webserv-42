@@ -30,6 +30,7 @@ class CGI{
 		Location* _select_location(Request & , Server &);
 		Location* _compare_location(std::string str, std::map<std::string, Location> &conf);
 		std::string _get_only_path(std::string path);
+		bool _is_path(std::string path);
 };
 
 

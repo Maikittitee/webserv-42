@@ -15,12 +15,14 @@ class Client{
 		~Client();
 
 		int 				fd;
+		id_t				server_fd;
 		std::string			IPaddr;
 		socklen_t			addrLen;
 		struct sockaddr_in	addr;
 		Server 				*server;
 		Request				*request;
 		Location			*location;
+
 
 };
 

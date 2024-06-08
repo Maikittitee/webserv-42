@@ -66,7 +66,7 @@ Server *mock_server(void)
 	serv->port = 6969;
 	serv->_config = mock_location();
 
-	// std::cout << serv->_config << std::endl;
+	std::cout << serv->_config << std::endl;
 	return (serv);
 
 }
