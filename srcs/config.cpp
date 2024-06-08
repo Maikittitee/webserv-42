@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/09 01:29:12 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/09 01:45:38 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,9 @@ std::string	ft_getvalue(std::string key, std::string line)
 		break;
 	}
 	value += "";
-	return (value);
+	if (value.find("#") == std::string::npos)
+		return (value);
+	return ("false");	
 }
 
 std::string ft_getkey(std::string sp_line)
@@ -184,7 +186,9 @@ std::string ft_getkey(std::string sp_line)
 		key += sp_line[i];
 		i++;
 	}
-	return (key);
+	if (key.find("#") == std::string::npos) // not find 
+		return (key);
+	return ("false");	
 }
 
 std::string	ft_trim_ispace(std::string line)
@@ -411,8 +415,11 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 			continue;
 		else
 			value = ft_getvalue(key, sp_line);
-		if (value == "false")
+		if (key == "false" || value == "false")
+		{
+			std::cout << "false " << std::endl;
 			return (-1);
+		}
 		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
 		// if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
 		// if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
