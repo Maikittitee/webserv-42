@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/09 01:45:38 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/09 01:52:06 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -521,10 +521,10 @@ int main(int ac, char **av, char **env)
 		sv_get.listen = tmp_port[i];
 		sv.push_back(sv_get);
 	}
-	for (int i = 0; i < tmp_port.size(); i++)
-	{
-		ft_prt_server(sv[i]);
-	}
+	// for (int i = 0; i < tmp_port.size(); i++)
+	// {
+	// 	ft_prt_server(sv[i]);
+	// }
 	// ft_print_vec_uint(tmp_port);
 	return (0);	
 }
