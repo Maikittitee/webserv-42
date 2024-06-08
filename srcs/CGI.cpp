@@ -30,10 +30,12 @@ bool CGI::rout(Client &client, Server &server)
 			}
 		}
 	}
-	else{
+	if (client.location->autoIndex){
 		// auto index
 	}
-
+	if (client.location->cgiPass){
+		// cgi
+	}
 
 
 	
