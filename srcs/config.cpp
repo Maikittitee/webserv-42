@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/07 21:40:19 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/08 18:32:03 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,7 +338,7 @@ void ft_prt_locate(short locate)
 		std::cout << "locate : CLOSE_DEDAULT" << std::endl;
 }
 
-int	parsing_config(int ac, char **av, std::vector<uint64_t> &tmp_port)
+int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_port)
 {
 	std::string	line;
 	std::string	file;
@@ -349,7 +349,7 @@ int	parsing_config(int ac, char **av, std::vector<uint64_t> &tmp_port)
 	Location	location;
 	std::string	tmp_key;
 	std::map<std::string, Location> _con;
-	Server		server;
+	// Server		server;
 	std::vector<std::string> vec;
 	
 	// tmp = 10;
@@ -442,35 +442,65 @@ int	parsing_config(int ac, char **av, std::vector<uint64_t> &tmp_port)
 	return (0);	
 }
 
+
+bool	ft_check_sameport(std::vector<u_int64_t> port)
+{
+	int			i;
+    int         start_loop;
+	bool		check;
+	u_int64_t	tmp_port;
+	int			len;
+	
+	i = 1;
+    start_loop = 1;
+	check = false;
+	if (port.empty())
+		return (false);
+	len = port.size();
+	tmp_port = 	port[0];
+    while (i < len)
+    {
+        if (tmp_port == port[i])
+            return (true);
+        if (i == len - 1)
+        {
+            tmp_port = port[start_loop];
+            i = start_loop + 1;
+            start_loop++;
+        }
+        i++;
+    } 
+	return (false);
+}
+
 int main(int ac, char **av, char **env)
 {
 	std::string name;
-	int tmp_2 = 5;
-	int &tmp = tmp_2;
 	Server tmp_sv;
+	Server sv_get;
 	std::vector<uint64_t> tmp_port;
 	std::vector<Server> sv;
-	name = "false";	
 	// if (parsing_config(ac, av, tmp) == -1)
-	if (parsing_config(ac, av, tmp_port) == -1)
+	if (parsing_config(ac, av, tmp_sv, tmp_port) == -1)
 	{
-		std::cout << "Error" << std::endl;
-		return(1);	
+		std::cerr << "Error" << std::endl;
+		return(1);
+	}
+	if (ft_check_sameport(tmp_port) == true)
+	{
+		std::cerr << "Error : Same Port" << std::endl;
+		return (1);
 	}
 	for (int i = 0; i < tmp_port.size(); i++)
 	{
-		// sv.push_back(sv.t)
-		tmp_sv.listen = tmp_port[i];
-		sv.push_back(tmp_sv);
-		// std::cout << "port : " 
+		sv_get = tmp_sv;
+		sv_get.listen = tmp_port[i];
+		sv.push_back(sv_get);
 	}
 	for (int i = 0; i < tmp_port.size(); i++)
 	{
 		ft_prt_server(sv[i]);
 	}
 	// ft_print_vec_uint(tmp_port);
-	
-	// std::cout << "tmp_nbr : " << std::endl;
-	// std::cout << tmp << std::endl;
 	return (0);	
 }
