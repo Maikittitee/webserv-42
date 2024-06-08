@@ -137,8 +137,18 @@ bool	WebServer::_send_response(int fd)
 	Client *client = _get_client(fd);
 	Server *server = client->server;
 
-	std::string msg = server->rout(*client->request);
+	if (!client || !server)
+		std::cerr << RED << "can't find server or client" << RESET << std::endl;
+	
 	// CGI work here
+	int return_code = _cgi.rout(*client, *server);
+
+	std::string msg;	
+	if (return_code < 100) // return code is fd of child process
+		msg = _cgi.readfile(return_code);
+	else 
+		msg = _cgi.readfile(client->request->_path);
+
 
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;

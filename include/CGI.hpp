@@ -20,7 +20,9 @@ class CGI{
 		
 		Response response;
 
-		bool rout(Client &client, Server &server);
+		int rout(Client &client, Server &server);
+		std::string readfile(std::string filename);
+		std::string readfile(int fd);
 		std::string	get_response(void);
 
 	// private:

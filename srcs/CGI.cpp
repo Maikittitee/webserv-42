@@ -7,15 +7,17 @@ CGI::~CGI(void){}
 
 
 
-bool CGI::rout(Client &client, Server &server)
+int CGI::rout(Client &client, Server &server)
 {
 	client.location = _select_location(*client.request, server);
 	if (!_is_allow_method(client.request->_method, *client.location)) {
+		return (403);
 		//method not allow 
 	}
 	if (client.location->ret.have){
 		// redirect
 		client.request->_path = client.location->ret.text;
+		return (client.location->ret.code);
 	}
 	if (client.request->_method == DELETE){
 		// delete file 
