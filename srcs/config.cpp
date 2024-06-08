@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/09 01:08:07 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/09 01:29:12 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -349,6 +349,36 @@ bool ft_check_name(std::string key)
 	return (false);
 }
 
+bool	ft_check_sameport(std::vector<u_int64_t> port)
+{
+	int			i;
+    int         start_loop;
+	bool		check;
+	u_int64_t	tmp_port;
+	int			len;
+	
+	i = 1;
+    start_loop = 1;
+	check = false;
+	if (port.empty())
+		return (false);
+	len = port.size();
+	tmp_port = 	port[0];
+    while (i < len)
+    {
+        if (tmp_port == port[i])
+            return (true);
+        if (i == len - 1)
+        {
+            tmp_port = port[start_loop];
+            i = start_loop + 1;
+            start_loop++;
+        }
+        i++;
+    } 
+	return (false);
+}
+
 int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_port)
 {
 	std::string	line;
@@ -453,39 +483,16 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 		std::cout << std::endl;
 	}
 	input_file.close();
+	if (ft_check_sameport(tmp_port) == true)
+	{
+		std::cerr << RED << "Error : Same Port" << RESET << std::endl;
+		// return (-1);
+		exit (0);
+	}
 	return (0);	
 }
 
 
-bool	ft_check_sameport(std::vector<u_int64_t> port)
-{
-	int			i;
-    int         start_loop;
-	bool		check;
-	u_int64_t	tmp_port;
-	int			len;
-	
-	i = 1;
-    start_loop = 1;
-	check = false;
-	if (port.empty())
-		return (false);
-	len = port.size();
-	tmp_port = 	port[0];
-    while (i < len)
-    {
-        if (tmp_port == port[i])
-            return (true);
-        if (i == len - 1)
-        {
-            tmp_port = port[start_loop];
-            i = start_loop + 1;
-            start_loop++;
-        }
-        i++;
-    } 
-	return (false);
-}
 
 int main(int ac, char **av, char **env)
 {
@@ -496,19 +503,11 @@ int main(int ac, char **av, char **env)
 	std::vector<Server> sv;
 
 	tmp_port.push_back(80);
-	// if (parsing_config(ac, av, tmp) == -1)
 	if (parsing_config(ac, av, tmp_sv, tmp_port) == -1)
 	{
-		std::cerr << "Error" << std::endl;
+		std::cerr << RED << "Error File" << RESET << std::endl;
 		return(1);
 	}
-	if (ft_check_sameport(tmp_port) == true)
-	{
-		std::cerr << "Error : Same Port" << std::endl;
-		return (1);
-	}
-	// std::cout << "len : " << tmp_port.size() << std::endl;
-	// exit (0);
 	for (int i = 0; i < tmp_port.size(); i++)
 	{
 		sv_get = tmp_sv;
