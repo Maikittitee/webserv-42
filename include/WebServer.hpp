@@ -15,6 +15,7 @@ class CGI;
 class WebServer{
 	public:
 		WebServer();
+		WebServer(std::vector<Server> &servers);
 		~WebServer();
 		bool	initServer(std::vector<Server> &servers);
 		bool	runServer(void);

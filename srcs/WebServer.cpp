@@ -4,6 +4,41 @@ WebServer::WebServer(){
 	buffer = new char[BUFFERSIZE];
 }
 
+WebServer::WebServer(std::vector<Server> &servers)
+{
+	buffer = new char[BUFFERSIZE];
+	struct sockaddr_in	sockAddr;
+	socklen_t addr_len = sizeof(sockAddr);
+	for (int i = 0; i < servers.size(); i++){
+		if (_setSockAddr(sockAddr, servers[i]) == 0)
+			std::cerr << "setup socket failed" << std::endl;
+
+		// get server fd
+		servers[i]._server_fd = socket(AF_INET, SOCK_STREAM, 0);
+		if (servers[i]._server_fd < 0)
+			std::cerr << "create socket failed" << std::endl;
+
+		// set non blocking	
+		if (fcntl(servers[i]._server_fd, F_SETFL, O_NONBLOCK) < 0)
+			std::cout << "non-blocking failed" << std::endl;
+		
+		if (_setOptSock(servers[i]._server_fd) == 0)
+			std::cerr << "setup socket option failed" << std::endl;
+		
+		// Bind the socket to the specified address and port
+		if (bind(servers[i]._server_fd, (sockaddr *)&sockAddr, addr_len) < 0)
+			std::cerr << "bilded failed" << std::endl;
+		
+		// Prepare socket for incoming connection
+		if (listen(servers[i]._server_fd, 512) < 0)
+			std::cout << "listen failded" << std::endl;
+
+		std::cout << BLU "create server success fd: " << servers[i]._server_fd << RESET << std::endl;
+		this->_servers.push_back(servers[i]);
+	}
+
+}
+
 WebServer::~WebServer(){
 	delete[] buffer;
 }
