@@ -147,7 +147,7 @@ bool	WebServer::_send_response(int fd)
 	if (return_code < 100) // return code is fd of child process
 		msg = _cgi.readfile(return_code);
 	else 
-		msg = _cgi.readfile(client->request->_path);
+		msg = _cgi.readfile(client->request->_path, return_code);
 
 
 	std::cout << BLU << "sending response:" << RESET << std::endl;

@@ -21,7 +21,7 @@ class CGI{
 		Response response;
 
 		int rout(Client &client, Server &server);
-		std::string readfile(std::string filename);
+		std::string readfile(std::string filename, int return_code);
 		std::string readfile(int fd);
 		std::string	get_response(void);
 
