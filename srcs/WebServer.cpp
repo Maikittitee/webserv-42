@@ -234,6 +234,7 @@ bool	WebServer::_accept_connection(int server_fd)
 {
 	Client new_client;
 
+	std::cout << "bp0" << std::endl;
 	new_client.fd = accept(server_fd, (sockaddr *)&new_client.addr, &new_client.addrLen);
 	if (new_client.fd < 0){
 		std::cerr << RED << "cannot accept connection." << RESET << std::endl;
