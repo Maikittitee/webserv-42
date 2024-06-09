@@ -82,9 +82,6 @@ int	main(int ac, char **av, char **env)
 	webserver.initServer(servs);
 	webserver.runServer();
 
-
-			
-
     return 0;
 }
 
