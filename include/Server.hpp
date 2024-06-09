@@ -54,7 +54,6 @@ class Server{
 		
 		//Location
 		std::map<std::string, Location> _config;
-		// p_dfconf			df; 
 		Mime				_mime;
 		char				**_env;
 		Server();
