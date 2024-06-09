@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/09 01:52:06 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/09 19:10:30 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,8 +251,11 @@ void	ft_prt_server(Server sv)
 	std::cout << "listen : " << sv.listen << std::endl;
 	std::cout << "error_page : " << std::endl;
 	ft_print_vec_str(sv.error_page);
+	// std::cout << "limit_except : " << std::endl;
+	// ft_print_vec_str(sv.);
 	
 	// ft_prt_locate(sv._config);
+	std::cout << std::endl;
 }
 
 void	ft_prt_location(Location location)
@@ -382,8 +385,14 @@ bool	ft_check_sameport(std::vector<u_int64_t> port)
     } 
 	return (false);
 }
+void	ft_init_server(Server &server)
+{
+	server.server_name = "localhost";
+	server.error_page.clear();
+}
 
-int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_port)
+// int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_port)
+int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 {
 	std::string	line;
 	std::string	file;
@@ -393,9 +402,12 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 	short		locate;
 	Location	location;
 	std::string	tmp_key;
+	Server server;
 	std::map<std::string, Location> _con;
 	std::vector<std::string> vec;
-	
+	std::vector<u_int64_t> tmp_port;
+
+	tmp_port.push_back(80);
 	if (ac != 2)
 		return(std::cerr << RED << "Error : Expected 2 arguments" << RESET << std::endl, 0);
 	std::ifstream input_file(av[1]);
@@ -407,7 +419,6 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 	int stage = 0;	
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
-		locate = DEFAULT;
 		// write new code for trim isspace
 		sp_line = ft_trim_ispace(line);
 		key = ft_getkey(sp_line);
@@ -421,15 +432,12 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 			return (-1);
 		}
 		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
-		// if (key.find("location") != std::string::npos) // find is location or not (if answer == std::string::npos , It mean don't found)
-		// if (key.find("location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		{
 			if (!value.empty())
 			{
 				vec = ft_split(value);
 				tmp_key = vec[0];
-				std::cout << "|" << tmp_key << "|" << std::endl;
 			}	
 			locate = BETWEEN_LOCATION;
 		}
@@ -449,53 +457,31 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 		if (ft_check_name(key) == false)
 			std::cerr << RED << key << " is valid" << RESET << std::endl;	
 		if (locate == BETWEEN_LOCATION)
-		{
 			locate = ft_getlocate(location, key, value);
-			// ft_prt_locate(locate);
-		}
-		// else if (locate == CLOSE_LOCATION)
 		if (locate == CLOSE_LOCATION)
 		{
-			// ft_prt_location(location);
 			server._config.insert(std::pair<std::string, Location>(tmp_key, location));
 			location = ft_init_location();
 		}
 	}
-	
-	/*
-		PRINT MAP LOCATION
-	*/
-	std::map<std::string, Location>::iterator it;
-	for (it = server._config.begin(); it != server._config.end(); it++)
-	{
-		if (it->second.cgiPass == true)
-			std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
-		else
-			std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
-		std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
-		std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
-		std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
-		std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
-		if (it->second.ret.have == HAVE)
-			std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
-		else
-			std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
-		if (it->second.autoIndex == ON)
-			std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
-		else
-			std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
-		for (int j= 0; j < it->second.index.size(); j++)
-			std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
-			
-		std::cout << std::endl;
-	}
-	input_file.close();
 	if (ft_check_sameport(tmp_port) == true)
 	{
 		std::cerr << RED << "Error : Same Port" << RESET << std::endl;
 		// return (-1);
 		exit (0);
 	}
+	for (int i = 0; i < tmp_port.size(); i++)
+	{
+		std::cout << RED << "Entry"  << RESET << std::endl;
+		server.listen = tmp_port[i];			
+		sv.push_back(server);
+	}
+		// 	tmp_port.clear();
+		// 	ft_init_server(server);
+		// 	stage = 0;
+	
+	
+	input_file.close();
 	return (0);	
 }
 
@@ -503,28 +489,42 @@ int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_
 
 int main(int ac, char **av, char **env)
 {
-	std::string name;
-	Server tmp_sv;
-	Server sv_get;
-	std::vector<uint64_t> tmp_port;
 	std::vector<Server> sv;
 
-	tmp_port.push_back(80);
-	if (parsing_config(ac, av, tmp_sv, tmp_port) == -1)
+	if (parsing_config(ac, av, sv) == -1)
 	{
 		std::cerr << RED << "Error File" << RESET << std::endl;
 		return(1);
 	}
-	for (int i = 0; i < tmp_port.size(); i++)
+	std::map<std::string, Location>::iterator it;
+	for (int i = 0; i < sv.size(); i++)
 	{
-		sv_get = tmp_sv;
-		sv_get.listen = tmp_port[i];
-		sv.push_back(sv_get);
+		ft_prt_server(sv[i]);
+		for (it = sv[i]._config.begin(); it != sv[i]._config.end(); it++)
+		{
+			std::cout  << BLU << "location" << RESET << std::endl;
+			if (it->second.cgiPass == true)
+				std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
+			else
+				std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
+			std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
+			std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
+			std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
+			std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
+			if (it->second.ret.have == HAVE)
+				std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
+			else
+				std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
+			if (it->second.autoIndex == ON)
+				std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
+			else
+				std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
+			for (int j= 0; j < it->second.index.size(); j++)
+				std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
+				
+			std::cout << std::endl;
+		}
 	}
-	// for (int i = 0; i < tmp_port.size(); i++)
-	// {
-	// 	ft_prt_server(sv[i]);
-	// }
 	// ft_print_vec_uint(tmp_port);
 	return (0);	
 }
