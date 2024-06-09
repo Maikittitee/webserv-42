@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/09 19:10:30 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/10 02:49:26 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -406,7 +406,9 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	std::map<std::string, Location> _con;
 	std::vector<std::string> vec;
 	std::vector<u_int64_t> tmp_port;
+	int	check_paren;
 
+	check_paren = 0;
 	tmp_port.push_back(80);
 	if (ac != 2)
 		return(std::cerr << RED << "Error : Expected 2 arguments" << RESET << std::endl, 0);
@@ -430,6 +432,32 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		{
 			std::cout << "false " << std::endl;
 			return (-1);
+		}
+		// if (key == "{" || value == "{")
+		// 	check_paren += 1;
+		// if (key == "}" || value == "}")
+		// 	check_paren -= 1;
+		if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
+		{
+			check_paren += 1;
+			// std::cout << "Entry {" << std::endl;
+			// if (key.find("{") != std::string::npos)
+			// 	std::cout << "key : |" << key << "|" << std::endl;
+			// if (value.find("{") != std::string::npos)
+			// 	std::cout << "value : |" << value << "|" << std::endl;
+			// std::cout << "check_paren : |" << check_paren << "|" << std::endl;
+			// std::cout << std::endl;
+		}
+		if (key.find("}") != std::string::npos || value.find("}") != std::string::npos)
+		{
+			check_paren -= 1;	
+			// std::cout << "Entry }" << std::endl;
+			// if (key.find("}") != std::string::npos)
+			// 	std::cout << "key : |" << key << "|" << std::endl;
+			// if (value.find("}") != std::string::npos)
+			// 	std::cout << "value : |" << value << "|" << std::endl;
+			// std::cout << "check_paren : |" << check_paren << "|" << std::endl;
+			// std::cout << std::endl;
 		}
 		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
@@ -463,19 +491,40 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			server._config.insert(std::pair<std::string, Location>(tmp_key, location));
 			location = ft_init_location();
 		}
+		if (check_paren == 0)
+		{
+			// std::cout << UYEL << "check paren equal 0" << RESET << std::endl;
+			if (ft_check_sameport(tmp_port) == true)
+			{
+				// std::cerr << RED << "Error : Same Port" << RESET << std::endl;
+				// return (-1);
+				exit (0);
+			}
+			for (int i = 0; i < tmp_port.size(); i++)
+			{
+				// std::cout << RED << "Entry assign value"  << RESET << std::endl;
+				server.listen = tmp_port[i];			
+				sv.push_back(server);
+			}
+			tmp_port.clear();
+			tmp_port.push_back(80);
+			ft_init_server(server);
+			stage = 0;
+			
+		}
 	}
-	if (ft_check_sameport(tmp_port) == true)
-	{
-		std::cerr << RED << "Error : Same Port" << RESET << std::endl;
-		// return (-1);
-		exit (0);
-	}
-	for (int i = 0; i < tmp_port.size(); i++)
-	{
-		std::cout << RED << "Entry"  << RESET << std::endl;
-		server.listen = tmp_port[i];			
-		sv.push_back(server);
-	}
+	// if (ft_check_sameport(tmp_port) == true)
+	// {
+	// 	std::cerr << RED << "Error : Same Port" << RESET << std::endl;
+	// 	// return (-1);
+	// 	exit (0);
+	// }
+	// for (int i = 0; i < tmp_port.size(); i++)
+	// {
+	// 	std::cout << RED << "Entry assign value"  << RESET << std::endl;
+	// 	server.listen = tmp_port[i];			
+	// 	sv.push_back(server);
+	// }
 		// 	tmp_port.clear();
 		// 	ft_init_server(server);
 		// 	stage = 0;

@@ -2,10 +2,10 @@
 
 int main(void)
 {
-    std::string name = "34";
+    std::string name = "/ {";
 
     // size_t  find = name.find("f");
-    size_t  find = name.find("#");
+    size_t  find = name.find("{");
     if (find != std::string::npos)
         std::cout << "find : " << find << std::endl; 
     else
