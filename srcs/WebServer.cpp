@@ -198,7 +198,6 @@ bool WebServer::_parsing_request(int client_fd)
 	client.request = &request;
 	_clear_fd(client_fd, _read_fds);
 	_set_fd(client_fd, _write_fds);
-
 	return (true);
 }
 
