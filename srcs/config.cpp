@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/10 20:18:02 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 01:32:31 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,29 @@ std::ostream& operator<<(std::ostream& os, const Location& location)
 // 	else 
 // 		os << "return: " << location.ret.code << " " << location.ret.text << std::endl;
 	return (os);
+}
+
+short	ft_stos(std::string str)
+{
+	int			i;
+    short		res;
+
+	i = 0;
+    res = 0;
+	while (isspace(str[i]))
+        i++;
+    if (str[i] == '-' || str[i] == '+')
+    {
+        if (str[i] == '-')
+			return (0);
+        i++;
+    }
+    while (str[i] >= '0' && str[i] <= '9')
+    {
+        res = (res * 10) + (str[i] - '0');
+        i++;
+    }
+    return (res);
 }
 
 uint64_t	ft_stouint(std::string str)
@@ -251,30 +274,60 @@ void	ft_prt_server(Server sv)
 	std::cout << std::endl;
 }
 
+void	ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::vector<t_method> allowMethod)
+{
+	// const	std::string std::pair<const std::string>
+
+	// it->first = 
+	for (int i = 0; i < allowMethod.size(); i++)
+	{
+		if (allowMethod[i] == ELSE)
+			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "ELSE" << std::endl;
+		else if (allowMethod[i] == GET)
+			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "GET" << std::endl;
+		else if (allowMethod[i] == POST)
+			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "POST" << std::endl;
+		else if (allowMethod[i] == DELETE)
+			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "DELETE" << std::endl;
+		else if (allowMethod[i] == HEAD)
+			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "HEAD" << std::endl;
+	}
+	
+}
+
 void	ft_prt_location(std::map<std::string, Location> _config)
 {
 	std::map<std::string, Location>::iterator it;
 	for (it = _config.begin(); it != _config.end(); it++)
 		{
-			std::cout  << BLU << "location" << RESET << std::endl;
-			if (it->second.cgiPass == true)
+			std::cout << BLU << "location" << RESET << std::endl;
+			if (it->second.cgiPass == ON)
 				std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
 			else
 				std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
+				
+			if (it->second.autoIndex == ON)
+				std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
+			else
+				std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
+
+			std::cout << "allowMethod " << std::endl;
+			
+			ft_prt_allowmethod(it, it->second.allowMethod);
+			
 			std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
+			
 			std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
+			
+			for (int j= 0; j < it->second.index.size(); j++)
+				std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
+			
 			std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
 			std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
 			if (it->second.ret.have == HAVE)
 				std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
 			else
 				std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
-			if (it->second.autoIndex == ON)
-				std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
-			else
-				std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
-			for (int j= 0; j < it->second.index.size(); j++)
-				std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
 				
 			std::cout << std::endl;
 		}
@@ -305,29 +358,12 @@ int	ft_stoi(std::string str)
     return (res * sym);
 }
 
-void	ft_print_df_conf(t_dfconf df)
-{
-	std::cout << "cliBodySize : " << df.cliBodySize << std::endl;
-	std::cout << "listen : " << df.listen << std::endl;
-	std::cout << "server_name : " << df.server_name << std::endl;
-	std::cout << "root : " << df.root << std::endl;	
-	
-	std::cout << "index : " << std::endl;
-	ft_print_vec_str(df.index);
-	
-	std::cout << "limit_except : " << std::endl;
-	ft_print_vec_str(df.limit_except);
-	
-	std::cout << "error_page : " << std::endl;
-	ft_print_vec_str(df.error_page);
-}
-
 Location	ft_init_location()
 {
 	Location location;
 
-	location.cgiPass = 0;
-	location.autoIndex = 0;
+	location.cgiPass = OFF;
+	location.autoIndex = OFF;
 	location.allowMethod.clear();
 	location.cliBodySize = 5000;
 	location.root = "";
@@ -400,6 +436,60 @@ void	ft_init_server(Server &server)
 	server.error_page.clear();
 }
 
+std::vector<t_method>	ft_get_allowMethod(std::string value)
+{
+	std::vector<std::string>	sp;
+	std::vector<t_method>		res;
+
+	sp = ft_split(value);
+	for (int i = 0; i < sp.size(); i++)
+	{
+		if (sp[i] == "ELSE")
+			res.push_back(ELSE);
+		else if (sp[i] == "GET")
+			res.push_back(GET);
+		else if (sp[i] == "POST")
+			res.push_back(POST);
+		else if (sp[i] == "DELETE")
+			res.push_back(DELETE);
+		else if (sp[i] == "HEAD")
+			res.push_back(HEAD);
+	}
+	return (res);
+}
+
+void	ft_get_default_config(Location &def_loc, std::string key, std::string value)
+{
+	std::vector<std::string> sp;
+	if (key == "client_max_body_size")
+		def_loc.cliBodySize = ft_stouint(value);
+	else if (key == "root")
+		def_loc.root = "";
+	else if (key == "index")
+		def_loc.index.clear();
+	else if (key == "return")
+	{
+		sp = ft_split(value);
+		def_loc.ret.code = ft_stos(sp[0]);
+		def_loc.ret.have =  true;
+		def_loc.ret.text = sp[1];
+	}
+	else if (key == "autoindex")
+	{
+		if (value == "on")
+			def_loc.autoIndex = ON;
+	}
+	else if (key == "cgi_pass")
+	{
+		if (value == "on")
+			def_loc.cgiPass = ON;	
+	}
+	else if (key == "limit_except")
+	{
+		def_loc.allowMethod = ft_get_allowMethod(value);
+	}
+}
+
 int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 {
 	std::string						line;
@@ -412,11 +502,17 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	std::string						tmp_key;
 	Server							server;
 	std::map<std::string, Location> _con;
+	std::map<std::string, Location> tmp_con;
 	std::vector<std::string>		vec;
 	std::vector<u_int64_t>			tmp_port;
 	int								check_paren;
+	
+	Location						def_loc;
+	std::vector<Location>	tmp_def_loc;	
 
+	// tmp_def_loc.push_back(def_loc);
 	check_paren = 0;
+	locate = DEFAULT;
 	tmp_port.push_back(80);
 	if (ac != 2)
 		return(std::cerr << RED << "Error : Expected 2 arguments" << RESET << std::endl, 0);
@@ -427,6 +523,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		return (std::cerr << RED << "Error : extension file" << RESET << std::endl, 0);
 	int i = 0;
 	int stage = 0;	
+	int a = 0;
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		// write new code for trim isspace
@@ -437,17 +534,23 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		else
 			value = ft_getvalue(key, sp_line);
 		if (key == "false" || value == "false")
-		{
-			// std::cout << "false " << std::endl;
 			return (false);
+		if (locate == DEFAULT)
+		{
+			if (a == 3)
+			{
+				std::cout << REDB << "Entry default again" << RESET << std::endl;
+				// std::cout << REDB << "def_loc.cliBodySize : " << def_loc.cliBodySize << std::endl;
+			}
+			ft_get_default_config(def_loc, key, value);
 		}
 		if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
 			check_paren += 1;
 		if (key.find("}") != std::string::npos || value.find("}") != std::string::npos)
 			check_paren -= 1;	
-		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		{
+			location = def_loc;
 			if (!value.empty())
 			{
 				vec = ft_split(value);
@@ -475,7 +578,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		if (locate == CLOSE_LOCATION)
 		{
 			server._config.insert(std::pair<std::string, Location>(tmp_key, location));
-			location = ft_init_location();
+			location = def_loc;
 		}
 		if (check_paren == 0)
 		{
@@ -488,6 +591,11 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			tmp_port.push_back(80);
 			ft_init_server(server);
 			stage = 0;
+			locate = DEFAULT;
+			def_loc = Location();
+			std::cout << GRNB << "def_loc : " << def_loc.cliBodySize << std::endl;
+			a = 3;
+			// tmp_def_loc.push_back(def_loc);
 		}
 	}	
 	if (ft_check_sameport(sv) == false)

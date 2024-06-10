@@ -34,7 +34,7 @@ typedef struct s_dfconf
 	std::string	root;
 		
 	std::vector<std::string> index;
-	std::vector<std::string> limit_except;
+	// std::vector<std::string> limit_except;
 	std::vector<std::string> error_page;
 	// int			locate;  // true false
 } t_dfconf ;

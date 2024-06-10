@@ -44,10 +44,10 @@ class Location{
 		bool						cgiPass;
 		bool						autoIndex;
 		std::vector<t_method>		allowMethod;
-		uint64_t					cliBodySize;
-		std::string					root;
-		std::vector<std::string>	index;
-		return_t					ret;
+		uint64_t					cliBodySize; //
+		std::string					root; //
+		std::vector<std::string>	index; //
+		return_t					ret; //
 
 		Location(const Location &other);
 		

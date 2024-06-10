@@ -3,8 +3,9 @@
 // Location::Location(void) : _client_max(3) {}
 Location::Location(void) 
 {
-	cgiPass = 0;
-	autoIndex = 0;
+	std::cout << BCYN << "Constructor Location called"  << RESET << std::endl;
+	cgiPass = OFF;
+	autoIndex = OFF;
 	allowMethod.clear();
 	cliBodySize = 5000;
 	root = "";
