@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/10 19:17:11 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/10 19:33:34 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -438,8 +438,8 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			value = ft_getvalue(key, sp_line);
 		if (key == "false" || value == "false")
 		{
-			std::cout << "false " << std::endl;
-			return (-1);
+			// std::cout << "false " << std::endl;
+			return (false);
 		}
 		if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
 			check_paren += 1;
@@ -490,8 +490,9 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			stage = 0;
 		}
 	}	
-	ft_check_sameport(sv);
-	input_file.close();
+	if (ft_check_sameport(sv) == false)
+		return(false);
+	input_file.close();	
 	return (0);	
 }
 
@@ -499,7 +500,7 @@ int main(int ac, char **av, char **env)
 {
 	std::vector<Server> sv;
 
-	if (parsing_config(ac, av, sv) == -1)
+	if (parsing_config(ac, av, sv) == false)
 	{
 		std::cerr << RED << "Error File" << RESET << std::endl;
 		return(1);
