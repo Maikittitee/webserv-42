@@ -144,10 +144,10 @@ bool WebServer::runServer(void)
 
 }
 
-bool	WebServer::_send_response(int fd)
+bool	WebServer::_send_response(int fd) // write fd
 {
 	Client *client = _get_client(fd);
-	Server *server = _get_server(client->server_fd);
+	Server *server = client->server;
 	std::cout << "server fd in send" << client->server_fd << std::endl;
 	std::cout << server << std::endl;
 

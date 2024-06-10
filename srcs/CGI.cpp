@@ -42,11 +42,16 @@ int CGI::rout(Client &client, Server &server)
 		return (404);
 	if (client.location->autoIndex){
 		// maybe send 1000
+		return (1000);
 	}
-	if (client.location->cgiPass){
+	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
+
+		// is end file ? N: fork -> read ต่อ -> รัน cgi file -> 
 		// send fd
+		// return (fd child)
 	}
+
 
 
 	
@@ -71,8 +76,13 @@ std::string CGI::readfile(std::string filename, Server &server, int return_code)
 
 }
 		
-std::string CGI::readfile(int fd)
+std::string CGI::readfile(int fd) // fd of child (cgi) process <=============== HELLOOOOO PTEW
 {
+	// อ่าน fd ของ child process แล้วเก็๋บไว้ใน buffer 
+	// response.body = buffer
+	// genate_header()
+	// return (response txt)
+	// close fd
 	return ("READFILE FROM FD");
 }
 
