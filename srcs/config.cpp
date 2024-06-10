@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/10 16:02:56 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/10 19:17:11 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ std::ostream& operator<<(std::ostream& os, const Location& location)
 
 uint64_t	ft_stouint(std::string str)
 {
-	int	i;
-    u_int64_t res;
+	int			i;
+    u_int64_t	res;
 
 	i = 0;
     res = 0;
@@ -60,25 +60,21 @@ uint64_t	ft_stouint(std::string str)
 
 void	ft_print_vec_str(std::vector<std::string> vec)
 {
-	// size_t len = vec.size();
-	// std::cout << "len : " << len << std::endl;
 	for (int i = 0; i < vec.size(); i++)
         	std::cout << i << "|" << vec[i] << "|" << std::endl;
 }
 
 void	ft_print_vec_uint(std::vector<uint64_t> vec)
 {
-	// size_t len = vec.size();
-	// std::cout << "len : " << len << std::endl;
 	for (int i = 0; i < vec.size(); i++)
         	std::cout << i << "|" << vec[i] << "|" << std::endl;
 }
 
 std::vector<std::string>    ft_split(std::string str)
 {
-    int i;
-    std::vector<std::string> res;
-    std::string                 word;
+    int							i;
+    std::vector<std::string>	res;
+    std::string					word;
     
     i = 0;
     while (str[i])
@@ -169,8 +165,8 @@ std::string	ft_getvalue(std::string key, std::string line)
 
 std::string ft_getkey(std::string sp_line)
 {
-	int	i;
-	std::string key;
+	int			i;
+	std::string	key;
 	
 	key = "";
 	i = 0;
@@ -193,9 +189,9 @@ std::string ft_getkey(std::string sp_line)
 
 std::string	ft_trim_ispace(std::string line)
 {
-	char is_sp[5] = {'\t', '\n', '\v', '\f', '\r'};
+	char		is_sp[5] = {'\t', '\n', '\v', '\f', '\r'};
 	std::string	sp_line;
-	int	i;
+	int			i;
 	
 	i = 0;
 	sp_line = ft_trim(line, ' ');
@@ -227,9 +223,6 @@ short	ft_getlocate(Location &location, std::string key, std::string value)
 	else if (key == "return")
 	{
 		sp = ft_split(value);
-		// std::cout << "sp[0] : " << sp[0] << std::endl;
-		// std::cout << "sp[1] : " << sp[1] << std::endl;
-		// exit(0);
 		location.ret.code  = true;
 		location.ret.code = ft_stoi(sp[0]);
 		location.ret.text = sp[1]; 
@@ -403,24 +396,25 @@ bool	ft_check_sameport(std::vector<Server> sv)
 void	ft_init_server(Server &server)
 {
 	server.server_name = "localhost";
+	server.listen = 0;
 	server.error_page.clear();
 }
 
 int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 {
-	std::string	line;
-	std::string	file;
-	std::string	key;
-	std::string	value;
-	std::string	sp_line;
-	short		locate;
-	Location	location;
-	std::string	tmp_key;
-	Server server;
+	std::string						line;
+	std::string						file;
+	std::string						key;
+	std::string						value;
+	std::string						sp_line;
+	short							locate;
+	Location						location;
+	std::string						tmp_key;
+	Server							server;
 	std::map<std::string, Location> _con;
-	std::vector<std::string> vec;
-	std::vector<u_int64_t> tmp_port;
-	int	check_paren;
+	std::vector<std::string>		vec;
+	std::vector<u_int64_t>			tmp_port;
+	int								check_paren;
 
 	check_paren = 0;
 	tmp_port.push_back(80);
@@ -500,8 +494,6 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	input_file.close();
 	return (0);	
 }
-
-
 
 int main(int ac, char **av, char **env)
 {
