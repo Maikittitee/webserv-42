@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/10 15:59:02 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/10 16:02:56 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,21 +258,33 @@ void	ft_prt_server(Server sv)
 	std::cout << std::endl;
 }
 
-void	ft_prt_location(Location location)
+void	ft_prt_location(std::map<std::string, Location> _config)
 {
-	if (location.cgiPass == false)
-		std::cout << "cgiPass : " << "off" << std::endl;
-	else
-		std::cout << "cgiPass : " << "on" << std::endl;
-	std::cout << "autoIndex :" << location.autoIndex << std::endl;
-	std::cout << "cliBodySize : " << location.cliBodySize << std::endl;
-	std::cout << "root : " << location.root << std::endl;
-	std::cout << "___________index___________" << std::endl;
-	for (int i = 0; i < location.index.size(); i++)
-	{
-		std::cout << location.index[i] << std::endl;
-	}
-	std::cout << "________________________________________________________________" << std::endl;
+	std::map<std::string, Location>::iterator it;
+	for (it = _config.begin(); it != _config.end(); it++)
+		{
+			std::cout  << BLU << "location" << RESET << std::endl;
+			if (it->second.cgiPass == true)
+				std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
+			else
+				std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
+			std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
+			std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
+			std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
+			std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
+			if (it->second.ret.have == HAVE)
+				std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
+			else
+				std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
+			if (it->second.autoIndex == ON)
+				std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
+			else
+				std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
+			for (int j= 0; j < it->second.index.size(); j++)
+				std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
+				
+			std::cout << std::endl;
+		}
 }
 
 int	ft_stoi(std::string str)
@@ -501,35 +513,10 @@ int main(int ac, char **av, char **env)
 		return(1);
 	}
 
-	
-	std::map<std::string, Location>::iterator it;
 	for (int i = 0; i < sv.size(); i++)
 	{
 		ft_prt_server(sv[i]);
-		// for (it = sv[i]._config.begin(); it != sv[i]._config.end(); it++)
-		// {
-		// 	std::cout  << BLU << "location" << RESET << std::endl;
-		// 	if (it->second.cgiPass == true)
-		// 		std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
-		// 	else
-		// 		std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
-		// 	std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
-		// 	std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
-		// 	std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
-		// 	std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
-		// 	if (it->second.ret.have == HAVE)
-		// 		std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
-		// 	else
-		// 		std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
-		// 	if (it->second.autoIndex == ON)
-		// 		std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
-		// 	else
-		// 		std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
-		// 	for (int j= 0; j < it->second.index.size(); j++)
-		// 		std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
-				
-		// 	std::cout << std::endl;
-		// }
+		ft_prt_location(sv[i]._config);
 	}
 	return (0);	
 }
