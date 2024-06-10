@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/10 19:33:34 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/10 20:18:02 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -491,9 +491,12 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		}
 	}	
 	if (ft_check_sameport(sv) == false)
+	{
+		// std::cout << "Same port" << std::endl;
 		return(false);
+	}
 	input_file.close();	
-	return (0);	
+	return (true);	
 }
 
 int main(int ac, char **av, char **env)
