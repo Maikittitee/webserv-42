@@ -15,6 +15,8 @@ class Client
 		~Client();
 
 		int 				fd;
+		id_t				server_fd;
+		std::string			IPaddr;
 		socklen_t			addrLen;
 		struct sockaddr_in	addr;
 	
@@ -27,6 +29,9 @@ class Client
 
 		Server 				*server;
 		Request				*request;
+		Location			*location;
+
+
 };
 
 #endif

@@ -15,6 +15,7 @@ class CGI;
 class WebServer{
 	public:
 		WebServer();
+		WebServer(std::vector<Server> &servers);
 		~WebServer();
 		bool	initServer(std::vector<Server> &servers);
 		bool	runServer(void);
@@ -33,7 +34,7 @@ class WebServer{
 		Client* _get_client(int fd);
 		bool	_send_response(int fd);
 
-		std::map<int, Client>	_clients;
+		std::map<int, Client >	_clients;
 		std::vector<Server> 	_servers;
 		struct timeval			_timeOut;
 		fd_set 					_read_fds;

@@ -48,10 +48,10 @@ std::map<std::string, Location> mock_location(void)
 
 	ret.insert(std::pair<std::string, Location>("def", def));	
 	ret.insert(std::pair<std::string, Location>("/", r));	
-	ret.insert(std::pair<std::string, Location>("/redir/", redir));	
-	ret.insert(std::pair<std::string, Location>("/blog/", blog));	
-	ret.insert(std::pair<std::string, Location>("/images/", images));	
-	ret.insert(std::pair<std::string, Location>("/cgi-bin/", cgi_bin));	
+	ret.insert(std::pair<std::string, Location>("/redir", redir));	
+	ret.insert(std::pair<std::string, Location>("/blog", blog));	
+	ret.insert(std::pair<std::string, Location>("/images", images));	
+	ret.insert(std::pair<std::string, Location>("/cgi-bin", cgi_bin));	
 
 	return (ret);
 
@@ -77,9 +77,7 @@ int	main(int ac, char **av, char **env)
 	std::vector<Server> servs;
 	servs.push_back(*mock_server());
 
-	WebServer webserver;
-
-	webserver.initServer(servs);
+	WebServer webserver(servs);
 	webserver.runServer();
 
     return 0;
