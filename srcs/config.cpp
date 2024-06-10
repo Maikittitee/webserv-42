@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/10 02:49:26 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/10 15:59:02 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,8 +249,8 @@ void	ft_prt_server(Server sv)
 	std::cout << GRN << "SERVER : " << RESET << std::endl;
 	std::cout << "server_name : " << sv.server_name << std::endl;
 	std::cout << "listen : " << sv.listen << std::endl;
-	std::cout << "error_page : " << std::endl;
-	ft_print_vec_str(sv.error_page);
+	// std::cout << "error_page : " << std::endl;
+	// ft_print_vec_str(sv.error_page);
 	// std::cout << "limit_except : " << std::endl;
 	// ft_print_vec_str(sv.);
 	
@@ -356,42 +356,44 @@ bool ft_check_name(std::string key)
 	return (false);
 }
 
-bool	ft_check_sameport(std::vector<u_int64_t> port)
+bool	ft_check_sameport(std::vector<Server> sv)
 {
-	int			i;
-    int         start_loop;
-	bool		check;
-	u_int64_t	tmp_port;
-	int			len;
-	
-	i = 1;
-    start_loop = 1;
-	check = false;
-	if (port.empty())
-		return (false);
-	len = port.size();
-	tmp_port = 	port[0];
-    while (i < len)
-    {
-        if (tmp_port == port[i])
-            return (true);
-        if (i == len - 1)
-        {
-            tmp_port = port[start_loop];
-            i = start_loop + 1;
-            start_loop++;
-        }
-        i++;
-    } 
-	return (false);
-}
+	std::string tmp_name = sv[0].server_name;
+	u_int64_t tmp_listen = sv[0].listen;
+	int	i = 1;
+	int check = 1;
+	int len_server = sv.size();
+	while (i < len_server)
+	{
+		if (tmp_name == sv[i].server_name)
+		{
+			// std::cout << "Same name" << std::endl;
+			if (tmp_listen == sv[i].listen)
+			{
+				std::cout << "Same port" << std::endl;
+				return (false);
+			}	
+				
+		}
+		i++;
+		if (i == len_server - 1)
+		{
+			tmp_name = sv[check].server_name;
+			tmp_listen = sv[check].listen;
+			// std::cout << "tmp_name"
+			i = check + 1;
+			check += 1;
+		}
+	}
+	return (true);
+} 
+
 void	ft_init_server(Server &server)
 {
 	server.server_name = "localhost";
 	server.error_page.clear();
 }
 
-// int	parsing_config(int ac, char **av,Server &server, std::vector<uint64_t> &tmp_port)
 int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 {
 	std::string	line;
@@ -433,32 +435,10 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			std::cout << "false " << std::endl;
 			return (-1);
 		}
-		// if (key == "{" || value == "{")
-		// 	check_paren += 1;
-		// if (key == "}" || value == "}")
-		// 	check_paren -= 1;
 		if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
-		{
 			check_paren += 1;
-			// std::cout << "Entry {" << std::endl;
-			// if (key.find("{") != std::string::npos)
-			// 	std::cout << "key : |" << key << "|" << std::endl;
-			// if (value.find("{") != std::string::npos)
-			// 	std::cout << "value : |" << value << "|" << std::endl;
-			// std::cout << "check_paren : |" << check_paren << "|" << std::endl;
-			// std::cout << std::endl;
-		}
 		if (key.find("}") != std::string::npos || value.find("}") != std::string::npos)
-		{
 			check_paren -= 1;	
-			// std::cout << "Entry }" << std::endl;
-			// if (key.find("}") != std::string::npos)
-			// 	std::cout << "key : |" << key << "|" << std::endl;
-			// if (value.find("}") != std::string::npos)
-			// 	std::cout << "value : |" << value << "|" << std::endl;
-			// std::cout << "check_paren : |" << check_paren << "|" << std::endl;
-			// std::cout << std::endl;
-		}
 		// std::cout << "|" << key << "|" << " : "  << "|" << value << "|" << std::endl;
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		{
@@ -493,16 +473,8 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		}
 		if (check_paren == 0)
 		{
-			// std::cout << UYEL << "check paren equal 0" << RESET << std::endl;
-			if (ft_check_sameport(tmp_port) == true)
-			{
-				// std::cerr << RED << "Error : Same Port" << RESET << std::endl;
-				// return (-1);
-				exit (0);
-			}
 			for (int i = 0; i < tmp_port.size(); i++)
 			{
-				// std::cout << RED << "Entry assign value"  << RESET << std::endl;
 				server.listen = tmp_port[i];			
 				sv.push_back(server);
 			}
@@ -510,26 +482,9 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			tmp_port.push_back(80);
 			ft_init_server(server);
 			stage = 0;
-			
 		}
-	}
-	// if (ft_check_sameport(tmp_port) == true)
-	// {
-	// 	std::cerr << RED << "Error : Same Port" << RESET << std::endl;
-	// 	// return (-1);
-	// 	exit (0);
-	// }
-	// for (int i = 0; i < tmp_port.size(); i++)
-	// {
-	// 	std::cout << RED << "Entry assign value"  << RESET << std::endl;
-	// 	server.listen = tmp_port[i];			
-	// 	sv.push_back(server);
-	// }
-		// 	tmp_port.clear();
-		// 	ft_init_server(server);
-		// 	stage = 0;
-	
-	
+	}	
+	ft_check_sameport(sv);
 	input_file.close();
 	return (0);	
 }
@@ -545,35 +500,36 @@ int main(int ac, char **av, char **env)
 		std::cerr << RED << "Error File" << RESET << std::endl;
 		return(1);
 	}
+
+	
 	std::map<std::string, Location>::iterator it;
 	for (int i = 0; i < sv.size(); i++)
 	{
 		ft_prt_server(sv[i]);
-		for (it = sv[i]._config.begin(); it != sv[i]._config.end(); it++)
-		{
-			std::cout  << BLU << "location" << RESET << std::endl;
-			if (it->second.cgiPass == true)
-				std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
-			else
-				std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
-			std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
-			std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
-			std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
-			std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
-			if (it->second.ret.have == HAVE)
-				std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
-			else
-				std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
-			if (it->second.autoIndex == ON)
-				std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
-			else
-				std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
-			for (int j= 0; j < it->second.index.size(); j++)
-				std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
+		// for (it = sv[i]._config.begin(); it != sv[i]._config.end(); it++)
+		// {
+		// 	std::cout  << BLU << "location" << RESET << std::endl;
+		// 	if (it->second.cgiPass == true)
+		// 		std::cout << it->first << " :: " << "cgiPass : " <<  "on" << std::endl;
+		// 	else
+		// 		std::cout << it->first << " :: " << "cgiPass : " <<  "off" << std::endl;
+		// 	std::cout << it->first << " :: " <<  "cliBodySize : " <<  it->second.cliBodySize << std::endl;
+		// 	std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
+		// 	std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
+		// 	std::cout << it->first << " :: " << "return text: " << it->second.ret.text << std::endl;
+		// 	if (it->second.ret.have == HAVE)
+		// 		std::cout << it->first << " :: " << "return have : " << "have" << std::endl;
+		// 	else
+		// 		std::cout << it->first << " :: " << "return have : " << "not have" << std::endl;
+		// 	if (it->second.autoIndex == ON)
+		// 		std::cout << it->first << " :: " << "autoIndex : " << "on" << std::endl;
+		// 	else
+		// 		std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
+		// 	for (int j= 0; j < it->second.index.size(); j++)
+		// 		std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
 				
-			std::cout << std::endl;
-		}
+		// 	std::cout << std::endl;
+		// }
 	}
-	// ft_print_vec_uint(tmp_port);
 	return (0);	
 }
