@@ -6,10 +6,10 @@
 # include "Request.hpp"
 
 class Server;
-
 class Request;
 
-class Client{
+class Client
+{
 	public:
 		Client();
 		~Client();
@@ -19,6 +19,14 @@ class Client{
 		std::string			IPaddr;
 		socklen_t			addrLen;
 		struct sockaddr_in	addr;
+	
+		char				buffer[BUFFERSIZE];
+
+		std::string			rawReqMsg;
+		std::string			IPaddr;
+
+		ssize_t				bufSize;
+
 		Server 				*server;
 		Request				*request;
 		Location			*location;

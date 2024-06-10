@@ -257,34 +257,21 @@ bool	WebServer::_accept_connection(int server_fd)
 	return (true);
 }
 
-Request* mock_file_request(void)
-{
-	Request *ret = new Request();
-
-	// for example
-	ret->_method = GET;
-	// ret->_path = "/cgi-bin/hello.py";
-	ret->_path = "test.html";
-	ret->_http_version = "HTTP/1.1";
-
-	ret->_body = "";
-	return (ret);
-}
-
 bool WebServer::_parsing_request(int client_fd)
 {
-	Client *client = _get_client(client_fd);
+	Client client = *_get_client(client_fd);
+	Server *server = client.server;
 
-	std::cout << "server in parsing req: " << client->server << std::endl; 
+	client.bufSize = recv(client.fd, client.buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
+	client.buffer[client.bufSize] = '\0';
 
-	read(client_fd, buffer, BUFFERSIZE);
-	std::cout << GRN << buffer << RESET << std::endl;
+	std::cout << GRN << client.buffer << RESET << std::endl;
 
-	Request *request = mock_file_request(); // change to p'tew parsing request na krab
-	client->request = request;
-
+	Request request(client.buffer);
+	client.request = &request;
 	_clear_fd(client_fd, _read_fds);
 	_set_fd(client_fd, _write_fds);
+
 	return (true);
 }
 

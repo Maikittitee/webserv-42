@@ -79,7 +79,6 @@ int	main(int ac, char **av, char **env)
 
 	WebServer webserver(servs);
 	webserver.runServer();
-	// std::cout << *webserver._cgi._select_location(request, servs[0]);
 
     return 0;
 }
