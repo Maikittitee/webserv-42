@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 01:32:31 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 16:12:02 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -464,7 +464,7 @@ void	ft_get_default_config(Location &def_loc, std::string key, std::string value
 	if (key == "client_max_body_size")
 		def_loc.cliBodySize = ft_stouint(value);
 	else if (key == "root")
-		def_loc.root = "";
+		def_loc.root = value;
 	else if (key == "index")
 		def_loc.index.clear();
 	else if (key == "return")
