@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 16:33:51 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 18:10:28 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,11 +171,9 @@ std::string	ft_getvalue(std::string key, std::string line)
 			i++;
 		while ((line[i] != '{' || line[i] != '}') && line[i])
 		{
-			// std::cout << "line[i]" << line[i] << std::endl;
 			if (line[i] == ';') // Don't forget to check in case it forget to fill ->  maybe use state 
 				break;
 			value += line[i];
-			// value.append(sp_line[i]);
 			i++;
 		}
 		break;
@@ -231,7 +229,6 @@ short	ft_getlocate(Location &location, std::string key, std::string value)
 	std::vector<std::string> sp;
 
 	sp.clear();
-	// std::cout << "key_locate : " << key << std::endl;
 	if (key == "root")
 		location.root = value;
 	else if (key == "client_max_body_size")
@@ -276,9 +273,6 @@ void	ft_prt_server(Server sv)
 
 void	ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::vector<t_method> allowMethod)
 {
-	// const	std::string std::pair<const std::string>
-
-	// it->first = 
 	for (int i = 0; i < allowMethod.size(); i++)
 	{
 		if (allowMethod[i] == ELSE)
@@ -292,7 +286,6 @@ void	ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::vecto
 		else if (allowMethod[i] == HEAD)
 			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "HEAD" << std::endl;
 	}
-	
 }
 
 void	ft_prt_only_location(Location lc)
@@ -423,10 +416,10 @@ void ft_prt_locate(short locate)
 bool ft_check_name(std::string key)
 {
 	if (key == "server" ||  key == "client_max_body_size" || key == "root" \
-				|| key == "index" || key == "limit_except" || key == "return" \
-				|| key == "autoindex" || key == "error_page" || key == "listen" \
-				|| key == "cgi_pass" || key == "location" || key == "server_name" \
-				|| key == "}" || key == "{" )
+			|| key == "index" || key == "limit_except" || key == "return" \
+			|| key == "autoindex" || key == "error_page" || key == "listen" \
+			|| key == "cgi_pass" || key == "location" || key == "server_name" \
+			|| key == "}" || key == "{" )
 		return (true);
 	return (false);
 }
@@ -448,14 +441,12 @@ bool	ft_check_sameport(std::vector<Server> sv)
 				std::cout << "Same port" << std::endl;
 				return (false);
 			}	
-				
 		}
 		i++;
 		if (i == len_server - 1)
 		{
 			tmp_name = sv[check].server_name;
 			tmp_listen = sv[check].listen;
-			// std::cout << "tmp_name"
 			i = check + 1;
 			check += 1;
 		}
@@ -519,9 +510,7 @@ void	ft_get_default_config(Location &def_loc, std::string key, std::string value
 			def_loc.cgiPass = ON;	
 	}
 	else if (key == "limit_except")
-	{
 		def_loc.allowMethod = ft_get_allowMethod(value);
-	}
 }
 
 int	parsing_config(int ac, char **av, std::vector<Server> &sv)
@@ -568,9 +557,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		if (key == "false" || value == "false")
 			return (false);
 		if (locate == DEFAULT)
-		{
 			ft_get_default_config(def_loc, key, value);
-		}
 		if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
 			check_paren += 1;
 		if (key.find("}") != std::string::npos || value.find("}") != std::string::npos)
