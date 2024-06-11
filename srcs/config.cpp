@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 16:12:02 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 16:30:16 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,6 +295,40 @@ void	ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::vecto
 	
 }
 
+void	ft_prt_only_location(Location lc)
+{
+	std::cout << BLU << "location" << RESET << std::endl;
+	if (lc.cgiPass == ON)
+		std::cout << " :: " << "cgiPass : " <<  "on" << std::endl;
+	else
+		std::cout << " :: " << "cgiPass : " <<  "off" << std::endl;
+		
+	if (lc.autoIndex == ON)
+		std::cout << " :: " << "autoIndex : " << "on" << std::endl;
+	else
+		std::cout << " :: " << "autoIndex : " << "off" << std::endl;
+
+	std::cout << "allowMethod " << std::endl;
+	
+	// ft_prt_allowmethod(it, lc.allowMethod);
+	
+	std::cout << " :: " <<  "cliBodySize : " <<  lc.cliBodySize << std::endl;
+	
+	std::cout << " :: " << "root : " << lc.root << std::endl;
+	
+	for (int j = 0; j < lc.index.size(); j++)
+		std::cout << " :: " << "index[" << j << "] : " << lc.index[j] << std::endl;
+	
+	std::cout << " :: " << "return code : " << lc.ret.code << std::endl;
+	std::cout << " :: " << "return text: " << lc.ret.text << std::endl;
+	if (lc.ret.have == HAVE)
+		std::cout << " :: " << "return have : " << "have" << std::endl;
+	else
+		std::cout << " :: " << "return have : " << "not have" << std::endl;
+		
+	std::cout << std::endl;
+}
+
 void	ft_prt_location(std::map<std::string, Location> _config)
 {
 	std::map<std::string, Location>::iterator it;
@@ -510,7 +544,8 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	Location						def_loc;
 	std::vector<Location>	tmp_def_loc;	
 
-	// tmp_def_loc.push_back(def_loc);
+	int tt_sv = 0;
+	tmp_def_loc.push_back(def_loc);
 	check_paren = 0;
 	locate = DEFAULT;
 	tmp_port.push_back(80);
@@ -537,12 +572,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			return (false);
 		if (locate == DEFAULT)
 		{
-			if (a == 3)
-			{
-				std::cout << REDB << "Entry default again" << RESET << std::endl;
-				// std::cout << REDB << "def_loc.cliBodySize : " << def_loc.cliBodySize << std::endl;
-			}
-			ft_get_default_config(def_loc, key, value);
+			ft_get_default_config(tmp_def_loc[tt_sv], key, value);
 		}
 		if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
 			check_paren += 1;
@@ -550,7 +580,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			check_paren -= 1;	
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		{
-			location = def_loc;
+			location = tmp_def_loc[tt_sv];
 			if (!value.empty())
 			{
 				vec = ft_split(value);
@@ -578,7 +608,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		if (locate == CLOSE_LOCATION)
 		{
 			server._config.insert(std::pair<std::string, Location>(tmp_key, location));
-			location = def_loc;
+			location = tmp_def_loc[tt_sv];
 		}
 		if (check_paren == 0)
 		{
@@ -589,13 +619,12 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			}
 			tmp_port.clear();
 			tmp_port.push_back(80);
-			ft_init_server(server);
+			server = Server();
 			stage = 0;
 			locate = DEFAULT;
+			tt_sv += 1;
 			def_loc = Location();
-			std::cout << GRNB << "def_loc : " << def_loc.cliBodySize << std::endl;
-			a = 3;
-			// tmp_def_loc.push_back(def_loc);
+			tmp_def_loc.push_back(def_loc);
 		}
 	}	
 	if (ft_check_sameport(sv) == false)

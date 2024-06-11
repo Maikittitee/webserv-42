@@ -3,7 +3,7 @@
 // Location::Location(void) : _client_max(3) {}
 Location::Location(void) 
 {
-	std::cout << BCYN << "Constructor Location called"  << RESET << std::endl;
+	// std::cout << BCYN << "Constructor Location called"  << RESET << std::endl;
 	cgiPass = OFF;
 	autoIndex = OFF;
 	allowMethod.clear();
