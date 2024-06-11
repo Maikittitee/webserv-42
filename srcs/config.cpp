@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 19:11:52 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 19:25:09 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,9 @@ std::string	ft_getvalue(std::string key, std::string line)
 	int len = line.size();
 	if (line[len - 1] == ';' || line[len - 1] == '}' || line[len - 1] == '{')
 	{
-		
+		// do nothing
+		// std::cout << "line : " << line << std::endl;
+		// std::cout << GRN << "Do nothing" << std::endl;
 	}
 	else
 		return("false");
@@ -179,9 +181,7 @@ std::string	ft_getvalue(std::string key, std::string line)
 		break;
 	}
 	value += "";
-	if (value.find("#") == std::string::npos)
-		return (value);
-	return ("false");	
+	return (value);
 }
 
 std::string ft_getkey(std::string sp_line)
@@ -203,9 +203,7 @@ std::string ft_getkey(std::string sp_line)
 		key += sp_line[i];
 		i++;
 	}
-	if (key.find("#") == std::string::npos) // not find 
-		return (key);
-	return ("false");	
+	return (key);
 }
 
 std::string	ft_trim_ispace(std::string line)
@@ -522,6 +520,20 @@ int ft_checkfile(int ac, char *av)
 	return (true);
 }
 
+int	ft_checktxt(std::string key, std::string value)
+{
+	if (key.find("#") != std::string::npos || value.find("#") != std::string::npos)
+		return (false);
+	if (value == "false")
+		return (false);
+	if (ft_check_name(key) == false)
+	{
+		std::cerr << RED << key << " is valid" << RESET << std::endl;	
+		return (false);
+	}
+	return (true);
+}
+
 int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 {
 	std::string						line;
@@ -559,7 +571,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			continue;
 		else
 			value = ft_getvalue(key, sp_line);
-		if (key == "false" || value == "false")
+		if (ft_checktxt(key, value) == false)	
 			return (false);
 		if (locate == DEFAULT)
 			ft_get_default_config(def_loc, key, value);
@@ -590,8 +602,6 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			server.server_name = value;
 		else if (key == "error_page")
 			server.error_page = ft_split(value);
-		if (ft_check_name(key) == false)
-			std::cerr << RED << key << " is valid" << RESET << std::endl;	
 		if (locate == BETWEEN_LOCATION)
 			locate = ft_getlocate(location, key, value);
 		if (locate == CLOSE_LOCATION)
@@ -633,10 +643,10 @@ int main(int ac, char **av, char **env)
 		return(1);
 	}
 
-	for (int i = 0; i < sv.size(); i++)
-	{
-		ft_prt_server(sv[i]);
-		ft_prt_location(sv[i]._config);
-	}
+	// for (int i = 0; i < sv.size(); i++)
+	// {
+	// 	ft_prt_server(sv[i]);
+	// 	ft_prt_location(sv[i]._config);
+	// }
 	return (0);	
 }
