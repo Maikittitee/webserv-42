@@ -241,19 +241,14 @@ bool	WebServer::_accept_connection(int server_fd)
 		std::cerr << RED << "cannot accept connection." << RESET << std::endl;
 		return (false);
 	}
-	std::cout << "bp1" << std::endl;
 	_clients[new_client->fd] = new_client;
-	std::cout << "bp2" << std::endl;
 	new_client->server = _get_server(server_fd);
-	std::cout << "server in accept: " << new_client->server << std::endl;
 	if (!new_client->server){
 		std::cerr << RED << "server not found" << RESET << std::endl;
 		return (false);
 	}
 	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << new_client->fd << RESET << std::endl;
 	_set_fd(new_client->fd, _read_fds);
-	std::cout << "server in accept2: " << new_client->server << std::endl;
-	std::cout << "server in accept2(in map): " << _clients[new_client->fd]->server << std::endl;
 	return (true);
 }
 
@@ -261,9 +256,7 @@ Request* mock_file_request(void)
 {
 	Request *ret = new Request();
 
-	// for example
 	ret->_method = GET;
-	// ret->_path = "/cgi-bin/hello.py";
 	ret->_path = "test.html";
 	ret->_http_version = HTTP11;
 
@@ -290,7 +283,6 @@ bool WebServer::_parsing_request(int client_fd)
 	Client *client = _get_client(client_fd);
 	Server *server = client->server;
 
-	std::cout << "server in parsing request: " << client->server << std::endl;
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
 	client->buffer[client->bufSize] = '\0';
 
