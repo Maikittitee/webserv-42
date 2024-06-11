@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 16:30:16 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 16:33:51 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -542,10 +542,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	int								check_paren;
 	
 	Location						def_loc;
-	std::vector<Location>	tmp_def_loc;	
 
-	int tt_sv = 0;
-	tmp_def_loc.push_back(def_loc);
 	check_paren = 0;
 	locate = DEFAULT;
 	tmp_port.push_back(80);
@@ -572,7 +569,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			return (false);
 		if (locate == DEFAULT)
 		{
-			ft_get_default_config(tmp_def_loc[tt_sv], key, value);
+			ft_get_default_config(def_loc, key, value);
 		}
 		if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
 			check_paren += 1;
@@ -580,7 +577,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			check_paren -= 1;	
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		{
-			location = tmp_def_loc[tt_sv];
+			location = def_loc;
 			if (!value.empty())
 			{
 				vec = ft_split(value);
@@ -608,7 +605,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		if (locate == CLOSE_LOCATION)
 		{
 			server._config.insert(std::pair<std::string, Location>(tmp_key, location));
-			location = tmp_def_loc[tt_sv];
+			location = def_loc;
 		}
 		if (check_paren == 0)
 		{
@@ -622,9 +619,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			server = Server();
 			stage = 0;
 			locate = DEFAULT;
-			tt_sv += 1;
 			def_loc = Location();
-			tmp_def_loc.push_back(def_loc);
 		}
 	}	
 	if (ft_check_sameport(sv) == false)
