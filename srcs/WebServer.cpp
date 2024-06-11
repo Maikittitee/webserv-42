@@ -151,12 +151,10 @@ bool	WebServer::_send_response(int fd) // write fd
 	
 	if (!client)
 		std::cerr << RED << "can't find client" << RESET << std::endl;
-	
 	if (!server)
 		std::cerr << RED << "can't find server" << RESET << std::endl;
 	
 	// CGI work here
-	std::cout << "server in send_response" << server << std::endl;
 	int return_code = _cgi.rout(*client, *server);
 
 	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
@@ -168,12 +166,18 @@ bool	WebServer::_send_response(int fd) // write fd
 		// need to check that return code is ok or not and if not ok -> check to find where error file is 
 
 	// check client body size
+	if (msg.size() > client->location->cliBodySize){
+		// return 413 too big
+	}
 
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
 	close(fd);
 	_clear_fd(fd, _write_fds);
+	
+	delete _clients[fd]->request; // MAYBE NO NEED 
+	delete _clients[fd];
 	_clients.erase(fd);
 	return (true);
 
