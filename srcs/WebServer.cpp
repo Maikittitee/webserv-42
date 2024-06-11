@@ -148,8 +148,7 @@ bool	WebServer::_send_response(int fd) // write fd
 {
 	Client *client = _get_client(fd);
 	Server *server = client->server;
-	std::cout << server << std::endl;
-
+	
 	if (!client)
 		std::cerr << RED << "can't find client" << RESET << std::endl;
 	
@@ -157,7 +156,7 @@ bool	WebServer::_send_response(int fd) // write fd
 		std::cerr << RED << "can't find server" << RESET << std::endl;
 	
 	// CGI work here
-	std::cout << server->_config;
+	std::cout << "server in send_response" << server << std::endl;
 	int return_code = _cgi.rout(*client, *server);
 
 	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
@@ -231,43 +230,71 @@ Server *WebServer::_get_server(int fd)
 
 bool	WebServer::_accept_connection(int server_fd)
 {
-	Client new_client;
+	Client *new_client = new Client;
 
-	std::cout << "bp0" << std::endl;
-	new_client.fd = accept(server_fd, (sockaddr *)&new_client.addr, &new_client.addrLen);
-	if (new_client.fd < 0){
+	new_client->fd = accept(server_fd, (sockaddr *)&new_client->addr, &new_client->addrLen);
+	if (new_client->fd < 0){
 		std::cerr << RED << "cannot accept connection." << RESET << std::endl;
 		return (false);
 	}
 	std::cout << "bp1" << std::endl;
-	_clients[new_client.fd] = &new_client;
+	_clients[new_client->fd] = new_client;
 	std::cout << "bp2" << std::endl;
-	new_client.server = _get_server(server_fd);
-	new_client.server_fd = server_fd;
-	std::cout << "server in accept: " << new_client.server << std::endl;
-	if (!new_client.server){
+	new_client->server = _get_server(server_fd);
+	std::cout << "server in accept: " << new_client->server << std::endl;
+	if (!new_client->server){
 		std::cerr << RED << "server not found" << RESET << std::endl;
 		return (false);
 	}
-	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << new_client.fd << RESET << std::endl;
-	_set_fd(new_client.fd, _read_fds);
-	std::cout << "server in accept2: " << new_client.server << std::endl;
-	std::cout << "server in accept2(in map): " << _clients[new_client.fd]->server << std::endl;
+	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << new_client->fd << RESET << std::endl;
+	_set_fd(new_client->fd, _read_fds);
+	std::cout << "server in accept2: " << new_client->server << std::endl;
+	std::cout << "server in accept2(in map): " << _clients[new_client->fd]->server << std::endl;
 	return (true);
+}
+
+Request* mock_file_request(void)
+{
+	Request *ret = new Request();
+
+	// for example
+	ret->_method = GET;
+	// ret->_path = "/cgi-bin/hello.py";
+	ret->_path = "test.html";
+	ret->_http_version = HTTP11;
+
+	ret->_body = "";
+	return (ret);
+}
+
+Request *my_request_parser(char *buffer)
+{
+	std::istringstream f(buffer);
+	std::string line;
+	
+	std::getline(f, line);
+
+	Request *req = new Request;
+	std::cout << RED << line << RESET << std::endl;
+	std::vector<std::string> vec = splitToVector(line, ' ');
+	req->_path = vec[1];
+	return (req);
 }
 
 bool WebServer::_parsing_request(int client_fd)
 {
-	Client client = *_get_client(client_fd);
-	Server *server = client.server;
+	Client *client = _get_client(client_fd);
+	Server *server = client->server;
 
-	client.bufSize = recv(client.fd, client.buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
-	client.buffer[client.bufSize] = '\0';
+	std::cout << "server in parsing request: " << client->server << std::endl;
+	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
+	client->buffer[client->bufSize] = '\0';
 
-	std::cout << GRN << client.buffer << RESET << std::endl;
+	std::cout << GRN << client->buffer << RESET << std::endl;
 
-	Request request(client.buffer);
-	client.request = &request;
+	Request request(client->buffer);
+	// client.request = &request;
+	client->request = my_request_parser(client->buffer);
 	_clear_fd(client_fd, _read_fds);
 	_set_fd(client_fd, _write_fds);
 

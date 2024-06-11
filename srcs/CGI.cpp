@@ -69,6 +69,9 @@ std::string CGI::readfile(std::string filename, Server &server, int return_code)
 	Response response;
 
 	// mock
+
+	filename = "docs" + filename;
+	std::cout << "path before read is " << filename << std::endl;
 	response._body = response.get_body_from_file(filename);
 	response.genarate_header();
 	return (response.get_response_text());
