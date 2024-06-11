@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 19:30:51 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 21:44:56 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,15 +274,15 @@ void	ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::vecto
 	for (int i = 0; i < allowMethod.size(); i++)
 	{
 		if (allowMethod[i] == ELSE)
-			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "ELSE" << std::endl;
+			std::cout << it->first << ":: allowMethod [" << i << "]" << " : " << "ELSE" << std::endl;
 		else if (allowMethod[i] == GET)
-			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "GET" << std::endl;
+			std::cout << it->first << ":: allowMethod [" << i << "]" << " : " << "GET" << std::endl;
 		else if (allowMethod[i] == POST)
-			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "POST" << std::endl;
+			std::cout << it->first << ":: allowMethod [" << i << "]" << " : " << "POST" << std::endl;
 		else if (allowMethod[i] == DELETE)
-			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "DELETE" << std::endl;
+			std::cout << it->first << ":: allowMethod [" << i << "]" << " : " << "DELETE" << std::endl;
 		else if (allowMethod[i] == HEAD)
-			std::cout << it->first << "allowMethod [" << i << "]" << " : " << "HEAD" << std::endl;
+			std::cout << it->first << ":: allowMethod [" << i << "]" << " : " << "HEAD" << std::endl;
 	}
 }
 
@@ -336,7 +336,7 @@ void	ft_prt_location(std::map<std::string, Location> _config)
 			else
 				std::cout << it->first << " :: " << "autoIndex : " << "off" << std::endl;
 
-			std::cout << "allowMethod " << std::endl;
+			// std::cout << "allowMethod " << std::endl;
 			
 			ft_prt_allowmethod(it, it->second.allowMethod);
 			
@@ -543,10 +543,19 @@ int	ft_cnt_paren(std::string key, std::string value)
 	return (0);
 }
 
+void	ft_getlisten(int &stage, std::string value, std::vector<u_int64_t> &tmp_port)
+{
+	if (tmp_port[0] == 80 && stage == 0)
+	{
+		stage = 1;
+		tmp_port.pop_back();
+	}
+	tmp_port.push_back(ft_stoi(value));
+}
+
 int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 {
 	std::string						line;
-	std::string						file;
 	std::string						key;
 	std::string						value;
 	std::string						sp_line;
@@ -554,12 +563,9 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	Location						location;
 	std::string						tmp_key;
 	Server							server;
-	std::map<std::string, Location> _con;
-	std::map<std::string, Location> tmp_con;
 	std::vector<std::string>		vec;
 	std::vector<u_int64_t>			tmp_port;
 	int								check_paren;
-	
 	Location						def_loc;
 
 	check_paren = 0;
@@ -573,7 +579,6 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	int stage = 0;	
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
-		// write new code for trim isspace
 		sp_line = ft_trim_ispace(line);
 		key = ft_getkey(sp_line);
 		if (key.empty())
@@ -585,10 +590,6 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		if (locate == DEFAULT)
 			ft_get_default_config(def_loc, key, value);
 		check_paren += ft_cnt_paren(key, value);
-		// if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
-		// 	check_paren += 1;
-		// if (key.find("}") != std::string::npos || value.find("}") != std::string::npos)
-		// 	check_paren -= 1;	
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		{
 			location = def_loc;
@@ -600,14 +601,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			locate = BETWEEN_LOCATION;
 		}
 		if (key == "listen")
-		{
-			if (tmp_port[0] == 80 && stage == 0)
-			{
-				stage = 1;
-				tmp_port.pop_back();
-			}
-			tmp_port.push_back(ft_stoi(value));
-		}
+			ft_getlisten(stage, value, tmp_port);
 		else if (key == "server_name")
 			server.server_name = value;
 		else if (key == "error_page")
