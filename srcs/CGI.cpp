@@ -69,7 +69,7 @@ std::string CGI::readfile(std::string filename, Server &server, int return_code)
 	Response response;
 
 	// mock
-	response._body = response.get_body_from_file("docs/test.html");
+	response._body = response.get_body_from_file(filename);
 	response.genarate_header();
 	return (response.get_response_text());
 	

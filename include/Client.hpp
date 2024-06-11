@@ -23,7 +23,6 @@ class Client
 		char				buffer[BUFFERSIZE];
 
 		std::string			rawReqMsg;
-		std::string			IPaddr;
 
 		ssize_t				bufSize;
 

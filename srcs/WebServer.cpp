@@ -148,9 +148,7 @@ bool	WebServer::_send_response(int fd) // write fd
 {
 	Client *client = _get_client(fd);
 	Server *server = client->server;
-	std::cout << "server fd in send" << client->server_fd << std::endl;
 	std::cout << server << std::endl;
-
 
 	if (!client)
 		std::cerr << RED << "can't find client" << RESET << std::endl;
@@ -242,7 +240,7 @@ bool	WebServer::_accept_connection(int server_fd)
 		return (false);
 	}
 	std::cout << "bp1" << std::endl;
-	_clients[new_client.fd] = new_client;
+	_clients[new_client.fd] = &new_client;
 	std::cout << "bp2" << std::endl;
 	new_client.server = _get_server(server_fd);
 	new_client.server_fd = server_fd;
@@ -254,7 +252,7 @@ bool	WebServer::_accept_connection(int server_fd)
 	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << new_client.fd << RESET << std::endl;
 	_set_fd(new_client.fd, _read_fds);
 	std::cout << "server in accept2: " << new_client.server << std::endl;
-	std::cout << "server in accept2(in map): " << _clients[new_client.fd].server << std::endl;
+	std::cout << "server in accept2(in map): " << _clients[new_client.fd]->server << std::endl;
 	return (true);
 }
 
@@ -280,5 +278,5 @@ Client* WebServer::_get_client(int fd)
 {
 	if (!_clients.count(fd))
 		return (NULL);
-	return (&_clients[fd]);
+	return (_clients[fd]);
 }
