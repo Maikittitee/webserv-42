@@ -120,9 +120,7 @@ Location* CGI::_select_location(Request &request, Server &server)
 	Location *select_loc;
 	
 
-	std::cout << YEL << "request path is " << request._path << RESET << std::endl;
-	std::cout << YEL << "[ expect format: \"haha/eiei/index.html\" ]" << RESET << std::endl;;
-
+	std::cout << YEL << "request path:" << request._path << RESET << std::endl;
 	std::string only_path = "/" + _get_only_path(request._path);
 	while (!match){
 		if ((select_loc = _compare_location(only_path, server._config)) != NULL){
@@ -131,10 +129,7 @@ Location* CGI::_select_location(Request &request, Server &server)
 			// std::cout << *select_loc << std::endl;
 		}
 		else
-		{
 			only_path = _get_only_path(only_path);
-
-		}
 		if (only_path == ""){
 			std::cout << "get / location" << std::endl;
 			select_loc = &server._config["/"];
