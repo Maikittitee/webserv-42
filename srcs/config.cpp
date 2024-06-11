@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 19:25:09 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 19:30:51 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -436,7 +436,7 @@ bool	ft_check_sameport(std::vector<Server> sv)
 			// std::cout << "Same name" << std::endl;
 			if (tmp_listen == sv[i].listen)
 			{
-				std::cout << "Same port" << std::endl;
+				// std::cout << "Same port" << std::endl;
 				return (false);
 			}	
 		}
@@ -534,6 +534,15 @@ int	ft_checktxt(std::string key, std::string value)
 	return (true);
 }
 
+int	ft_cnt_paren(std::string key, std::string value)
+{
+	if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
+		return (1);
+	if (key.find("}") != std::string::npos || value.find("}") != std::string::npos)
+		return (-1);
+	return (0);
+}
+
 int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 {
 	std::string						line;
@@ -575,10 +584,11 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 			return (false);
 		if (locate == DEFAULT)
 			ft_get_default_config(def_loc, key, value);
-		if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
-			check_paren += 1;
-		if (key.find("}") != std::string::npos || value.find("}") != std::string::npos)
-			check_paren -= 1;	
+		check_paren += ft_cnt_paren(key, value);
+		// if (key.find("{") != std::string::npos || value.find("{") != std::string::npos)
+		// 	check_paren += 1;
+		// if (key.find("}") != std::string::npos || value.find("}") != std::string::npos)
+		// 	check_paren -= 1;	
 		if (strcmp(key.c_str() , "location") == 0) // find is location or not (if answer == std::string::npos , It mean don't found)
 		{
 			location = def_loc;
@@ -643,10 +653,10 @@ int main(int ac, char **av, char **env)
 		return(1);
 	}
 
-	// for (int i = 0; i < sv.size(); i++)
-	// {
-	// 	ft_prt_server(sv[i]);
-	// 	ft_prt_location(sv[i]._config);
-	// }
+	for (int i = 0; i < sv.size(); i++)
+	{
+		ft_prt_server(sv[i]);
+		ft_prt_location(sv[i]._config);
+	}
 	return (0);	
 }
