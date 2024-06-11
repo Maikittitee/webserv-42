@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 18:10:28 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/11 19:11:52 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -513,6 +513,15 @@ void	ft_get_default_config(Location &def_loc, std::string key, std::string value
 		def_loc.allowMethod = ft_get_allowMethod(value);
 }
 
+int ft_checkfile(int ac, char *av)
+{
+	if (ac != 2)
+		return(std::cerr << RED << "Error : Expected 2 arguments" << RESET << std::endl, false);
+	if (ft_check_extension(av) == false)
+		return (std::cerr << RED << "Error : extension file" << RESET << std::endl, false);
+	return (true);
+}
+
 int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 {
 	std::string						line;
@@ -535,16 +544,12 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	check_paren = 0;
 	locate = DEFAULT;
 	tmp_port.push_back(80);
-	if (ac != 2)
-		return(std::cerr << RED << "Error : Expected 2 arguments" << RESET << std::endl, 0);
+	if (ft_checkfile(ac, av[1]) == false)
+		return (false);
 	std::ifstream input_file(av[1]);
 	if (input_file.is_open() == false)
 		return(std::cerr << RED << "Error : Could not open file : " << RESET << av[1] << std::endl, 0);
-	if (ft_check_extension(av[1]) == false)
-		return (std::cerr << RED << "Error : extension file" << RESET << std::endl, 0);
-	int i = 0;
 	int stage = 0;	
-	int a = 0;
 	while (std::getline(input_file, line)) // return integer representing the status  of read not actual content of the line
 	{
 		// write new code for trim isspace
