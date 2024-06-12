@@ -18,6 +18,7 @@
 # include <vector>
 # include "Color.hpp"
 # include <string.h>
+# include <sys/stat.h>
 
 # define BUFFERSIZE 65535
 

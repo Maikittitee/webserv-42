@@ -5,17 +5,45 @@ CGI::CGI(void){}
 CGI::~CGI(void){}
 
 
+std::string _append_index(Client &client)
+{
+	// if not directory -> return;
+	struct stat s;
+	std::cout << "kuay" << std::endl;
+	if (access(client.request->_path.c_str(), F_OK) != 0)
+		return (client.request->_path);
+	if (stat(client.request->_path.c_str(),&s) == 0)
+	{
+		if(s.st_mode & S_IFREG) // if it's file
+		{
+			std::cout << "it is a file" << std::endl;
+			return (client.request->_path);
+		}
+		else if (s.st_mode & S_IFDIR) 
+		{
+			std::cout << "it is a dir" << std::endl;
+			if (client.request->_path[client.request->_path.size() - 1] != '/')
+				client.request->_path += "/";
+			// loop index
+			std::string tmp_file;
+			for (int i = 0; i < client.location->index.size(); i++)
+			{
+				tmp_file = client.request->_path + client.location->index[i];
+				if (access(tmp_file.c_str(), F_OK) == 0){
+					return (tmp_file);
+				}
+			}
+		} 
 
+	}
+}
 
 int CGI::rout(Client &client, Server &server)
 {
 	client.location = _select_location(*client.request, server);
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
-	else {
-		std::cout << client.location;
-	}
-	if (false && !_is_allow_method(client.request->_method, *client.location)) {
+	if (false /* plaeaseee */ && !_is_allow_method(client.request->_method, *client.location)) {
 		return (403);
 		//method not allow 
 	}
@@ -28,16 +56,8 @@ int CGI::rout(Client &client, Server &server)
 		// delete file 
 	}
 	client.request->_path = client.location->root + client.request->_path;
-	if (!client.location->autoIndex && _is_path(client.request->_path)){
-		std::string tmp_file;
-		for (int i = 0; i < client.location->index.size(); i++){
-			tmp_file = client.request->_path + client.location->index[i];
-			if (access(tmp_file.c_str(), F_OK) == 0){
-				client.request->_path = tmp_file;
-				break;
-			}
-		}
-	}
+	client.request->_path = _append_index(client);
+	std::cout << YEL << "after find index:" << client.request->_path << RESET << std::endl;
 	// check access
 	if (access(client.request->_path.c_str(), F_OK) != 0)
 		return (404);
