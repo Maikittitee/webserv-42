@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/11 21:44:56 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/13 03:47:31 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,15 @@ short	ft_getlocate(Location &location, std::string key, std::string value)
 
 	sp.clear();
 	if (key == "root")
-		location.root = value;
+	{
+		if (!value.empty())
+		{
+			if (value.find_last_of('/') == value.size() - 1)
+				location.root = value;
+			else
+				location.root = value + '/';
+		}
+	}
 	else if (key == "client_max_body_size")
 		location.cliBodySize = ft_stouint(value);
 	else if (key == "cgi_pass")
@@ -484,10 +492,20 @@ std::vector<t_method>	ft_get_allowMethod(std::string value)
 void	ft_get_default_config(Location &def_loc, std::string key, std::string value)
 {
 	std::vector<std::string> sp;
+	
+	sp.clear();
 	if (key == "client_max_body_size")
 		def_loc.cliBodySize = ft_stouint(value);
 	else if (key == "root")
-		def_loc.root = value;
+	{
+		if (!value.empty())
+		{
+			if (value.find_last_of('/') == value.size() - 1)
+				def_loc.root = value;
+			else
+				def_loc.root = value + '/' ;
+		}
+	}
 	else if (key == "index")
 		def_loc.index.clear();
 	else if (key == "return")
