@@ -5,6 +5,7 @@
 #	include "Server.hpp"
 #	include "Client.hpp"
 #	include "Response.hpp"
+#	include "Mime.hpp"
 
 class Server;
 
@@ -12,6 +13,7 @@ class Client;
 
 class Response;
 
+class Mime;
 
 class CGI{
 	public:
@@ -19,9 +21,10 @@ class CGI{
 		~CGI(void);
 		
 		Response response;
+		Mime		_mime;
 
 		int rout(Client &client, Server &server);
-		std::string readfile(std::string filename, Server &server, int return_code);
+		std::string readfile(Client &client, Server &server, int return_code);
 		std::string readfile(int fd);
 		std::string	get_response(void);
 

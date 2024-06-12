@@ -11,6 +11,7 @@
 
 // class Location;
 
+
 class Response{
 	public:
 		int _return_code;

@@ -64,16 +64,16 @@ void Response::genarate_header()
 	std::stringstream header;
 
 	header << "HTTP/1.1 ";
-	header << 200;
+	header << _return_code;
 	header << " ";
-	header << "OK";
+	header << status_def();
 	header << "\r\n";
 	header << "Date: "; 
 	header << get_date();
 	header << "\r\n";
 	if (!cgiPass){
 		header <<  "Content-Type: ";
-		header << "text/html";
+		header << _content_type;
 		header << "\r\n";
 	}
 	// header << "Content-Length: ";
@@ -89,6 +89,13 @@ std::string Response::status_def(void)
 {
 	if (_return_code == 200)
 		return ("OK");
+	if (_return_code == 404)
+		return ("NOT FOUND");
+	if (_return_code == 405)
+		return ("Method Not Allowed");
+	if (_return_code == 403)
+		return ("Forbidden");
+	
 	return ("ERROR");
 
 }

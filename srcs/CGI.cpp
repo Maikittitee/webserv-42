@@ -56,15 +56,19 @@ int CGI::rout(Client &client, Server &server)
 
 }
 
-std::string CGI::readfile(std::string filename, Server &server, int return_code)
+std::string CGI::readfile(Client &client, Server &server, int return_code)
 {
 	Response response;
 
 	if (return_code >= 400)
+	{
 		// check in error list and read error file
-
-	std::cout << "path read is " << filename << std::endl;
-	response._body = response.get_body_from_file(filename);
+		client.request->_path = "docs/error.html"; // need fix to error in server
+	}
+	std::cout << "read file: " << client.request->_path << std::endl;
+	response._body = response.get_body_from_file(client.request->_path);
+	response._return_code = return_code;
+	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();
 	return (response.get_response_text());
 	
