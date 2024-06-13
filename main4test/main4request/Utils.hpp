@@ -5,6 +5,7 @@
 #	include <string>
 #	include <fstream>
 #	include <vector>
+#	include "Common.hpp"
 
 typedef enum e_method{
 			ELSE,
@@ -30,5 +31,6 @@ void						trimLeadingSpaces(std::string& str) ;
 void						trimSpaces(std::string& str) ;
 std::vector<std::string>	splitToVector(const std::string& str, char delimiter);
 std::vector<std::string> 	lineToVector(const std::string& str);
+bool is_directory(std::string &str);
 
 #endif

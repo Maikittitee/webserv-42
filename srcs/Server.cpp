@@ -28,18 +28,6 @@ void Server::send_response(const char *response, int client_fd)
 char *Server::PortNotExist::what() const throw(){
 	return ((char *)"Your port is not in range of 0 - 65535");
 }
-std::string Server::errorPage(int error_code)
-{
-	std::string body;
-
-	switch (error_code){
-		case 404:
-			readFile(body, "docs/error.html");
-		case 405:
-			readFile(body, "docs/error.html");
-	}
-	return (body);
-}
 
 std::string Server::do_cgi(Request &request)
 {

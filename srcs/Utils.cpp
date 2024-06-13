@@ -2,7 +2,7 @@
 
 bool readFile(std::string &buff, std::string const &filename)
 {
-	std::ifstream file(filename);
+	std::ifstream file(filename, std::ios::binary | std::ios::ate);
 	int length;
 	file.seekg(0, std::ios::end);
 
@@ -118,4 +118,26 @@ std::ostream &operator << (std::ostream &os, const t_method &method)
 			break;
 	}
 	return (os);
+}
+
+bool is_directory(std::string &str)
+{
+	struct stat s;
+
+	if (access(str.c_str(), F_OK) != 0)
+		return (false);
+
+	if (stat(str.c_str() ,&s) == 0)
+	{
+		if(s.st_mode & S_IFREG) // if it's file
+		{
+			return (false);
+		}
+		else if (s.st_mode & S_IFDIR) 
+		{
+			return (true);
+		} 
+		return (false);
+	}
+	return (false);
 }

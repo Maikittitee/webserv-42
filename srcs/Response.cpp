@@ -128,7 +128,7 @@ std::string Response::get_date(void)
 	return (ret);
 }
 
-std::string		Response::get_body_from_file(std::string filename)
+std::string Response::get_body_from_file(std::string filename)
 {
 	std::string body;
 	

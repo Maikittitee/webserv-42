@@ -92,3 +92,24 @@ void	trimSpaces(std::string& str)
     trimLeadingSpaces(str);
     trimTrailingSpaces(str);
 }
+
+bool is_directory(std::string &str)
+{
+	struct stat s;
+
+	if (access(str.c_str(), F_OK) != 0)
+		return (false);
+
+	if (stat(str.c_str() ,&s) == 0)
+	{
+		if(s.st_mode & S_IFREG) // if it's file
+		{
+			return (false);
+		}
+		else if (s.st_mode & S_IFDIR) 
+		{
+			return (true);
+		} 
+		return (false);
+	}
+}

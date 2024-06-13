@@ -9,7 +9,6 @@ std::string _append_index(Client &client)
 {
 	// if not directory -> return;
 	struct stat s;
-	std::cout << "kuay" << std::endl;
 	if (access(client.request->_path.c_str(), F_OK) != 0)
 		return (client.request->_path);
 	if (stat(client.request->_path.c_str(),&s) == 0)
@@ -26,16 +25,22 @@ std::string _append_index(Client &client)
 				client.request->_path += "/";
 			// loop index
 			std::string tmp_file;
+			std::cout << "hello1 index size: " << client.location->index.size() << std::endl;
 			for (int i = 0; i < client.location->index.size(); i++)
 			{
 				tmp_file = client.request->_path + client.location->index[i];
+				std::cout << "tmp_file: " << tmp_file << std::endl; 
 				if (access(tmp_file.c_str(), F_OK) == 0){
+					std::cout << "found index!!: " << tmp_file << std::endl;  
 					return (tmp_file);
 				}
 			}
+			return (client.request->_path);
 		} 
+		return (client.request->_path);
 
 	}
+	return (client.request->_path);
 }
 
 int CGI::rout(Client &client, Server &server)
@@ -59,12 +64,12 @@ int CGI::rout(Client &client, Server &server)
 	client.request->_path = _append_index(client);
 	std::cout << YEL << "after find index:" << client.request->_path << RESET << std::endl;
 	// check access
-	if (access(client.request->_path.c_str(), F_OK) != 0)
+	if (access(client.request->_path.c_str(), F_OK) != 0 || is_directory(client.request->_path))
 		return (404);
-	if (client.location->autoIndex){
-		// maybe send 1000
-		return (1000);
-	}
+	// if (client.location->autoIndex && !is_directory(client.request->_path)){
+	// 	// maybe send 1000
+	// 	return (1000);
+	// }
 	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
 
@@ -119,7 +124,6 @@ std::string CGI::_get_only_path(std::string path)
 
 	found = path.find_last_of("/\\");
 	str = path.substr(0, found);
-	std::cout << "cut " << str << std::endl;
 	return (str);
 }
 
@@ -127,10 +131,9 @@ Location* CGI::_compare_location(std::string str, std::map<std::string, Location
 {
 	std::map<std::string, Location>::iterator it;
 
-	std::cout << conf;
 	for (it = conf.begin(); it != conf.end(); it++){
 		if (it->first == str){
-			std::cout << YEL << "checked with " << it->first << RESET << std::endl;
+			std::cout << "checked with " << it->first  << std::endl;
 			return (&(it->second));
 		}
 	}
@@ -142,10 +145,14 @@ Location* CGI::_select_location(Request &request, Server &server)
 {
 	bool match = false;
 	Location *select_loc;
+	struct stat s;
 	
 
-	std::cout << YEL << "request path:" << request._path << RESET << std::endl;
-	std::string only_path = "/" + _get_only_path(request._path);
+	std::cout << YEL << "request path: " << request._path << RESET << std::endl;
+	if ((select_loc = _compare_location(request._path, server._config)) != NULL)
+		match = true;
+	std::string only_path = _get_only_path(request._path);
+	std::cout << "only_path: " << only_path << std::endl;
 	while (!match){
 		if ((select_loc = _compare_location(only_path, server._config)) != NULL){
 			std::cout << YEL << "config match!" << RESET << std::endl;
