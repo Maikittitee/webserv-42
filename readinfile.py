@@ -1,8 +1,7 @@
 #!/opt/homebrew/bin/python3
 
 import os
+import cgi
 
-string = os.read(0, 1000)
-
-print(string)
+f = cgi.FieldStorage()
 

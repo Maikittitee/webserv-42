@@ -12,11 +12,13 @@ bool readFile(std::string &buff, std::string const &filename)
 	}
 	length = file.tellg();
 
+	std::cout << RED << length << RESET << std::endl; 
+
 	char *buffer = new char[length];
 	file.seekg(0, std::ios::beg);
 	file.read(buffer, length);
 	file.close();
-	buff = buffer;
+	buff = buffer; // ?????
 	return (true);
 
 }

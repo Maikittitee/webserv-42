@@ -76,9 +76,9 @@ void Response::genarate_header()
 		header << _content_type;
 		header << "\r\n";
 	}
-	// header << "Content-Length: ";
-	// header << strlen(_body.c_str());
-	// header << "\r\n";
+	header << "Content-Length: ";
+	header << _body.size();
+	header << "\r\n";
 
 	this->_header = header.str();
 
@@ -133,8 +133,6 @@ std::string Response::get_body_from_file(std::string filename)
 	std::string body;
 	
 	readFile(body, filename.c_str());
-	replace_str(body, "\n", "\r\n");
-
 	return (body);
 
 }
