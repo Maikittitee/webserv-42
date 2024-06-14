@@ -163,7 +163,7 @@ bool	WebServer::_send_response(int fd) // write fd
 		msg = _cgi.readfile(return_code);
 	else 
 		msg = _cgi.readfile(*client, *server, return_code); 
-		// need to check that return code is ok or not and if not ok -> check to find where error file is 
+	// need to check that return code is ok or not and if not ok -> check to find where error file is 
 
 	// check client body size
 	if (msg.size() > client->location->cliBodySize){

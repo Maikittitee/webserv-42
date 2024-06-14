@@ -44,13 +44,15 @@ void Response::genarate_header(void)
 
 std::string Response::get_response_text(void)
 {
-	std::stringstream response;
+	std::string response;
 
-	response << _header;
+	response += _header;
 	if (!cgiPass)
-		response << "\r\n";
-	response << _body;
+		response += "\r\n";
+	std::cout << "get response body: " << _body << std::endl;
+	response += _body;
+	std::cout << "done" << std::endl;
 
-	return (response.str());
+	return (response);
 
 }

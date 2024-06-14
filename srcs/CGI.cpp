@@ -71,10 +71,18 @@ int CGI::rout(Client &client, Server &server)
 	}
 	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
+		pipe(client.pipe_fd);
+		client.pipe_available = true;
 
-		// is end file ? N: fork -> read ต่อ -> รัน cgi file -> 
-		// send fd
-		// return (fd child)
+		client.child_pid = fork();
+		if (client.child_pid == 0){ // child
+			dup2(client.pipe_fd[0], STDIN_FILENO);
+			dup2(client.pipe_fd[1], STDOUT_FILENO);
+			// 
+			std::cout << "Hello From child proceass" << std::endl;
+			exit(0);
+		}
+		return (client.pipe_fd[1]);
 	}
 	return (200);
 
@@ -84,18 +92,29 @@ std::string CGI::readfile(Client &client, Server &server, int return_code)
 {
 	Response response;
 	char buffer[BUFFERSIZE];
+	int fd;
+	int length;
 
 	if (return_code >= 400)
 	{
 		// check in error list and read error file
 		client.request->_path = "docs/error.html"; // need fix to error in server
 	}
-	std::cout << "read file: " << client.request->_path << std::endl;
-	int fd = open(client.request->_path.c_str(), O_RDONLY);
-	int length = read(fd, buffer, BUFFERSIZE);
-	response._body.assign(buffer, length);
-	std::cout << "readed body: " << std::endl;
-	std::cout << response._body << std::endl;
+	if (return_code >= 100) {
+		std::cout << "read file: " << client.request->_path << std::endl;
+		fd = open(client.request->_path.c_str(), O_RDONLY);
+	}
+	else {
+		fd = client.pipe_fd[0];
+	}
+	std::cout << "fd: " << fd << std::endl;
+
+	length = read(fd, buffer, BUFFERSIZE);
+	while (length > 0)
+	{
+		response._body.append(buffer, length);
+		length = read(fd, buffer, BUFFERSIZE);
+	}
 	response._return_code = return_code;
 	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();
@@ -161,7 +180,6 @@ Location* CGI::_select_location(Request &request, Server &server)
 		if ((select_loc = _compare_location(only_path, server._config)) != NULL){
 			std::cout << YEL << "config match!" << RESET << std::endl;
 			match = true;
-			// std::cout << *select_loc << std::endl;
 		}
 		else
 			only_path = _get_only_path(only_path);

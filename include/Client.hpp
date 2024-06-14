@@ -15,6 +15,8 @@ class Client
 		~Client();
 
 		int 				fd;
+		bool				pipe_available;
+		int 				child_pid;
 		int 				pipe_fd[2];
 		std::string			IPaddr;
 		socklen_t			addrLen;

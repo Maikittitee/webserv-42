@@ -37,7 +37,7 @@ std::map<std::string, Location> mock_location(void)
 
 	Location images(def);
 	images.index.clear();
-	images.index.insert(images.index.end(), "Cat03.jpg");
+	images.index.insert(images.index.end(), "usa.jpg");
 	images.index.insert(images.index.end(), "test.png");
 
 	Location cgi_bin(def);
