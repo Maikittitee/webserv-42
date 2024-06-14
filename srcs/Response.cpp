@@ -17,3 +17,40 @@ std::string Response::get_date(void)
 		ret += buf[i++];
 	return (ret);
 }
+
+void Response::genarate_header(void)
+{
+	std::stringstream header;
+
+	header << "HTTP/1.1 ";
+	header << 200;
+	header << " ";
+	header << "OK";
+	header << "\r\n";
+	header << "Date: "; 
+	header << get_date();
+	header << "\r\n";
+	if (!cgiPass){
+		header << "Content-Type: ";
+		header << _content_type;
+		header << "\r\n";
+	}
+	header << "Content-Length: ";
+	header << _body.size();
+	header << "\r\n";
+
+	this->_header = header.str();
+}
+
+std::string Response::get_response_text(void)
+{
+	std::stringstream response;
+
+	response << _header;
+	if (!cgiPass)
+		response << "\r\n";
+	response << _body;
+
+	return (response.str());
+
+}

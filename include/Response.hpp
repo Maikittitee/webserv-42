@@ -22,6 +22,8 @@ class Response{
 
 		Response();
 		~Response();
+		void genarate_header();
+		std::string get_response_text(void);
 		std::string get_date();
 
 

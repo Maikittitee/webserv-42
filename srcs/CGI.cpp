@@ -9,7 +9,7 @@ std::string _append_index(Client &client)
 {
 	// if not directory -> return;
 	struct stat s;
-	if (access(client.request->_path.c_str(), F_OK) != 0)
+	if (access(client.request->_path.c_str(), F_OK) != 0 || client.location->autoIndex)
 		return (client.request->_path);
 	if (stat(client.request->_path.c_str(),&s) == 0)
 	{
@@ -66,10 +66,9 @@ int CGI::rout(Client &client, Server &server)
 	// check access
 	if (access(client.request->_path.c_str(), F_OK) != 0 || is_directory(client.request->_path))
 		return (404);
-	// if (client.location->autoIndex && !is_directory(client.request->_path)){
-	// 	// maybe send 1000
-	// 	return (1000);
-	// }
+	if (client.location->autoIndex && is_directory(client.request->_path)){
+		return (1000);
+	}
 	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
 
@@ -84,6 +83,7 @@ int CGI::rout(Client &client, Server &server)
 std::string CGI::readfile(Client &client, Server &server, int return_code)
 {
 	Response response;
+	char buffer[BUFFERSIZE];
 
 	if (return_code >= 400)
 	{
@@ -91,7 +91,11 @@ std::string CGI::readfile(Client &client, Server &server, int return_code)
 		client.request->_path = "docs/error.html"; // need fix to error in server
 	}
 	std::cout << "read file: " << client.request->_path << std::endl;
-	response._body = response.get_body_from_file(client.request->_path);
+	int fd = open(client.request->_path.c_str(), O_RDONLY);
+	int length = read(fd, buffer, BUFFERSIZE);
+	response._body.assign(buffer, length);
+	std::cout << "readed body: " << std::endl;
+	std::cout << response._body << std::endl;
 	response._return_code = return_code;
 	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();

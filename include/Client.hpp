@@ -15,7 +15,7 @@ class Client
 		~Client();
 
 		int 				fd;
-		id_t				server_fd;
+		int 				pipe_fd[2];
 		std::string			IPaddr;
 		socklen_t			addrLen;
 		struct sockaddr_in	addr;
