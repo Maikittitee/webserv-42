@@ -2,9 +2,9 @@
 
 Server::Server(void)
 {
-	name = "localhost"; //? server_name
+	server_name = "localhost"; //? server_name
 	ipAddr = "0.0.0.0"; //? listen could be ip address or port
-	port = 80;
+	listen = 80;
 
 }
 

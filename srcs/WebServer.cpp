@@ -48,7 +48,7 @@ bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server &serv) {
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	addr.sin_port = htons(serv.port);
+	addr.sin_port = htons(serv.listen);
 	return true;
 }
 

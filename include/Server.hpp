@@ -16,10 +16,12 @@ class Location;
 class Server{
 	public:
 		int _server_fd;
-		std::string							name; //? server_name
 		std::string							ipAddr; //? listen could be ip address or port
 		int									port; //? listen
-		
+
+		u_int64_t			listen;
+		std::string			server_name;
+		std::vector<std::string>	error_page;	
 		std::map<std::string, Location> _config; 
 		Mime _mime;
 		char **_env;
