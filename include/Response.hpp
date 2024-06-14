@@ -22,12 +22,6 @@ class Response{
 
 		Response();
 		~Response();
-		void		receive_request(Request &request, Location &config);
-		void		set_body(std::string filename);
-		std::string		get_body_from_file(std::string filename);
-		void		genarate_header();
-		std::string status_def();
-		std::string get_response_text();
 		std::string get_date();
 
 
