@@ -126,8 +126,6 @@ bool WebServer::runServer(void)
 				{
 					std::cout << YEL << "receiving request..." << RESET << std::endl;
 					_parsing_request(fd);
-
-
 				}
 			}
 			else if (FD_ISSET(fd, &tmp_write_fds))
