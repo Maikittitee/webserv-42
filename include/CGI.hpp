@@ -26,11 +26,13 @@ class CGI{
 		std::string	get_response(void);
 
 	// private:
-		bool	_is_allow_method(t_method method, Location &location);
-		Location* _select_location(Request & , Server &);
-		Location* _compare_location(std::string str, std::map<std::string, Location> &conf);
+		bool		_is_allow_method(t_method method, Location &location);
+		Location*	_select_location(Request & , Server &);
+		Location*	_compare_location(std::string str, std::map<std::string, Location> &conf);
 		std::string _get_only_path(std::string path);
-		bool _is_path(std::string path);
+		void		_separateReadRequestProcess(Client &client);
+		bool		_checkAndUpdateRequestStatus(Client &client);
+		bool		_is_path(std::string path);
 };
 
 

@@ -262,11 +262,14 @@ bool WebServer::_parsing_request(int client_fd)
 	Client client = *_get_client(client_fd);
 	Server *server = client.server;
 
-	client.bufSize = recv(client.fd, client.buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
-	client.buffer[client.bufSize] = '\0';
-
+	if (client.bufSize > 0)
+		client.buffer[client.bufSize] = '\0';
+	else
+	{
+		std::cout << "Handle With recv error do somethings!" << std::endl;
+		break;
+	}
 	std::cout << GRN << client.buffer << RESET << std::endl;
-
 	Request request(client.buffer);
 	client.request = &request;
 	_clear_fd(client_fd, _read_fds);

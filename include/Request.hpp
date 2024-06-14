@@ -23,13 +23,31 @@ typedef enum e_requestErrorCode{
 			BAD_HTTPREQUEST
 } t_reqErr;
 
+typedef enum e_requestStatusCode{
+			IN_REQUEST_LINE,
+			IN_HEADER_LINE,
+			IN_CRLF_LINE,
+			IN_BODY_LINE,
+			END_REQUEST_MSG
+} t_reqStatus;
+
+typedef enum e_method{
+			ELSE,
+			GET,
+			POST,
+			DELETE,
+			HEAD,
+			PUT,
+			NONE
+} t_method;
+
 class Request{
 
 	private:
-
-		std::vector<std::string> request_v;
-
-		int			write_fd;
+		size_t						_lineIndex;
+		std::vector<std::string>	request_v;
+		t_reqStatus					_status;
+		int							write_fd;
 	
 		std::map<std::string, int>	_method_map;
 		std::map<std::string, std::string>	_headerField_map;
@@ -47,7 +65,6 @@ class Request{
 
 	public:
 		// Attribute
-		size_t		_lineIndex;
 		t_reqErr	_reqErr;
 		t_method	_method;
 		std::string	_path;
@@ -62,36 +79,17 @@ class Request{
 		~Request( void ) {}
 
 		// Getter
-
-		t_method	getMethod( void )
-		{
-			return _method;
-		}
-
-		std::string	getPath( void )
-		{
-			return _path;
-		}
-
-		t_version	getHttpVersion( void )
-		{
-			return _http_version;
-		}
-
-		std::string	getBody( void )
-		{
-			return _body;
-		}
-
-		std::string	getQueryString( void )
-		{
-			return _query_string;
-		}
-
 		std::map<std::string, std::string>	getHeaderFieldMap ( void )
 		{
 			return _headerField_map;
 		}
+		t_reqStatus	getStatusIndex( void )
+		{
+			return _status_index;
+		}
+
+		// Public Method
+		void		_updateRequest( void );
 };
 
 

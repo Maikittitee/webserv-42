@@ -44,25 +44,48 @@ int CGI::rout(Client &client, Server &server)
 		// maybe send 1000
 		return (1000);
 	}
-	if (client.location->cgiPass) { // <=============== HELLO PTEW
-		// cgi
-
-		// is end file ? N: fork -> read ต่อ -> รัน cgi file -> 
-		// send fd
-		// return (fd child)
+	if (client.location->cgiPass)
+	{
+		if(client.request->getStatusIndex() != END_REQUEST_MSG)
+			_separateReadRequestProcess(client);
+		else // <=============== HELLO MAI
+			std::cout << "wanna run CGI" << std::endl; 
 	}
-
-
-
-	
-
-
-
-
-
 	return (true);
-
 }
+
+void	CGI::_separateReadRequestProcess(Client &client)
+{
+	int	pid = fork();
+	if (pid = 0)
+	{
+		do 
+		{
+			client.bufSize = recv(client.fd, client.buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
+			if (client.bufSize > 0)
+			{
+				client.buffer[client.bufSize] = '\0';
+				client.request->_updateRequest(client.buffer);
+			}
+			else
+			{
+				std::cout << "Handle With recv error do somethings!" << std::endl;
+				break;
+			}
+		} while (_checkRequestStatus(client)); // <=============== HELLO MAI
+		std::cout << "wanna run CGI" << std::endl;
+	}
+}
+
+bool	CGI::_checkRequestStatus(Client &client)
+{
+	if (client.request->_status == END_REQUEST_MSG)
+		return (false);
+	else if (client.request->_method == POST && client.request->_status >= IN_CRLF_LINE)
+		return (false);
+	return (true);
+}
+
 
 std::string CGI::readfile(std::string filename, Server &server, int return_code)
 {

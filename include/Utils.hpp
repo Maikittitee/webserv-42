@@ -3,16 +3,6 @@
 
 # 	include "Common.hpp"
 
-typedef enum e_method{
-			ELSE,
-			GET,
-			POST,
-			DELETE,
-			HEAD,
-			PUT,
-			NONE
-} t_method;
-
 typedef enum e_version{
 	HTTP09, // HTTP/0.9
 	HTTP10, // HTTP/1.0

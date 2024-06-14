@@ -2,6 +2,7 @@
 
 Request::Request():
 _lineIndex(0),
+_status(IN_REQUEST_LINE),
 _reqErr(SUCESS_REQUEST),
 _method(NONE),
 _path(""),
@@ -19,6 +20,7 @@ write_fd(-1)
 
 Request::Request(std::string request):
 _lineIndex(0),
+_status(IN_REQUEST_LINE),
 _reqErr(SUCESS_REQUEST),
 _method(NONE),
 _path(""),
@@ -34,11 +36,19 @@ write_fd(-1)
 	_method_map["HEAD"] = HEAD;
 	if(!_collectRequestToVector(request))
 		_reqErrMsg();
-	if(!_readRequestLine())
+	if(_status > IN_REQUEST_LINE)
+	{
+		_readRequestLine();
 		_reqErrMsg();
-	if(!_readRequestHeaderField())
+	}
+	if(_status >= IN_HEADER_LINE)
+	{
+		_readRequestHeaderField();
 		_reqErrMsg();
-	_readRequestMassageBody();
+	}
+	if(_status > IN_CRLF_LINE)
+		_readRequestMassageBody();
+	_updateStatus();
 }
 
 bool	Request::_collectRequestToVector(std::string &request)
@@ -50,7 +60,9 @@ bool	Request::_collectRequestToVector(std::string &request)
 		_reqErr = EMPTHY_REQUEST;
 		return false;
 	}
+	_collectUncomplteLine(request);
 	request_v = lineToVector(request);
+	_checkRequestStatus();
     std::vector<std::string>::iterator it;
 	return true;
 }
@@ -162,6 +174,43 @@ void	Request::_collectQuery(std::string path_l)
 	std::cout << "start = " << start << "\n";
 	if (start != std::string::npos)
 		_query_string = path_l.substr(start, path_l.length());
+}
+
+void	Request::_updateRequest(std::string &request)
+{
+	_updateRequestToVector(request)
+	if (_status == IN_REQUEST_LINE)
+		_updateFromRequestLine();
+	else if (_status == IN_HEADER_LINE)
+		_updateFromHeaderLine();
+	else
+		_updateAfterHeaderLine();
+	_updateStatus();
+}
+
+void	Request::_updateRequestToVector(std::string &request)
+{
+
+}
+
+void	Request::_updateFromRequestLine( void )
+{
+
+}
+
+void	Request::_updateFromHeaderLine( void )
+{
+
+}
+
+void	Request::_updateAfterHeaderLine( void )
+{
+
+}
+
+void	Request::_updateStatus( void )
+{
+
 }
 
 int		Request::_reqErrMsg( void )
