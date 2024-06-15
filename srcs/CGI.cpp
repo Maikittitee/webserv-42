@@ -84,11 +84,14 @@ int CGI::rout(Client &client, Server &server)
 			close(client.pipe_fd[1]);
 			close(client.pipe_fd_out[0]);
 			close(client.pipe_fd_out[1]);
-			std::cout << "Hello From child process" << std::endl;
+			char *arg[] = {(char *)client.request->_path.c_str(), NULL};
+			execve((char *)client.request->_path.c_str(), arg, NULL);
+			// std::cout << "Hello From child process" << std::endl;
 			exit(0);
 		}
 		else{
-			write(client.pipe_fd[1], client.request->_body.c_str(), BUFFERSIZE);
+			std::cout << "write: " << client.request->_body << std::endl;
+			write(client.pipe_fd[1], client.request->_body.c_str(), client.request->_body.size());
 			return (client.pipe_fd_out[1]); // return write able fd
 		}
 	}
@@ -113,7 +116,7 @@ std::string CGI::readfile(Client &client, Server &server, int return_code)
 	Response response;
 	char buffer[BUFFERSIZE];
 	int fd;
-	int length;
+	int length = 0;
 
 	std::cout << "in readfile" << std::endl; 
 	if (return_code >= 400)
@@ -128,22 +131,21 @@ std::string CGI::readfile(Client &client, Server &server, int return_code)
 	else {
 		std::cout << "read cgi" << std::endl;
 		fd = client.pipe_fd_out[0];
+		close(client.pipe_fd[0]);
+		close(client.pipe_fd[1]);
+		close(client.pipe_fd_out[1]);
 	}
 	std::cout << "fd: " << fd << std::endl;
 
-	length = read(fd, buffer, BUFFERSIZE);
-	// while (length > 0)
-	// {
-		// close(client.pipe_fd[0]);
-		// close(client.pipe_fd[1]);
-		// close(client.pipe_fd_out[0]);
-		// close(client.pipe_fd_out[1]);
-		// std::cout << length << ": read value: " << buffer << std::endl;
-	response._body.append(buffer, length);
-		// std::cout << "++" << std::endl;
-		// length = read(fd, buffer, BUFFERSIZE);
-		// std::cout << "--" << std::endl;
-	// }
+	while (true)
+	{
+		bzero(buffer, length);
+		length = read(fd, buffer, BUFFERSIZE - 1);
+		buffer[length] = '\0';
+		if (length <= 0)
+			break;
+		response._body.append(buffer, length);
+	}
 	response._return_code = return_code;
 	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();

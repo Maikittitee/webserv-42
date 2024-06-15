@@ -281,6 +281,7 @@ Request *my_request_parser(char *buffer)
 	std::cout << RED << line << RESET << std::endl;
 	std::vector<std::string> vec = splitToVector(line, ' ');
 	req->_path = vec[1];
+	req->_body = "this is body";
 	return (req);
 }
 
