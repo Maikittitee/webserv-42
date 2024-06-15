@@ -72,21 +72,41 @@ int CGI::rout(Client &client, Server &server)
 	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
 		pipe(client.pipe_fd);
+		pipe(client.pipe_fd_out);
 		client.pipe_available = true;
 
 		client.child_pid = fork();
 		if (client.child_pid == 0){ // child
 			dup2(client.pipe_fd[0], STDIN_FILENO);
-			dup2(client.pipe_fd[1], STDOUT_FILENO);
+			dup2(client.pipe_fd_out[1], STDOUT_FILENO);
 			// 
-			std::cout << "Hello From child proceass" << std::endl;
+			close(client.pipe_fd[0]);
+			close(client.pipe_fd[1]);
+			close(client.pipe_fd_out[0]);
+			close(client.pipe_fd_out[1]);
+			std::cout << "Hello From child process" << std::endl;
 			exit(0);
 		}
-		return (client.pipe_fd[1]); // return write able fd
+		else{
+			write(client.pipe_fd[1], client.request->_body.c_str(), BUFFERSIZE);
+			return (client.pipe_fd_out[1]); // return write able fd
+		}
 	}
 	return (200);
 
 }
+
+size_t read_line(int fd, char* buffer)
+{
+    char char_buf;
+    size_t buffer_size = 0;
+    while (read(fd, &char_buf, 1) > 0 && char_buf != '\n')
+        buffer[buffer_size++] = char_buf;
+    buffer[buffer_size] = '\0';
+
+    return buffer_size;
+}
+
 
 std::string CGI::readfile(Client &client, Server &server, int return_code)
 {
@@ -95,6 +115,7 @@ std::string CGI::readfile(Client &client, Server &server, int return_code)
 	int fd;
 	int length;
 
+	std::cout << "in readfile" << std::endl; 
 	if (return_code >= 400)
 	{
 		// check in error list and read error file
@@ -105,22 +126,28 @@ std::string CGI::readfile(Client &client, Server &server, int return_code)
 		fd = open(client.request->_path.c_str(), O_RDONLY);
 	}
 	else {
-		fd = client.pipe_fd[0];
+		std::cout << "read cgi" << std::endl;
+		fd = client.pipe_fd_out[0];
 	}
 	std::cout << "fd: " << fd << std::endl;
 
 	length = read(fd, buffer, BUFFERSIZE);
-	while (length > 0)
-	{
-		response._body.append(buffer, length);
-		length = read(fd, buffer, BUFFERSIZE);
-	}
+	// while (length > 0)
+	// {
+		// close(client.pipe_fd[0]);
+		// close(client.pipe_fd[1]);
+		// close(client.pipe_fd_out[0]);
+		// close(client.pipe_fd_out[1]);
+		// std::cout << length << ": read value: " << buffer << std::endl;
+	response._body.append(buffer, length);
+		// std::cout << "++" << std::endl;
+		// length = read(fd, buffer, BUFFERSIZE);
+		// std::cout << "--" << std::endl;
+	// }
 	response._return_code = return_code;
 	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();
 	return (response.get_response_text());
-	
-
 }
 		
 std::string CGI::readfile(int fd) // fd of child (cgi) process <=============== HELLOOOOO PTEW

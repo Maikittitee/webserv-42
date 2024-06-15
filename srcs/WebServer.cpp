@@ -157,15 +157,7 @@ bool	WebServer::_send_response(int fd) // write fd
 
 	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
 	std::string msg;
-	if (return_code < 100){ // return code is fd of child process
-		if (client->request->_method == POST)
-			_set_fd(client->pipe_fd[0], _write_fds);
-		else{
-			_set_fd(client->pipe_fd[1], _read_fds);
-		}
-	}
-	else 
-		msg = _cgi.readfile(*client, *server, return_code); 
+	msg = _cgi.readfile(*client, *server, return_code); 
 
 	// check client body size
 	if (msg.size() > client->location->cliBodySize){
@@ -254,7 +246,7 @@ bool	WebServer::_accept_connection(int server_fd)
 	return (true);
 }
 
-Request* mock_file_request(void)
+Request* mock_get_file_request(void)
 {
 	Request *ret = new Request();
 
@@ -263,6 +255,18 @@ Request* mock_file_request(void)
 	ret->_http_version = HTTP11;
 
 	ret->_body = "";
+	return (ret);
+}
+
+Request* mock_post_cgi_request(void)
+{
+	Request *ret = new Request();
+
+	ret->_method = GET;
+	ret->_path = "/cgi-bin/arg.py";
+	ret->_http_version = HTTP11;
+
+	ret->_body = "hello from request, how are you?";
 	return (ret);
 }
 
@@ -293,6 +297,7 @@ bool WebServer::_parsing_request(int client_fd)
 	Request request(client->buffer);
 	// client.request = &request;
 	client->request = my_request_parser(client->buffer);
+	// client->request = mock_post_cgi_request();
 	_clear_fd(client_fd, _read_fds);
 	_set_fd(client_fd, _write_fds);
 
