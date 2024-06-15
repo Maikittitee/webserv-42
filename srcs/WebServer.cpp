@@ -157,11 +157,15 @@ bool	WebServer::_send_response(int fd) // write fd
 
 	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
 	std::string msg;
-	if (return_code < 100) // return code is fd of child process
-		msg = _cgi.readfile(return_code);
+	if (return_code < 100){ // return code is fd of child process
+		if (client->request->_method == POST)
+			_set_fd(client->pipe_fd[0], _write_fds);
+		else{
+			_set_fd(client->pipe_fd[1], _read_fds);
+		}
+	}
 	else 
 		msg = _cgi.readfile(*client, *server, return_code); 
-	// need to check that return code is ok or not and if not ok -> check to find where error file is 
 
 	// check client body size
 	if (msg.size() > client->location->cliBodySize){

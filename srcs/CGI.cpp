@@ -82,7 +82,7 @@ int CGI::rout(Client &client, Server &server)
 			std::cout << "Hello From child proceass" << std::endl;
 			exit(0);
 		}
-		return (client.pipe_fd[1]);
+		return (client.pipe_fd[1]); // return write able fd
 	}
 	return (200);
 
