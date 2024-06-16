@@ -5,17 +5,50 @@ CGI::CGI(void){}
 CGI::~CGI(void){}
 
 
+std::string _append_index(Client &client)
+{
+	// if not directory -> return;
+	struct stat s;
+	if (access(client.request->_path.c_str(), F_OK) != 0 || client.location->autoIndex)
+		return (client.request->_path);
+	if (stat(client.request->_path.c_str(),&s) == 0)
+	{
+		if(s.st_mode & S_IFREG) // if it's file
+		{
+			std::cout << "it is a file" << std::endl;
+			return (client.request->_path);
+		}
+		else if (s.st_mode & S_IFDIR) 
+		{
+			std::cout << "it is a dir" << std::endl;
+			if (client.request->_path[client.request->_path.size() - 1] != '/')
+				client.request->_path += "/";
+			// loop index
+			std::string tmp_file;
+			std::cout << "hello1 index size: " << client.location->index.size() << std::endl;
+			for (int i = 0; i < client.location->index.size(); i++)
+			{
+				tmp_file = client.request->_path + client.location->index[i];
+				std::cout << "tmp_file: " << tmp_file << std::endl; 
+				if (access(tmp_file.c_str(), F_OK) == 0){
+					std::cout << "found index!!: " << tmp_file << std::endl;  
+					return (tmp_file);
+				}
+			}
+			return (client.request->_path);
+		} 
+		return (client.request->_path);
 
+	}
+	return (client.request->_path);
+}
 
 int CGI::rout(Client &client, Server &server)
 {
 	client.location = _select_location(*client.request, server);
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
-	else {
-		std::cout << client.location;
-	}
-	if (!_is_allow_method(client.request->_method, *client.location)) {
+	if (false /* plaeaseee */ && !_is_allow_method(client.request->_method, *client.location)) {
 		return (403);
 		//method not allow 
 	}
@@ -27,53 +60,96 @@ int CGI::rout(Client &client, Server &server)
 	if (client.request->_method == DELETE){
 		// delete file 
 	}
-	if (!client.location->autoIndex && _is_path(client.request->_path)){
-		std::string tmp_file;
-		for (int i = 0; i < client.location->index.size(); i++){
-			tmp_file = client.request->_path + client.location->index[i];
-			if (access(tmp_file.c_str(), F_OK) == 0){
-				client.request->_path = tmp_file;
-				break;
-			}
-		}
-	}
+	client.request->_path = client.location->root + client.request->_path;
+	client.request->_path = _append_index(client);
+	std::cout << YEL << "after find index:" << client.request->_path << RESET << std::endl;
 	// check access
-	if (access(client.request->_path.c_str(), F_OK) != 0)
+	if (access(client.request->_path.c_str(), F_OK) != 0 || is_directory(client.request->_path))
 		return (404);
-	if (client.location->autoIndex){
-		// maybe send 1000
+	if (client.location->autoIndex && is_directory(client.request->_path)){
 		return (1000);
 	}
 	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
+		pipe(client.pipe_fd);
+		pipe(client.pipe_fd_out);
+		client.pipe_available = true;
 
-		// is end file ? N: fork -> read ต่อ -> รัน cgi file -> 
-		// send fd
-		// return (fd child)
+		client.child_pid = fork();
+		if (client.child_pid == 0){ // child
+			dup2(client.pipe_fd[0], STDIN_FILENO);
+			dup2(client.pipe_fd_out[1], STDOUT_FILENO);
+			// 
+			close(client.pipe_fd[0]);
+			close(client.pipe_fd[1]);
+			close(client.pipe_fd_out[0]);
+			close(client.pipe_fd_out[1]);
+			char *arg[] = {(char *)client.request->_path.c_str(), NULL};
+			execve((char *)client.request->_path.c_str(), arg, NULL);
+			// std::cout << "Hello From child process" << std::endl;
+			exit(0);
+		}
+		else{
+			std::cout << "write: " << client.request->_body << std::endl;
+			write(client.pipe_fd[1], client.request->_body.c_str(), client.request->_body.size());
+			return (client.pipe_fd_out[1]); // return write able fd
+		}
 	}
-
-
-
-	
-
-
-
-
-
-	return (true);
+	return (200);
 
 }
 
-std::string CGI::readfile(std::string filename, Server &server, int return_code)
+size_t read_line(int fd, char* buffer)
+{
+    char char_buf;
+    size_t buffer_size = 0;
+    while (read(fd, &char_buf, 1) > 0 && char_buf != '\n')
+        buffer[buffer_size++] = char_buf;
+    buffer[buffer_size] = '\0';
+
+    return buffer_size;
+}
+
+
+std::string CGI::readfile(Client &client, Server &server, int return_code)
 {
 	Response response;
+	char buffer[BUFFERSIZE];
+	int fd;
+	int length = 0;
 
-	// mock
-	response._body = response.get_body_from_file("docs/test.html");
+	std::cout << "in readfile" << std::endl; 
+	if (return_code >= 400)
+	{
+		// check in error list and read error file
+		client.request->_path = "docs/error.html"; // need fix to error in server
+	}
+	if (return_code >= 100) {
+		std::cout << "read file: " << client.request->_path << std::endl;
+		fd = open(client.request->_path.c_str(), O_RDONLY);
+	}
+	else {
+		std::cout << "read cgi" << std::endl;
+		fd = client.pipe_fd_out[0];
+		close(client.pipe_fd[0]);
+		close(client.pipe_fd[1]);
+		close(client.pipe_fd_out[1]);
+	}
+	std::cout << "fd: " << fd << std::endl;
+
+	while (true)
+	{
+		bzero(buffer, length);
+		length = read(fd, buffer, BUFFERSIZE - 1);
+		buffer[length] = '\0';
+		if (length <= 0)
+			break;
+		response._body.append(buffer, length);
+	}
+	response._return_code = return_code;
+	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();
 	return (response.get_response_text());
-	
-
 }
 		
 std::string CGI::readfile(int fd) // fd of child (cgi) process <=============== HELLOOOOO PTEW
@@ -100,7 +176,6 @@ std::string CGI::_get_only_path(std::string path)
 
 	found = path.find_last_of("/\\");
 	str = path.substr(0, found);
-	std::cout << "cut " << str << std::endl;
 	return (str);
 }
 
@@ -108,12 +183,9 @@ Location* CGI::_compare_location(std::string str, std::map<std::string, Location
 {
 	std::map<std::string, Location>::iterator it;
 
-	std::cout << conf;
-	std::cout << "start compare" << std::endl;
 	for (it = conf.begin(); it != conf.end(); it++){
-		std::cout << "path checking" << it->first << std::endl;
 		if (it->first == str){
-			std::cout << YEL << "checked with " << it->first << RESET << std::endl;
+			std::cout << "checked with " << it->first  << std::endl;
 			return (&(it->second));
 		}
 	}
@@ -125,28 +197,23 @@ Location* CGI::_select_location(Request &request, Server &server)
 {
 	bool match = false;
 	Location *select_loc;
+	struct stat s;
 	
 
-	std::cout << YEL << "request path is " << request._path << RESET << std::endl;
-	std::cout << YEL << "[ expect format: \"haha/eiei/index.html\" ]" << RESET << std::endl;;
-
-	std::string only_path = "/" + _get_only_path(request._path);
+	std::cout << YEL << "request path: " << request._path << RESET << std::endl;
+	if ((select_loc = _compare_location(request._path, server._config)) != NULL)
+		match = true;
+	std::string only_path = _get_only_path(request._path);
+	std::cout << "only_path: " << only_path << std::endl;
 	while (!match){
-		std::cout << YEL << "only_path is " <<  only_path << RESET << std::endl;
 		if ((select_loc = _compare_location(only_path, server._config)) != NULL){
 			std::cout << YEL << "config match!" << RESET << std::endl;
 			match = true;
-			// std::cout << *select_loc << std::endl;
 		}
 		else
-		{
-			std::cout << "renew" << std::endl;
 			only_path = _get_only_path(only_path);
-
-		}
-		std::cout << "after cut " << only_path << std::endl;
 		if (only_path == ""){
-			std::cout << "/ ja" << std::endl;
+			std::cout << "get / location" << std::endl;
 			select_loc = &server._config["/"];
 			break;
 		}

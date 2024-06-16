@@ -37,7 +37,7 @@ std::map<std::string, Location> mock_location(void)
 
 	Location images(def);
 	images.index.clear();
-	images.index.insert(images.index.end(), "Cat03.jpg");
+	images.index.insert(images.index.end(), "usa.jpg");
 	images.index.insert(images.index.end(), "test.png");
 
 	Location cgi_bin(def);
@@ -61,9 +61,9 @@ std::map<std::string, Location> mock_location(void)
 Server *mock_server(void)
 {
 	Server *serv = new Server();
-	serv->name = "localhost";
+	serv->server_name = "localhost";
 	serv->ipAddr = "0.0.0.0";
-	serv->port = 6969;
+	serv->listen = 6969;
 	serv->_config = mock_location();
 
 	std::cout << serv->_config << std::endl;
