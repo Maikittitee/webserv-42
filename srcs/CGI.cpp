@@ -111,7 +111,7 @@ size_t read_line(int fd, char* buffer)
 }
 
 
-std::string CGI::readfile(Client &client, Server &server, int return_code)
+Response& CGI::readfile(Client &client, Server &server, int return_code)
 {
 	Response response;
 	char buffer[BUFFERSIZE];
@@ -122,46 +122,38 @@ std::string CGI::readfile(Client &client, Server &server, int return_code)
 	if (return_code >= 400)
 	{
 		// check in error list and read error file
-		client.request->_path = "docs/error.html"; // need fix to error in server
-	}
-	if (return_code >= 100) {
-		std::cout << "read file: " << client.request->_path << std::endl;
-		fd = open(client.request->_path.c_str(), O_RDONLY);
-	}
-	else {
-		std::cout << "read cgi" << std::endl;
-		fd = client.pipe_fd_out[0];
-		close(client.pipe_fd[0]);
-		close(client.pipe_fd[1]);
-		close(client.pipe_fd_out[1]);
-	}
-	std::cout << "fd: " << fd << std::endl;
+		// client.request->_path = "docs/error.html"; // need fix to error in server
+		response = server.error_page(return_code);
+	} else {
+		if (return_code >= 100) {
+			std::cout << "read file: " << client.request->_path << std::endl;
+			fd = open(client.request->_path.c_str(), O_RDONLY);
+		}
+		else {
+			std::cout << "read cgi" << std::endl;
+			fd = client.pipe_fd_out[0];
+			close(client.pipe_fd[0]);
+			close(client.pipe_fd[1]);
+			close(client.pipe_fd_out[1]);
+		}
+		std::cout << "fd: " << fd << std::endl;
 
-	while (true)
-	{
-		bzero(buffer, length);
-		length = read(fd, buffer, BUFFERSIZE - 1);
-		buffer[length] = '\0';
-		if (length <= 0)
-			break;
-		response._body.append(buffer, length);
+		while (true)
+		{
+			bzero(buffer, length);
+			length = read(fd, buffer, BUFFERSIZE - 1);
+			buffer[length] = '\0';
+			if (length <= 0)
+				break;
+			response._body.append(buffer, length);
+		}
 	}
 	response._return_code = return_code;
 	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();
-	return (response.get_response_text());
+	return (response);
 }
 		
-std::string CGI::readfile(int fd) // fd of child (cgi) process <=============== HELLOOOOO PTEW
-{
-	// อ่าน fd ของ child process แล้วเก็๋บไว้ใน buffer 
-	// response.body = buffer
-	// genate_header()
-	// return (response txt)
-	// close fd
-	return ("READFILE FROM FD");
-}
-
 bool CGI::_is_path(std::string path)
 {
 	if (path[path.size() - 1] == '/')

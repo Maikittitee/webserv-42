@@ -16,6 +16,11 @@ Server::~Server (void) {
 	close(_server_fd);
 }
 
+Response& Server::errorPage(int error_code){
+	Response response;
+
+	if (std::count(error_page.begin(), error_page.end() - 1, error_code));
+}
 
 std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map)
 {

@@ -156,14 +156,17 @@ bool	WebServer::_send_response(int fd) // write fd
 	int return_code = _cgi.rout(*client, *server);
 
 	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
-	std::string msg;
-	msg = _cgi.readfile(*client, *server, return_code); 
+	Response response;
+	response = _cgi.readfile(*client, *server, return_code); 
 
 	// check client body size
-	if (msg.size() > client->location->cliBodySize){
+	if (response._body.size() > client->location->cliBodySize){
 		// return 413 too big
+		response = server->error_page(413);
 	}
 
+
+	std::string msg = response.get_response_text();
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());

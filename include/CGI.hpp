@@ -24,8 +24,7 @@ class CGI{
 		Mime		_mime;
 
 		int rout(Client &client, Server &server);
-		std::string readfile(Client &client, Server &server, int return_code);
-		std::string readfile(int fd);
+		Response& readfile(Client &client, Server &server, int return_code);
 		std::string	get_response(void);
 
 	// private:
@@ -34,6 +33,7 @@ class CGI{
 		Location* _compare_location(std::string str, std::map<std::string, Location> &conf);
 		std::string _get_only_path(std::string path);
 		bool _is_path(std::string path);
+		int		_delete_method(Client &client);
 };
 
 
