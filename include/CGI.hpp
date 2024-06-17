@@ -15,6 +15,20 @@ class Response;
 
 class Mime;
 
+typedef enum e_res_type{
+	STATUS_CODE, 
+	FORKING,
+	DELETE,
+	AUTO_INDEX,
+	HEAD
+} t_res_type;
+
+typedef struct s_cgi_return{
+	t_res_type type;
+	int			status_code;
+
+} t_cgi_return;
+
 class CGI{
 	public:
 		CGI(void);
@@ -23,8 +37,8 @@ class CGI{
 		Response response;
 		Mime		_mime;
 
-		int rout(Client &client, Server &server);
-		Response& readfile(Client &client, Server &server, int return_code);
+		t_cgi_return rout(Client &client, Server &server);
+		Response& readfile(Client &client, Server &server, t_cgi_return cgi_return);
 		std::string	get_response(void);
 
 	// private:
@@ -36,5 +50,8 @@ class CGI{
 		int		_delete_method(Client &client);
 };
 
+std::ostream& operator <<(std::ostream &os, const t_res_type &res_type);
+
+std::ostream& operator <<(std::ostream &os, const t_cgi_return &cgi_ret);
 
 #endif

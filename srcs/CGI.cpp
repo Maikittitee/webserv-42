@@ -9,7 +9,7 @@ std::string _append_index(Client &client)
 {
 	// if not directory -> return;
 	struct stat s;
-	if (access(client.request->_path.c_str(), F_OK) != 0 || client.location->autoIndex)
+	if (access(client.request->_path.c_str(), F_OK) != 0 || client.location->autoIndex) // ???
 		return (client.request->_path);
 	if (stat(client.request->_path.c_str(),&s) == 0)
 	{
@@ -43,31 +43,37 @@ std::string _append_index(Client &client)
 	return (client.request->_path);
 }
 
-int CGI::rout(Client &client, Server &server)
+t_cgi_return CGI::rout(Client &client, Server &server)
 {
+	t_cgi_return ret;
+
 	client.location = _select_location(*client.request, server);
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
 	if (false /* plaeaseee */ && !_is_allow_method(client.request->_method, *client.location)) {
-		return (403);
-		//method not allow 
+		if (client.request->_method == HEAD)
+			return (t_cgi_return){HEAD, 403};
+		return (t_cgi_return){STATUS_CODE, 403};
 	}
 	if (client.location->ret.have){
 		// redirect
 		client.request->_path = client.location->ret.text;
-		return (client.location->ret.code);
+		return ((t_cgi_return){STATUS_CODE, client.location->ret.code});
 	}
 	if (client.request->_method == DELETE){
-		// delete file 
+		return (t_cgi_return){DELETE, 0};	
 	}
-	client.request->_path = client.location->root + client.request->_path;
-	client.request->_path = _append_index(client);
+	client.request->_path = client.location->root + client.request->_path; // prepend root path
+	client.request->_path = _append_index(client);	// append index
 	std::cout << YEL << "after find index:" << client.request->_path << RESET << std::endl;
+
 	// check access
 	if (access(client.request->_path.c_str(), F_OK) != 0 || is_directory(client.request->_path))
-		return (404);
+		return ((t_cgi_return){STATUS_CODE, 404});
+
+	// check auto index
 	if (client.location->autoIndex && is_directory(client.request->_path)){
-		return (1000);
+		return ((t_cgi_return){AUTO_INDEX, 0});
 	}
 	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
@@ -86,16 +92,14 @@ int CGI::rout(Client &client, Server &server)
 			close(client.pipe_fd_out[1]);
 			char *arg[] = {(char *)client.request->_path.c_str(), NULL};
 			execve((char *)client.request->_path.c_str(), arg, NULL);
-			// std::cout << "Hello From child process" << std::endl;
 			exit(0);
 		}
-		else{
-			std::cout << "write: " << client.request->_body << std::endl;
+		else{ // perent
 			write(client.pipe_fd[1], client.request->_body.c_str(), client.request->_body.size());
-			return (client.pipe_fd_out[1]); // return write able fd
+			return ((t_cgi_return){FORKING, 0}); // return write able fd
 		}
 	}
-	return (200);
+	return ((t_cgi_return){STATUS_CODE, 200});
 
 }
 
@@ -111,44 +115,65 @@ size_t read_line(int fd, char* buffer)
 }
 
 
-Response& CGI::readfile(Client &client, Server &server, int return_code)
+Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 {
 	Response response;
+	bool	readable = false;
 	char buffer[BUFFERSIZE];
 	int fd;
 	int length = 0;
 
 	std::cout << "in readfile" << std::endl; 
-	if (return_code >= 400)
+	if (cgi_return.type == STATUS_CODE && cgi_return.status_code >= 400)
 	{
 		// check in error list and read error file
 		// client.request->_path = "docs/error.html"; // need fix to error in server
-		response = server.error_page(return_code);
-	} else {
-		if (return_code >= 100) {
-			std::cout << "read file: " << client.request->_path << std::endl;
-			fd = open(client.request->_path.c_str(), O_RDONLY);
-		}
-		else {
-			std::cout << "read cgi" << std::endl;
-			fd = client.pipe_fd_out[0];
-			close(client.pipe_fd[0]);
-			close(client.pipe_fd[1]);
-			close(client.pipe_fd_out[1]);
-		}
-		std::cout << "fd: " << fd << std::endl;
-
-		while (true)
-		{
-			bzero(buffer, length);
-			length = read(fd, buffer, BUFFERSIZE - 1);
-			buffer[length] = '\0';
-			if (length <= 0)
-				break;
-			response._body.append(buffer, length);
-		}
+		response = server.errorPage(cgi_return.status_code);
+		readable = false;
+	} 
+	else if (cgi_return.type == STATUS_CODE && cgi_return.status_code >= 100) 
+	{
+		std::cout << "read file: " << client.request->_path << std::endl;
+		fd = open(client.request->_path.c_str(), O_RDONLY);
+		readable = true;
 	}
-	response._return_code = return_code;
+	else if (cgi_return.type == FORKING)
+	{
+		std::cout << "read cgi" << std::endl;
+		fd = client.pipe_fd_out[0];
+		close(client.pipe_fd[0]);
+		close(client.pipe_fd[1]);
+		close(client.pipe_fd_out[1]);
+		readable = true;
+	}
+	else if (cgi_return.type == AUTO_INDEX)
+	{
+		// return 
+		readable = false;
+	}
+	else if (cgi_return.type == DELETE)
+	{
+
+	}
+	else if (cgi_return.type == HEAD)
+	{
+		
+	}
+
+	std::cout << "fd: " << fd << std::endl;
+	while (readable)
+	{
+		bzero(buffer, length);
+		length = read(fd, buffer, BUFFERSIZE - 1);
+		buffer[length] = '\0';
+		if (length <= 0)
+			break;
+		response._body.append(buffer, length);
+	}
+	if (cgi_return.type == STATUS_CODE)
+		response._return_code = cgi_return.status_code;
+	else 
+		response._return_code = 0;
 	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();
 	return (response);
@@ -221,4 +246,38 @@ bool	CGI::_is_allow_method(t_method method, Location &location)
 			return (true);
 	}
 	return (false);
+}
+
+std::ostream& operator <<(std::ostream &os, const t_res_type &res_type)
+{
+	switch (res_type)
+	{
+		case STATUS_CODE:
+			os << "STATUS_CODE";
+			break;
+		case FORKING:
+			os << "FORKING";
+			break;
+		case DELETE:
+			os << "DELETE";
+			break;
+		case AUTO_INDEX:
+			os << "AUTO_INDEX";	
+			break;
+		case HEAD:
+			os << "HEAD";	
+			break;
+		default:
+			os << "Undefind response type";
+			break;
+	}
+	return (os);
+}
+
+std::ostream& operator <<(std::ostream &os, const t_cgi_return &cgi_ret)
+{
+	os << "Resposne Type: " << cgi_ret.type;
+	if (cgi_ret.type == STATUS_CODE)
+		os << ":: " << cgi_ret.status_code << std::endl;
+	return (os);
 }

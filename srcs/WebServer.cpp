@@ -146,23 +146,24 @@ bool	WebServer::_send_response(int fd) // write fd
 {
 	Client *client = _get_client(fd);
 	Server *server = client->server;
-	
+	Response response;
+	t_cgi_return cgi_return;	
 	if (!client)
 		std::cerr << RED << "can't find client" << RESET << std::endl;
 	if (!server)
 		std::cerr << RED << "can't find server" << RESET << std::endl;
 	
 	// CGI work here
-	int return_code = _cgi.rout(*client, *server);
+	cgi_return = _cgi.rout(*client, *server);
+	std::cout << BLU << "cgi return: " << cgi_return << RESET << std::endl;
 
-	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
-	Response response;
-	response = _cgi.readfile(*client, *server, return_code); 
+	// Get resource
+	response = _cgi.readfile(*client, *server, cgi_return); 
 
 	// check client body size
 	if (response._body.size() > client->location->cliBodySize){
 		// return 413 too big
-		response = server->error_page(413);
+		response = server->errorPage(413);
 	}
 
 

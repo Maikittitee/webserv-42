@@ -16,7 +16,7 @@ Server::~Server (void) {
 	close(_server_fd);
 }
 
-Response& Server::errorPage(int error_code){
+Response& Server::errorPage(int error_code){ // return resposne
 	Response response;
 
 	if (std::count(error_page.begin(), error_page.end() - 1, error_code));
