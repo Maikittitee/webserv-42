@@ -1,15 +1,16 @@
-#include "../include/Request.hpp"
+#include "Request.hpp"
 
 Request::Request():
 _lineIndex(0),
 _status(IN_REQUEST_LINE),
+write_fd(-1),
 _reqErr(SUCESS_REQUEST),
 _method(NONE),
 _path(""),
 _http_version(HTTP00),
 _body(""),
 _query_string(""),
-write_fd(-1)
+_isEndRecv(false)
 {
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
@@ -21,13 +22,14 @@ write_fd(-1)
 Request::Request(std::string request):
 _lineIndex(0),
 _status(IN_REQUEST_LINE),
+write_fd(-1),
 _reqErr(SUCESS_REQUEST),
 _method(NONE),
 _path(""),
 _http_version(HTTP00),
 _body(""),
 _query_string(""),
-write_fd(-1)
+_isEndRecv(false)
 {
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
@@ -61,11 +63,11 @@ write_fd(-1)
 
 void Request::_intiRequestStatus( void )
 {
-	while (std::vector<std::string>::iterator it = request_v.begin(); it != request_v.end(); ++it)
+	for (std::vector<std::string>::iterator it = request_v.begin(); it != request_v.end(); ++it)
 	{
 		if ( it == request_v.begin()
 			&& _status == IN_REQUEST_LINE \
-			&& ((*it).find('\n', start) != std::string::npos))
+			&& ((*it).find('\n', (*it).size()- 1) != std::string::npos))
 		{
 				_status = IN_HEADER_LINE;
 		}
@@ -161,8 +163,11 @@ bool	Request::_readRequestHeaderField( void )
 
 	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
 	{
-		if (request_v[_lineIndex].find('\n', 0) == std::string::npos)
+		if (request_v[_lineIndex].find('\n', \
+			request_v[_lineIndex].size()- 1) == std::string::npos)
+		{
 			return true;
+		}
 		header_l = request_v[_lineIndex];
 		word_v = splitToVector(header_l, ':');
 		if (word_v.size() > 2)
@@ -207,7 +212,7 @@ void	Request::_collectQuery(std::string path_l)
 
 void	Request::updateRequest(std::string &request)
 {
-	_updateRequestToVector(request)
+	_updateRequestToVector(request);
 	if (_status == IN_REQUEST_LINE)
 		_updateFromRequestLine();
 	if (_status == IN_HEADER_LINE)
@@ -220,15 +225,17 @@ void	Request::updateRequest(std::string &request)
 	if (_status == IN_BODY_LINE)
 		_updateAfterHeaderLine();
 	if (_isEndRecv == true)
-		_stats = END_REQUEST_MSG;
+		_status = END_REQUEST_MSG;
 }
 
 void	Request::_updateRequestToVector(std::string &request)
 {
-    std::string::size_type start = 0;
-    std::string::size_type end = 0;
+    std::string::size_type 		start = 0;
+    std::string::size_type		end = 0;
+	std::vector<std::string>	updateReq;
 
-	if (request_v.back().find('\n', start) != std::string::npos)
+	if (request_v.back().find('\n', \
+		request_v.back().size() - 1) != std::string::npos)
 	{
 		updateReq = lineToVector(request);
 		request_v.push_back(updateReq);

@@ -126,8 +126,6 @@ bool WebServer::runServer(void)
 				{
 					std::cout << YEL << "receiving request..." << RESET << std::endl;
 					_parsing_request(fd);
-
-
 				}
 			}
 			else if (FD_ISSET(fd, &tmp_write_fds))
@@ -170,7 +168,6 @@ bool	WebServer::_send_response(int fd) // write fd
 		msg = _cgi.readfile(client->request->_path, *server, return_code); 
 		// need to check that return code is ok or not and if not ok -> check to find where error file is 
 
-
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
@@ -178,7 +175,6 @@ bool	WebServer::_send_response(int fd) // write fd
 	_clear_fd(fd, _write_fds);
 	_clients.erase(fd);
 	return (true);
-
 }
 
 bool	WebServer::_is_match_server(int fd)
@@ -262,6 +258,7 @@ bool WebServer::_parsing_request(int client_fd)
 	Client client = *_get_client(client_fd);
 	Server *server = client.server;
 
+	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
 	if (client.bufSize > 0)
 		client.buffer[client.bufSize] = '\0';
 	else
@@ -270,10 +267,27 @@ bool WebServer::_parsing_request(int client_fd)
 		break;
 	}
 	std::cout << GRN << client.buffer << RESET << std::endl;
-	Request request(client.buffer);
-	client.request = &request;
-	_clear_fd(client_fd, _read_fds);
-	_set_fd(client_fd, _write_fds);
+	if (!client.request)
+	{
+		Request request(client.buffer);
+		client.request = &request;	
+	}
+	if (client.request->_method != POST \
+			&& client.request->_status >= IN_CRLF_LINE)
+	{
+		_clear_fd(client_fd, _read_fds);
+		_set_fd(client_fd, _write_fds);
+	}
+	else if (client.request->_method == POST \
+			&& client.request->_status >= END_REQUEST_MSG)
+	{
+		_clear_fd(client_fd, _read_fds);
+		_set_fd(client_fd, _write_fds);	
+	}
+	else if (client.request->_status < END_REQUEST_MSG)
+	{
+		client.request->updateRequest(client.buffer);
+	}
 	return (true);
 }
 

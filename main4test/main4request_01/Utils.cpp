@@ -1,4 +1,4 @@
-#include "../include/Utils.hpp"
+#include "Utils.hpp"
 
 bool readFile(std::string &buff, std::string const &filename)
 {
@@ -96,6 +96,11 @@ void	trimSpaces(std::string& str)
 {
     trimLeadingSpaces(str);
     trimTrailingSpaces(str);
+}
+
+void	vectorPlueVector()
+{
+	
 }
 
 std::ostream &operator << (std::ostream &os, const t_method &method)

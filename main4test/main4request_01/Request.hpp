@@ -1,6 +1,7 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
+#	include <fstream>
 #	include <iostream>
 #	include <string>
 #	include <sys/socket.h>
@@ -62,6 +63,12 @@ class Request{
 		void		_collectQuery(std::string body_l);
 		void		_trimSpaceWordVector(std::vector<std::string> &word_v);
 		void		_readRequestMassageBody( void );
+		void		_intiRequestStatus( void );
+		void		_updateRequestToVector(std::string &request);
+		void		_updateFromRequestLine( void );
+		void		_updateFromHeaderLine( void );
+		void		_updateAfterHeaderLine( void );
+
 
 	public:
 		// Attribute
@@ -90,7 +97,7 @@ class Request{
 		}
 
 		// Public Method
-		void		updateRequest(std::string request);
+		void		updateRequest(std::string &request);
 };
 
 
