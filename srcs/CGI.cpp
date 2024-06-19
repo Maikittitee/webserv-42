@@ -148,12 +148,14 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	}
 	else if (cgi_return.type == AUTO_INDEX)
 	{
-		// return 
+		// return
+		// response = _auto_indexing(client, server); 
 		readable = false;
 	}
 	else if (cgi_return.type == DELETE)
 	{
-
+		response = _delete_method(client);
+		readable = false;
 	}
 	else if (cgi_return.type == HEAD)
 	{
@@ -161,6 +163,7 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	}
 
 	std::cout << "fd: " << fd << std::endl;
+	int read_byte = 0;
 	while (readable)
 	{
 		bzero(buffer, length);
@@ -177,6 +180,11 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	response._content_type = _mime.get_mime_type(client.request->_path);
 	response.genarate_header();
 	return (response);
+}
+
+int		_delete_method(Client &client)
+{
+
 }
 		
 bool CGI::_is_path(std::string path)
