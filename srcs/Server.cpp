@@ -17,9 +17,16 @@ Server::~Server (void) {
 }
 
 Response& Server::errorPage(int error_code){ // return resposne
-	Response response;
+	Response *response = new Response;
+	char buffer[BUFFERSIZE];
 
-	if (std::count(error_page.begin(), error_page.end() - 1, error_code));
+	// if (std::count(error_page.begin(), error_page.end() - 1, error_code));
+	int fd = open("docs/error.html", O_RDONLY);
+	int length = read(fd, buffer, BUFFERSIZE - 1);
+	buffer[length] = '\0';
+	response->_body.append(buffer, length);
+	return (*response);
+
 }
 
 std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map)

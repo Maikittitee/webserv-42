@@ -161,10 +161,10 @@ bool	WebServer::_send_response(int fd) // write fd
 	response = _cgi.readfile(*client, *server, cgi_return); 
 
 	// check client body size
-	if (response._body.size() > client->location->cliBodySize){
-		// return 413 too big
-		response = server->errorPage(413);
-	}
+	// if (response._body.size() > client->location->cliBodySize){
+	// 	// return 413 too big
+	// 	response = server->errorPage(413);
+	// }
 
 
 	std::string msg = response.get_response_text();
@@ -285,6 +285,15 @@ Request *my_request_parser(char *buffer)
 	std::cout << RED << line << RESET << std::endl;
 	std::vector<std::string> vec = splitToVector(line, ' ');
 	req->_path = vec[1];
+	
+	if (vec[0] == "GET")
+		req->_method = GET;
+	else if (vec[0] == "POST")
+		req->_method = POST;
+	else if (vec[0] == "DELETE")
+		req->_method = DELETE;
+	else
+		req->_method = ELSE;
 	req->_body = "this is body";
 	return (req);
 }

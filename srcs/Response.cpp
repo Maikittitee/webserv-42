@@ -1,6 +1,6 @@
 #include "../include/Response.hpp"
 
-Response::Response(void) {}
+Response::Response(void): cgiPass(false) {}
 
 Response::~Response(void) {}
 
@@ -23,7 +23,7 @@ void Response::genarate_header(void)
 	std::stringstream header;
 
 	header << "HTTP/1.1 ";
-	header << 200;
+	header << _return_code;
 	header << " ";
 	header << "OK";
 	header << "\r\n";
@@ -35,9 +35,11 @@ void Response::genarate_header(void)
 		header << _content_type;
 		header << "\r\n";
 	}
-	header << "Content-Length: ";
-	header << _body.size();
-	header << "\r\n";
+	if (_body.size()){
+		header << "Content-Length: ";
+		header << _body.size();
+		header << "\r\n";
+	}
 
 	this->_header = header.str();
 }
@@ -50,7 +52,6 @@ std::string Response::get_response_text(void)
 	if (!cgiPass)
 		response += "\r\n";
 	response += _body;
-	std::cout << "done" << std::endl;
 
 	return (response);
 

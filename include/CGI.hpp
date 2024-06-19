@@ -16,11 +16,11 @@ class Response;
 class Mime;
 
 typedef enum e_res_type{
-	STATUS_CODE, 
-	FORKING,
-	DELETE,
-	AUTO_INDEX,
-	HEAD
+	STATUS_CODE_RES, 
+	FORKING_RES,
+	DELETE_RES,
+	AUTO_INDEX_RES,
+	HEAD_RES
 } t_res_type;
 
 typedef struct s_cgi_return{
@@ -47,7 +47,7 @@ class CGI{
 		Location* _compare_location(std::string str, std::map<std::string, Location> &conf);
 		std::string _get_only_path(std::string path);
 		bool _is_path(std::string path);
-		int		_delete_method(Client &client);
+		Response&	_delete_method(Client &client);
 };
 
 std::ostream& operator <<(std::ostream &os, const t_res_type &res_type);
