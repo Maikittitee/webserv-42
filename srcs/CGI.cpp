@@ -126,8 +126,6 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	std::cout << "in readfile" << std::endl; 
 	if (cgi_return.type == STATUS_CODE_RES && cgi_return.status_code >= 400)
 	{
-		// check in error list and read error file
-		// client.request->_path = "docs/error.html"; // need fix to error in server
 		response = &server.errorPage(cgi_return.status_code);
 		readable = false;
 	} 
@@ -156,7 +154,6 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	}
 	else if (cgi_return.type == DELETE_RES)
 	{
-		std::cout << "come del" << std::endl;
 		response = &_delete_method(client);
 		readable = false;
 	}
@@ -247,9 +244,7 @@ Location* CGI::_select_location(Request &request, Server &server)
 		}
 		else
 			only_path = _get_only_path(only_path);
-		std::cout << "only path:" << only_path << "<" << std::endl;
 		if (only_path.size() <= 1){
-			std::cout << "here" << std::endl;
 			std::cout << "get / location" << std::endl;
 			select_loc = &server._config["/"];
 			break;
