@@ -14,6 +14,9 @@
 #	include <sstream> 
 #	include "Utils.hpp"
 
+
+#	define BUFFERSIZE 65535
+
 typedef enum e_requestErrorCode{
 			SUCESS_REQUEST,
 			EMPTHY_REQUEST,
@@ -63,7 +66,7 @@ class Request{
 		void		_collectQuery(std::string body_l);
 		void		_trimSpaceWordVector(std::vector<std::string> &word_v);
 		void		_readRequestMassageBody( void );
-		void		_intiRequestStatus( void );
+		void		_intiRequestStatus(std::string request);
 		void		_updateRequestToVector(std::string &request);
 		void		_updateFromRequestLine( void );
 		void		_updateFromHeaderLine( void );

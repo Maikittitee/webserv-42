@@ -1,45 +1,5 @@
 #include "Utils.hpp"
 
-bool readFile(std::string &buff, std::string const &filename)
-{
-	std::ifstream file(filename);
-	int length;
-	file.seekg(0, std::ios::end);
-
-	if (!file.is_open()){
-		std::cerr << "Can't Open The File" << std::endl;
-		return (false);
-	}
-	length = file.tellg();
-
-	char *buffer = new char[length];
-	file.seekg(0, std::ios::beg);
-	file.read(buffer, length);
-	file.close();
-	buff = buffer;
-	return (true);
-
-}
-
-void	replace_str(std::string &str, std::string s1, std::string s2)
-{
-	size_t	found_pos = 0;
-	int		index = 0;
-
-	if (s1.empty() || s2.empty())
-		return ;
-	while (true)
-	{
-		found_pos = str.find(s1, index);
-		if (found_pos > str.size())
-			break ;
-		str.erase(found_pos, s1.length());
-		str.insert(found_pos, s2);
-		index = found_pos + s2.length();
-	}
-}
-
-
 std::vector<std::string> splitToVector(const std::string& str, char delimiter) 
 {
     std::vector<std::string> tokens;
@@ -66,14 +26,14 @@ std::vector<std::string> lineToVector(const std::string& str)
     while ((end = str.find('\n', start)) != std::string::npos)
 	{
         if (end != start)
-            tokens.push_back(str.substr(start, end - start));
+            tokens.push_back(str.substr(start, end - start) + "\n");
 		else
 			tokens.push_back("\n");
         start = end + 1;
     }
 	if (start < str.size())
 	{
-		push_back(str.substr(start, str.size() - start))
+		tokens.push_back(str.substr(start, str.size() - start));
 	}
     return tokens;
 }
@@ -98,33 +58,30 @@ void	trimSpaces(std::string& str)
     trimTrailingSpaces(str);
 }
 
-void	vectorPlueVector()
+void	vectorPlueVector(std::vector<std::string>& v1, std::vector<std::string>& v2)
 {
-	
+    for (std::vector<std::string>::iterator it = v2.begin(); it != v2.end(); ++it) 
+	{
+        v1.push_back(*it);
+    }	
 }
 
-std::ostream &operator << (std::ostream &os, const t_method &method)
+void    trimNewline(std::string &str)
 {
-	switch (method)
-	{
-		case ELSE:
-			os << "ELSE";
-			break;
-		case GET:
-			os << "GET";
-			break;
-		case POST:
-			os << "POST";
-			break;
-		case DELETE:
-			os << "DELETE";
-			break;
-		case HEAD:
-			os << "HEAD";
-			break;
-		default:
-			os << "not a method";
-			break;
-	}
-	return (os);
+    // Find the first non-newline character from the beginning
+    std::string::size_type start = 0;
+    while (start < str.size() && (str[start] == '\n' || str[start] == '\r')) {
+        ++start;
+    }
+
+    // Find the last non-newline character from the end
+    std::string::size_type end = str.size();
+    while (end > start && (str[end - 1] == '\n' || str[end - 1] == '\r')) {
+        --end;
+    }
+
+    // If there are leading or trailing newlines, modify the string in place
+    if (start > 0 || end < str.size()) {
+        str = str.substr(start, end - start);
+    }
 }

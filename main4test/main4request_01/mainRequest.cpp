@@ -26,7 +26,10 @@ int main(int argc, char **argv)
         line = "";
     }
     file.close();
-    // std::cout << request;
+
+    std::cout << std::endl;
+    std::cout << "===========================" << std::endl << "request: " << std::endl << request << "===========================" << std::endl << std::endl;
+
     Request req(request);
     std::cout << "Method: " << req._method << std::endl;
     std::cout << "Path: " << req._path << std::endl;
@@ -39,7 +42,7 @@ int main(int argc, char **argv)
         std::cout << "Key: " << it->first << ", Value: " << it->second << std::endl;
     }
 
-    std::cout << "Body: " << req._body << std::endl;
+    std::cout << "Body: " << req._body;
     std::cout << "Query: " << req._query_string << std::endl;
     return 0;
 }

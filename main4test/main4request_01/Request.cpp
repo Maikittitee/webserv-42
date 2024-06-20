@@ -40,12 +40,13 @@ _isEndRecv(false)
 	{
 		_reqErrMsg();
 	}
-	_intiRequestStatus();
+	_intiRequestStatus(request);
 	if(_status > IN_REQUEST_LINE)
 	{
 		_readRequestLine();
 		_reqErrMsg();
 	}
+	std::cout << "status = " << _status << std::endl;
 	if(_status >= IN_HEADER_LINE)
 	{
 		_readRequestHeaderField();
@@ -61,25 +62,37 @@ _isEndRecv(false)
 	}
 }
 
-void Request::_intiRequestStatus( void )
+void Request::_intiRequestStatus(std::string request)
 {
 	for (std::vector<std::string>::iterator it = request_v.begin(); it != request_v.end(); ++it)
 	{
+		if (request.size() < BUFFERSIZE)
+		{
+			_status = END_REQUEST_MSG;
+			return ;
+		}
 		if ( it == request_v.begin()
 			&& _status == IN_REQUEST_LINE \
 			&& ((*it).find('\n', (*it).size()- 1) != std::string::npos))
 		{
+				std::cout << "IN_HEADER_LINE" << std::endl;
 				_status = IN_HEADER_LINE;
 		}
 		else if (_status == IN_HEADER_LINE)
 		{
 			if ((*it) == "\n")
+			{
+				std::cout << "IN_CRLF_LINE" << std::endl;
 				_status = IN_CRLF_LINE;
+			}
 		}
 		else if (_status == IN_CRLF_LINE)
 		{
 			if(it != request_v.end())
+			{
+				std::cout << "IN_CRLF_LINE" << std::endl;
 				_status = IN_BODY_LINE;
+			}
 		}
 	}
 }
@@ -138,6 +151,7 @@ bool	Request::_httpVersionCheckNCollect(std::string word)
 {
 	std::vector<std::string>	version_v;
 
+	trimNewline(word);
 	version_v = splitToVector(word, '/');
 	_trimSpaceWordVector(version_v);
 	if(version_v[0] != "HTTP")
@@ -146,13 +160,21 @@ bool	Request::_httpVersionCheckNCollect(std::string word)
 		return (false);
 	}
 	if(version_v[1] == "0.9")
+	{
 		_http_version = HTTP09;
+	}
 	else if(version_v[1] == "1.0")
+	{
 		_http_version = HTTP10;
+	}
 	else if(version_v[1] == "1.1")
+	{
 		_http_version = HTTP11;
+	}
 	else
+	{
 		_http_version = HTTP00;
+	}
 	return (true);
 }
 
@@ -176,6 +198,7 @@ bool	Request::_readRequestHeaderField( void )
 			return false;
 		}
 		_trimSpaceWordVector(word_v);
+		trimNewline(word_v[1]);
 		_headerField_map[word_v[0]] = word_v[1];
 		_lineIndex++;
 	}
@@ -205,7 +228,6 @@ void	Request::_collectQuery(std::string path_l)
 {
 	size_t 		start = path_l.find('?', 0) + 1;
 
-	std::cout << "start = " << start << "\n";
 	if (start != std::string::npos)
 		_query_string = path_l.substr(start, path_l.length());
 }
@@ -233,24 +255,25 @@ void	Request::_updateRequestToVector(std::string &request)
     std::string::size_type 		start = 0;
     std::string::size_type		end = 0;
 	std::vector<std::string>	updateReq;
+	std::string					lessReq;
 
 	if (request_v.back().find('\n', \
 		request_v.back().size() - 1) != std::string::npos)
 	{
 		updateReq = lineToVector(request);
-		request_v.push_back(updateReq);
+		vectorPlueVector(request_v, updateReq);
 	}
 	else
 	{
-		if (end = request.find('\n', start) != std::string::npos)
+		if ((end = request.find('\n', start)) != std::string::npos)
 		{
 			request_v.back() += request.substr(start, end - start);
-			lessReq = request.substr(start, str.size() - start);
-			updateReq = lineToVector(request);
-			request_v.push_back(updateReq);
+			lessReq = request.substr(start, request.size() - start);
+			updateReq = lineToVector(lessReq);
+			vectorPlueVector(request_v, updateReq);
 		}
 		else
-			request_v.back() += str.substr(start, end - start);
+			request_v.back() += request.substr(start, end - start);
 	}
 }
 
@@ -287,13 +310,13 @@ void	Request::_updateFromHeaderLine( void )
 	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
 	{
 		if (request_v[_lineIndex].find('\n', 0) == std::string::npos)
-			return true;
+			return ;
 		header_l = request_v[_lineIndex];
 		word_v = splitToVector(header_l, ':');
 		if (word_v.size() > 2)
 		{
 			_reqErr = BAD_HEADERFIELD;
-			return false;
+			return ;
 		}
 		_trimSpaceWordVector(word_v);
 		_headerField_map[word_v[0]] = word_v[1];
