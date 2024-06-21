@@ -5,6 +5,11 @@ Server::Server(void)
 	server_name = "localhost"; //? server_name
 	ipAddr = "0.0.0.0"; //? listen could be ip address or port
 	listen = 80;
+	error_page.push_back("400");
+	error_page.push_back("403");
+	error_page.push_back("404");
+	error_page.push_back("405");
+	error_page.push_back("error.html");
 
 }
 
@@ -72,20 +77,24 @@ Response& Server::errorPage(int error_code){ // return resposne
 	int len;
 
 	error_code_string << error_code;
-	char buffer[BUFFERSIZE];
+	std::string filename = _config["def"].root + "/" + error_page.back();
 
-	if (std::count(error_page.begin(), error_page.end() - 1, error_code_string) != 0){
-		fd = open(error_page[error_page.size() - 1].c_str(), O_RDONLY);
+	std::cout << "error code: " << error_code_string.str() << std::endl;
+	if (std::count(error_page.begin(), error_page.end() - 1, error_code_string.str()) != 0){
+		fd = open(filename.c_str(), O_RDONLY);
 		if (fd < 0)
-			std::cerr << RED << "Can't open " << error_page[error_page.size() - 1] << RESET << std::endl;
+			std::cerr << RED << "Can't open " << filename << RESET << std::endl;
+		std::cout << "bp1" << std::endl;
 		len = read(fd, buffer, BUFFERSIZE - 1);
 		buffer[len] = '\0';
 		response->_body.append(buffer, len);
+		std::cout << response->_body << std::endl;
 	}
 	else {
 		response->_return_code = error_code;
 		response->_body = status_code_validate(error_code);
 	}
+	response->_content_type = "text/html";
 	return (*response);
 
 

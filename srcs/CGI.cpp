@@ -50,8 +50,10 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 	client.location = _select_location(*client.request, server);
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
+	std::cout << GRN << *client.location << RESET << std::endl;
 	client.request->_path = client.location->root + client.request->_path; // prepend root path
-	if (false /* plaeaseee */ && !_is_allow_method(client.request->_method, *client.location)) {
+	if (!_is_allow_method(client.request->_method, *client.location)) {
+		std::cout << YEL << client.request->_method << " method is not allow" << RESET << std::endl; 
 		if (client.request->_method == HEAD)
 			return (t_cgi_return){HEAD_RES, 403};
 		return (t_cgi_return){STATUS_CODE_RES, 403};
@@ -176,7 +178,8 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	}
 	if (cgi_return.type == STATUS_CODE_RES)
 		response->_return_code = cgi_return.status_code;
-	response->_content_type = _mime.get_mime_type(client.request->_path);
+	if (readable)
+		response->_content_type = _mime.get_mime_type(client.request->_path);
 	response->genarate_header();
 	return (*response);
 }

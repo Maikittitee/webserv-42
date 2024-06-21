@@ -30,7 +30,7 @@ class Server{
 		~Server();
 
 		Response& errorPage(int error_code);
-		std::string Server::status_code_validate(int status_code);
+		std::string status_code_validate(int status_code);
 };
 
 std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map);

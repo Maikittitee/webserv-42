@@ -295,6 +295,8 @@ Request *my_request_parser(char *buffer)
 	else
 		req->_method = ELSE;
 	req->_body = "this is body";
+
+	std::cout << "method: " << req->_method << std::endl;
 	return (req);
 }
 
