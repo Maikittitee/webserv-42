@@ -17,9 +17,6 @@
 #	include "Response.hpp"
 #	include <time.h>
 
-// struct dfconf;
-// typedef struct t_dfconf s_dfconf;
-
 class Mime;
 
 class Request;
@@ -34,9 +31,7 @@ typedef struct s_dfconf
 	std::string	root;
 		
 	std::vector<std::string> index;
-	// std::vector<std::string> limit_except;
 	std::vector<std::string> error_page;
-	// int			locate;  // true false
 } t_dfconf ;
 
 class Server{
@@ -45,14 +40,11 @@ class Server{
 		int					_server_fd;
 		struct sockaddr_in	_address;
     	socklen_t			_addrlen;
-		// std::vector<int>	_server_port;
 
-		// keep key and value of default conf
 		u_int64_t			listen;
 		std::string			server_name;
 		std::vector<std::string>	error_page;
 		
-		//Location
 		std::map<std::string, Location> _config;
 		Mime				_mime;
 		char				**_env;
