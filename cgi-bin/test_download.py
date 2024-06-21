@@ -28,7 +28,7 @@ if fileitem.filename:
 else:
    message = 'No file was uploaded'
 
-# existing_files = os.listdir(dirUpload)
+existing_files = os.listdir(upload_dir)
 
 
 print("Content-Type: text/html")
@@ -45,8 +45,8 @@ print('<meta name="viewport" content="width=device-width, initial-scale=1.0">')
 print('<title>Document</title>')
 print('</head>')
 print('<body>')
-# for file in existing_files:
-#     print(f'<li>{file}</li>')
+for file in existing_files:
+    print(f'<h2>file : {file}</h2>')
 
 # print(f'<h1> "form : {form}" </h1>')
 print(f'<h1> "{message}" </h1>')
