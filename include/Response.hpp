@@ -3,12 +3,7 @@
 
 // to encapsulate data and pass it as a param before create response text
 
-# include <iostream>
-# include <string>
-# include <string.h>
-# include <time.h>
-# include <sstream>
-#include <unistd.h>
+# include "Common.hpp"
 # include "Mime.hpp"
 # include "Request.hpp"
 # include "Location.hpp"
@@ -31,8 +26,6 @@ class Response{
 		void genarate_header();
 		std::string get_response_text(void);
 		std::string get_date();
-
-
 };
 
 #endif

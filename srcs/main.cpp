@@ -72,7 +72,6 @@ Server *mock_server(void)
 }
 
 
-<<<<<<< HEAD
 // int	main()
 // {
 // 	Server server(8384);
@@ -135,16 +134,3 @@ Server *mock_server(void)
 // 	}
 // 	return (0);	
 // }
-=======
-int	main(int ac, char **av, char **env)
-{
-	std::vector<Server> servs;
-	servs.push_back(*mock_server());
-
-	WebServer webserver(servs);
-	webserver.runServer();
-
-    return 0;
-}
-
->>>>>>> 12e46af436804ed8672743987dc786f438bb9bf8

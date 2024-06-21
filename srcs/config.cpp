@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/21 20:50:31 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/21 21:13:58 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,8 @@ bool	ft_check_extension(char	*file)
 	char *tmp;
 
 	tmp = strrchr(file, '.');
+	if (!tmp)
+		return (false);
 	if (strcmp(tmp, ".conf") == 0)
 		return (true);
 	return (false);
@@ -268,12 +270,6 @@ void	ft_prt_server(Server sv)
 	std::cout << GRN << "SERVER : " << RESET << std::endl;
 	std::cout << "server_name : " << sv.server_name << std::endl;
 	std::cout << "listen : " << sv.listen << std::endl;
-	// std::cout << "error_page : " << std::endl;
-	// ft_print_vec_str(sv.error_page);
-	// std::cout << "limit_except : " << std::endl;
-	// ft_print_vec_str(sv.);
-	
-	// ft_prt_locate(sv._config);
 	std::cout << std::endl;
 }
 
