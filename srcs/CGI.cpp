@@ -51,7 +51,7 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
 	std::cout << GRN << *client.location << RESET << std::endl;
-	client.request->_path = client.location->root + client.request->_path; // prepend root path
+	client.request->_path = concat_path(client.location->root, client.request->_path);
 	if (!_is_allow_method(client.request->_method, *client.location)) {
 		std::cout << YEL << client.request->_method << " method is not allow" << RESET << std::endl; 
 		if (client.request->_method == HEAD)
@@ -211,9 +211,23 @@ Response&	CGI::_auto_indexing(Client &client, Server &server)
 	res->_body += "<hr>\n";
 	while ((en = readdir(dr)) != NULL){
 		std::string filename(en->d_name);
-		res->_body += "<p>";
+		std::string url;
+		if (filename == ".") {
+			url = "#";
+		}
+		if (filename == "..") {}
+		else {
+			url = concat_path(client.request->_path, filename);
+		}
+		std::cout << "root " << client.location->root << std::endl;
+		std::cout << "be" << url << std::endl;
+		replace_str(url, client.location->root, " ");
+		std::cout << "af" << url << std::endl;
+		res->_body += "<a href=\"";
+		res->_body += url;
+		res->_body += "\">";
 		res->_body += filename;
-		res->_body += "</p>\n";
+		res->_body += "</a>\n";
 	}
 	res->_body += "</body>\n";
 	res->_body += "</html>\n";

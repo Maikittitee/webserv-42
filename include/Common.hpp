@@ -21,6 +21,7 @@
 # include <sys/stat.h>
 # include <dirent.h>
 # include <sys/types.h>
+# include "Utils.hpp"
 
 # define BUFFERSIZE 65535
 
