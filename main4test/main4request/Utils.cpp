@@ -1,27 +1,25 @@
-#include "../include/Utils.hpp"
+#include "Utils.hpp"
 
-bool readFile(std::string &buff, std::string const &filename)
-{
-	std::ifstream file(filename, std::ios::binary | std::ios::ate);
-	int length;
-	file.seekg(0, std::ios::end);
+// bool readFile(std::string &buff, std::string const &filename)
+// {
+// 	std::ifstream file(filename);
+// 	int length;
+// 	file.seekg(0, std::ios::end);
 
-	if (!file.is_open()){
-		std::cerr << "Can't Open The File" << std::endl;
-		return (false);
-	}
-	length = file.tellg();
+// 	if (!file.is_open()){
+// 		std::cerr << "Can't Open The File" << std::endl;
+// 		return (false);
+// 	}
+// 	length = file.tellg();
 
-	std::cout << RED << length << RESET << std::endl; 
+// 	char *buffer = new char[length];
+// 	file.seekg(0, std::ios::beg);
+// 	file.read(buffer, length);
+// 	file.close();
+// 	buff = buffer;
+// 	return (true);
 
-	char *buffer = new char[length];
-	file.seekg(0, std::ios::beg);
-	file.read(buffer, length);
-	file.close();
-	buff = buffer; // ?????
-	return (true);
-
-}
+// }
 
 void	replace_str(std::string &str, std::string s1, std::string s2)
 {
@@ -40,7 +38,6 @@ void	replace_str(std::string &str, std::string s1, std::string s2)
 		index = found_pos + s2.length();
 	}
 }
-
 
 std::vector<std::string> splitToVector(const std::string& str, char delimiter) 
 {
@@ -96,32 +93,6 @@ void	trimSpaces(std::string& str)
     trimTrailingSpaces(str);
 }
 
-std::ostream &operator << (std::ostream &os, const t_method &method)
-{
-	switch (method)
-	{
-		case ELSE:
-			os << "ELSE";
-			break;
-		case GET:
-			os << "GET";
-			break;
-		case POST:
-			os << "POST";
-			break;
-		case DELETE:
-			os << "DELETE";
-			break;
-		case HEAD:
-			os << "HEAD";
-			break;
-		default:
-			os << "not a method";
-			break;
-	}
-	return (os);
-}
-
 bool is_directory(std::string &str)
 {
 	struct stat s;
@@ -141,5 +112,4 @@ bool is_directory(std::string &str)
 		} 
 		return (false);
 	}
-	return (false);
 }

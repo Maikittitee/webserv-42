@@ -9,21 +9,8 @@
 #include "../include/Location.hpp"
 #include "../include/Request.hpp"
 #include "../include/Response.hpp"
+#include "../include/WebServer.hpp"
 
-Request* mock_file_request(void)
-{
-	Request *ret = new Request();
-
-	// for example
-	ret->_method = GET;
-	// ret->_path = "/cgi-bin/hello.py";
-	ret->_path = "/test.html";
-	ret->_http_version = "HTTP/1.1";
-
-	ret->_body = "";
-	return (ret);
-
-}
 
 std::map<std::string, Location> mock_location(void)
 {
@@ -50,7 +37,7 @@ std::map<std::string, Location> mock_location(void)
 
 	Location images(def);
 	images.index.clear();
-	images.index.insert(images.index.end(), "Cat03.jpg");
+	images.index.insert(images.index.end(), "usa.jpg");
 	images.index.insert(images.index.end(), "test.png");
 
 	Location cgi_bin(def);
@@ -61,17 +48,31 @@ std::map<std::string, Location> mock_location(void)
 
 	ret.insert(std::pair<std::string, Location>("def", def));	
 	ret.insert(std::pair<std::string, Location>("/", r));	
-	ret.insert(std::pair<std::string, Location>("/redir/", redir));	
-	ret.insert(std::pair<std::string, Location>("/blog/", blog));	
-	ret.insert(std::pair<std::string, Location>("/images/", images));	
-	ret.insert(std::pair<std::string, Location>("/cgi-bin/", cgi_bin));	
+	ret.insert(std::pair<std::string, Location>("/redir", redir));	
+	ret.insert(std::pair<std::string, Location>("/blog", blog));	
+	ret.insert(std::pair<std::string, Location>("/images", images));	
+	ret.insert(std::pair<std::string, Location>("/cgi-bin", cgi_bin));	
 
 	return (ret);
 
 }
 
 
+Server *mock_server(void)
+{
+	Server *serv = new Server();
+	serv->server_name = "localhost";
+	serv->ipAddr = "0.0.0.0";
+	serv->listen = 6969;
+	serv->_config = mock_location();
 
+	std::cout << serv->_config << std::endl;
+	return (serv);
+
+}
+
+
+<<<<<<< HEAD
 // int	main()
 // {
 // 	Server server(8384);
@@ -134,3 +135,16 @@ std::map<std::string, Location> mock_location(void)
 // 	}
 // 	return (0);	
 // }
+=======
+int	main(int ac, char **av, char **env)
+{
+	std::vector<Server> servs;
+	servs.push_back(*mock_server());
+
+	WebServer webserver(servs);
+	webserver.runServer();
+
+    return 0;
+}
+
+>>>>>>> 12e46af436804ed8672743987dc786f438bb9bf8

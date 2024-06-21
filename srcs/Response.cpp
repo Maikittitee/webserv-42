@@ -121,18 +121,40 @@ std::string Response::get_date(void)
 	return (ret);
 }
 
-std::string		Response::get_body_from_file(std::string filename)
+void Response::genarate_header(void)
 {
-	std::string body;
-	
-	readFile(body, filename.c_str());
-	replace_str(body, "\n", "\r\n");
+	std::stringstream header;
 
-	return (body);
+	header << "HTTP/1.1 ";
+	header << 200;
+	header << " ";
+	header << "OK";
+	header << "\r\n";
+	header << "Date: "; 
+	header << get_date();
+	header << "\r\n";
+	if (!cgiPass){
+		header << "Content-Type: ";
+		header << _content_type;
+		header << "\r\n";
+	}
+	header << "Content-Length: ";
+	header << _body.size();
+	header << "\r\n";
 
+	this->_header = header.str();
 }
 
-void		Response::set_body(std::string content)
+std::string Response::get_response_text(void)
 {
-	_body = content;
+	std::string response;
+
+	response += _header;
+	if (!cgiPass)
+		response += "\r\n";
+	response += _body;
+	std::cout << "done" << std::endl;
+
+	return (response);
+
 }

@@ -17,6 +17,7 @@
 
 class Location;
 
+
 class Response{
 	public:
 		int _return_code;
@@ -27,12 +28,8 @@ class Response{
 
 		Response();
 		~Response();
-		void		receive_request(Request &request, Location &config);
-		void		set_body(std::string filename);
-		std::string		get_body_from_file(std::string filename);
-		void		genarate_header();
-		std::string status_def();
-		std::string get_response_text();
+		void genarate_header();
+		std::string get_response_text(void);
 		std::string get_date();
 
 

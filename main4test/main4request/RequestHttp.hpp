@@ -23,9 +23,19 @@ typedef enum e_requestErrorCode{
 			BAD_HTTPREQUEST
 } t_reqErr;
 
-class Request{
+class RequestHttp{
 
 	private:
+
+		// Attribute
+		size_t		_lineIndex;
+		t_reqErr	_reqErr;
+		t_method	_method;
+		std::string	_path;
+		t_version	_http_version;
+		std::string	_host;
+		std::string	_body;
+		std::string	_query_string;
 
 		std::vector<std::string> request_v;
 
@@ -46,20 +56,11 @@ class Request{
 		void		_readRequestMassageBody( void );
 
 	public:
-		// Attribute
-		size_t		_lineIndex;
-		t_reqErr	_reqErr;
-		t_method	_method;
-		std::string	_path;
-		t_version	_http_version;
-		std::string	_host;
-		std::string	_body;
-		std::string	_query_string;
 
 		// Constructor and Destructor
-		Request( void );
-		Request(std::string request);
-		~Request( void ) {}
+		RequestHttp( void );
+		RequestHttp(std::string request);
+		~RequestHttp( void ) {}
 
 		// Getter
 

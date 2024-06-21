@@ -1,6 +1,7 @@
 #ifndef SERVER_HPP
 #	define SERVER_HPP
 
+<<<<<<< HEAD
 #	include <iostream>
 #	include <vector>
 #	include <string>
@@ -11,11 +12,13 @@
 #	include <map>
 #	include <stdlib.h>
 #	include <unistd.h>
+=======
+#	include "Common.hpp"
+>>>>>>> 12e46af436804ed8672743987dc786f438bb9bf8
 #	include "Location.hpp"
 #	include "Request.hpp"
 #	include "Mime.hpp"
 #	include "Response.hpp"
-#	include <time.h>
 
 class Mime;
 
@@ -52,17 +55,9 @@ class Server{
 		Server(int port, char **env);
 		~Server();
 
-		class PortNotExist: public std::exception{
-			char *what() const throw();
-		};
-
-		bool run_server();
-		std::string rout(Request &request);
-		std::string do_cgi(Request &request);
-		Location& select_location(Request &request);
 		std::string errorPage(int error_code);
-		void send_response(const char *response, int client_fd);
-		std::string method_get(Request &request);
 };
+
+std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map);
 
 #endif
