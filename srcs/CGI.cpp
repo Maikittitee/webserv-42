@@ -215,7 +215,9 @@ Response&	CGI::_auto_indexing(Client &client, Server &server)
 		if (filename == ".") {
 			url = "#";
 		}
-		if (filename == "..") {}
+		if (filename == "..") {
+			// dont forget
+		}
 		else {
 			url = concat_path(client.request->_path, filename);
 		}
@@ -229,6 +231,7 @@ Response&	CGI::_auto_indexing(Client &client, Server &server)
 		res->_body += filename;
 		res->_body += "</a>\n";
 	}
+	closedir(dr);
 	res->_body += "</body>\n";
 	res->_body += "</html>\n";
 	res->_content_type = "text/html";
