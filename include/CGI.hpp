@@ -48,6 +48,7 @@ class CGI{
 		std::string _get_only_path(std::string path);
 		bool _is_path(std::string path);
 		Response&	_delete_method(Client &client);
+		Response&	_auto_indexing(Client &client, Server &server);
 };
 
 std::ostream& operator <<(std::ostream &os, const t_res_type &res_type);

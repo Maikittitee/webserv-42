@@ -66,17 +66,16 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 	if (client.request->_method == DELETE){
 		return (t_cgi_return){DELETE_RES, 0};	
 	}
-	client.request->_path = _append_index(client);	// append index
-	std::cout << YEL << "after find index:" << client.request->_path << RESET << std::endl;
+	if (!is_directory(client.request->_path) || client.location->autoIndex == false){ // if not autoindex
+		client.request->_path = _append_index(client);	// append index
+		// check access
+		std::cout << YEL << "after find index:" << client.request->_path << RESET << std::endl;
+		if (access(client.request->_path.c_str(), F_OK) != 0 || is_directory(client.request->_path))
+			return ((t_cgi_return){STATUS_CODE_RES, 404});
 
-	// check access
-	if (access(client.request->_path.c_str(), F_OK) != 0 || is_directory(client.request->_path))
-		return ((t_cgi_return){STATUS_CODE_RES, 404});
-
-	// check auto index
-	if (client.location->autoIndex && is_directory(client.request->_path)){
+	} else 
 		return ((t_cgi_return){AUTO_INDEX_RES, 0});
-	}
+	// else if (client.location->autoIndex && is_directory(client.request->_path)){
 	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
 		pipe(client.pipe_fd);
@@ -151,7 +150,7 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	else if (cgi_return.type == AUTO_INDEX_RES)
 	{
 		// return
-		// response = _auto_indexing(client, server); 
+		response = &_auto_indexing(client, server); 
 		readable = false;
 	}
 	else if (cgi_return.type == DELETE_RES)
@@ -168,7 +167,6 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	int read_byte = 0;
 	while (readable)
 	{
-		std::cout << "loop" << std::endl;
 		bzero(buffer, length);
 		length = read(fd, buffer, BUFFERSIZE - 1);
 		buffer[length] = '\0';
@@ -182,6 +180,47 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 		response->_content_type = _mime.get_mime_type(client.request->_path);
 	response->genarate_header();
 	return (*response);
+}
+
+// <!DOCTYPE html>
+// <html lang="en">
+// <head>
+//     <meta charset="UTF-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+Response&	CGI::_auto_indexing(Client &client, Server &server)
+{
+	Response *res = new Response;
+	DIR *dr;
+	struct dirent *en;
+	dr = opendir(client.request->_path.c_str());
+	if (!dr)
+		std::cerr << RED << "Cannot open " << client.request->_path << " directory (in auto indexing)" << RESET << std::endl;
+
+	res->_body += "<!DOCTYPE html>\n";
+	res->_body += "<html lang=\"en\">\n";
+	res->_body += "<head>\n";
+	res->_body += "<meta charset=\"UTF-8\">\n";
+	res->_body += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n";
+	res->_body += "<title>auto index</title>\n";
+	res->_body += "</head>\n";
+	res->_body += "<body>\n";
+	res->_body += "<h1>\n";
+	res->_body += client.request->_path;
+	res->_body += "</h1>\n";
+	res->_body += "<hr>\n";
+	while ((en = readdir(dr)) != NULL){
+		std::string filename(en->d_name);
+		res->_body += "<p>";
+		res->_body += filename;
+		res->_body += "</p>\n";
+	}
+	res->_body += "</body>\n";
+	res->_body += "</html>\n";
+	res->_content_type = "text/html";
+	res->_return_code = 200;
+	
+	return (*res);
 }
 
 Response&	CGI::_delete_method(Client &client)
