@@ -2,6 +2,7 @@
 # define RESPONSE_HPP
 
 // to encapsulate data and pass it as a param before create response text
+
 # include "Common.hpp"
 # include "Mime.hpp"
 # include "Request.hpp"
@@ -9,7 +10,7 @@
 
 // class Request;
 
-// class Location;
+class Location;
 
 
 class Response{
@@ -25,8 +26,6 @@ class Response{
 		void genarate_header();
 		std::string get_response_text(void);
 		std::string get_date();
-
-
 };
 
 #endif
