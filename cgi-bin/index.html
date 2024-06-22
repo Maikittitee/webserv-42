@@ -1,1 +1,45 @@
-Hello in CGI
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<a href="./cgi-bin/hello.py">
+    Click Hello
+</a>
+
+<!-- Method GET -->
+<!-- <form action = "/cgi-bin/hello_get.py" method = "get">
+   First Name: <input type = "text" name = "first_name">  <br />
+   Last Name: <input type = "text" name = "last_name" />
+   <input type = "submit" value = "Submit" />
+</form> -->
+
+<!-- Method POST -->
+<!-- <form action = "/cgi-bin/hello_get.py" method = "post">
+First Name: <input type = "text" name = "first_name"><br />
+Last Name: <input type = "text" name = "last_name" />
+<input type = "submit" value = "Submit" />
+</form> -->
+
+<!-- <form enctype = "multipart/form-data" action = "./cgi-bin/upload.py" method = "post"> -->
+<!-- <form enctype = "multipart/form-data" action = "cgi-bin/test_download.py" method = "post">
+    <p>Files: <input type = "file" name = "filename" /></p>
+    <p><input type = "submit" value = "Upload" /></p>
+</form> -->
+
+<h2>Upload a File</h2>
+<form enctype="multipart/form-data" action="/cgi-bin/test_upload.py" method="post">
+    <p>File: <input type="file" name="filename" /></p>
+    <p><input type="submit" value="Upload" /></p>
+</form>
+
+<h2>Download a File</h2>
+    <form action="/cgi-bin/download_file.py" method="get">
+        <p>Filename: <input type="text" name="filename" /></p>
+        <p><input type="submit" value="Download" /></p>
+    </form>
+</body>
+</html>
