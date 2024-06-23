@@ -32,4 +32,3 @@ bool is_directory(std::string &str);
 std::string concat_path(std::string s1, std::string s2);
 
 #endif
-
