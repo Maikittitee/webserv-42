@@ -10,6 +10,7 @@
 #include "../include/Request.hpp"
 #include "../include/Response.hpp"
 #include "../include/WebServer.hpp"
+#include "../include/Config.hpp"
 
 
 std::map<std::string, Location> mock_location(void)
@@ -71,18 +72,23 @@ Server *mock_server(void)
 
 }
 
+int main(int ac, char **av, char **env)
+{
+	std::vector<Server> sv;
 
-// int	main()
-// {
-// 	Server server(8384);
-// 	Request *req = mock_file_request();
-// 	Location *loc = mock_location();
+	if (parsing_config(ac, av, sv) == false)
+	{
+		std::cerr << RED << "Error File" << RESET << std::endl;
+		return(1);
+	}
 
-// 	server.classify_request(*req, *loc);
-// 	// std::cout << "bp2\n";
-
-
-// }
+	for (int i = 0; i < sv.size(); i++)
+	{
+		ft_prt_server(sv[i]);
+		ft_prt_location(sv[i]._config);
+	}
+	return (0);	
+}
 
 // int	main(int ac, char **av)
 // {

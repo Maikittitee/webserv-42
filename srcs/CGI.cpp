@@ -230,6 +230,7 @@ Response&	CGI::_auto_indexing(Client &client, Server &server)
 		res->_body += "\">";
 		res->_body += filename;
 		res->_body += "</a>\n";
+		res->_body += "<br>\n";
 	}
 	closedir(dr);
 	res->_body += "</body>\n";
