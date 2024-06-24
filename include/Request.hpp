@@ -1,6 +1,7 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
+#	include <fstream>
 #	include <iostream>
 #	include <string>
 #	include <sys/socket.h>
@@ -31,21 +32,11 @@ typedef enum e_requestStatusCode{
 			END_REQUEST_MSG
 } t_reqStatus;
 
-typedef enum e_method{
-			ELSE,
-			GET,
-			POST,
-			DELETE,
-			HEAD,
-			PUT,
-			NONE
-} t_method;
-
 class Request{
 
 	private:
 		size_t						_lineIndex;
-		std::vector<std::string>	request_v;
+		size_t						_bodyIndex;
 		t_reqStatus					_status;
 		int							write_fd;
 	
@@ -53,7 +44,7 @@ class Request{
 		std::map<std::string, std::string>	_headerField_map;
 
 		// Method
-		bool		_collectRequestToVector(std::string &request);
+		bool		_collectRequestToVector(std::string request);
 		bool		_readRequestLine( void );
 		bool		_readRequestHeaderField( void );
 		bool		_httpVersionCheckNCollect(std::string word);
@@ -62,6 +53,12 @@ class Request{
 		void		_collectQuery(std::string body_l);
 		void		_trimSpaceWordVector(std::vector<std::string> &word_v);
 		void		_readRequestMassageBody( void );
+		void		_intiRequestStatus(std::string request);
+		void		_updateRequestToVector(std::string &request);
+		void		_updateFromRequestLine( void );
+		void		_updateFromHeaderLine( void );
+		void		_updateAfterHeaderLine( void );
+
 
 	public:
 		// Attribute
@@ -73,6 +70,7 @@ class Request{
 		std::string	_body;
 		std::string	_query_string;
 		bool		_isEndRecv;
+		std::vector<std::string>	request_v;
 
 		// Constructor and Destructor
 		Request( void );
@@ -89,8 +87,13 @@ class Request{
 			return _status;
 		}
 
+
 		// Public Method
 		void		updateRequest(std::string request);
+		void		updateStatus(t_reqStatus status)
+		{
+			_status = status;
+		}
 };
 
 

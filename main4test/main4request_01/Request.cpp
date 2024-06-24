@@ -2,6 +2,7 @@
 
 Request::Request():
 _lineIndex(0),
+_bodyIndex(0),
 _status(IN_REQUEST_LINE),
 write_fd(-1),
 _reqErr(SUCESS_REQUEST),
@@ -19,8 +20,9 @@ _isEndRecv(false)
 	_method_map["HEAD"] = HEAD;
 }
 
-Request::Request(std::string request):
+Request::Request(const std::string request):
 _lineIndex(0),
+_bodyIndex(0),
 _status(IN_REQUEST_LINE),
 write_fd(-1),
 _reqErr(SUCESS_REQUEST),
@@ -46,7 +48,6 @@ _isEndRecv(false)
 		_readRequestLine();
 		_reqErrMsg();
 	}
-	std::cout << "status = " << _status << std::endl;
 	if(_status >= IN_HEADER_LINE)
 	{
 		_readRequestHeaderField();
@@ -66,23 +67,23 @@ void Request::_intiRequestStatus(std::string request)
 {
 	for (std::vector<std::string>::iterator it = request_v.begin(); it != request_v.end(); ++it)
 	{
+		std::cout << "request.size(): " << request.size() << std::endl;
+		std::cout << "BUFFERSIZE: " << BUFFERSIZE << std::endl;
 		if (request.size() < BUFFERSIZE)
 		{
 			_status = END_REQUEST_MSG;
 			return ;
 		}
-		if ( it == request_v.begin()
+		if (it == request_v.begin()
 			&& _status == IN_REQUEST_LINE \
 			&& ((*it).find('\n', (*it).size()- 1) != std::string::npos))
 		{
-				std::cout << "IN_HEADER_LINE" << std::endl;
 				_status = IN_HEADER_LINE;
 		}
 		else if (_status == IN_HEADER_LINE)
 		{
 			if ((*it) == "\n")
 			{
-				std::cout << "IN_CRLF_LINE" << std::endl;
 				_status = IN_CRLF_LINE;
 			}
 		}
@@ -90,14 +91,13 @@ void Request::_intiRequestStatus(std::string request)
 		{
 			if(it != request_v.end())
 			{
-				std::cout << "IN_CRLF_LINE" << std::endl;
 				_status = IN_BODY_LINE;
 			}
 		}
 	}
 }
 
-bool	Request::_collectRequestToVector(std::string &request)
+bool	Request::_collectRequestToVector(std::string request)
 {
 	std::string 		line;
 
@@ -185,8 +185,8 @@ bool	Request::_readRequestHeaderField( void )
 
 	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
 	{
-		if (request_v[_lineIndex].find('\n', \
-			request_v[_lineIndex].size()- 1) == std::string::npos)
+		if (request_v[_lineIndex].find('\n', 0) == std::string::npos \
+			&& request_v[_lineIndex].find(':', 0) == std::string::npos)
 		{
 			return true;
 		}
@@ -232,48 +232,62 @@ void	Request::_collectQuery(std::string path_l)
 		_query_string = path_l.substr(start, path_l.length());
 }
 
-void	Request::updateRequest(std::string &request)
+void	Request::updateRequest(std::string request)
 {
+	std::cout << "request_v.back() -> " << request_v.back() << std::endl; 
 	_updateRequestToVector(request);
+	std::cout << "request_v.size() = " << request_v.size() << std::endl;
+	std::cout << "status = " << _status << std::endl;
+	std::cout << "line_index = " << _lineIndex << std::endl;
 	if (_status == IN_REQUEST_LINE)
 		_updateFromRequestLine();
+	std::cout << "1\n";
 	if (_status == IN_HEADER_LINE)
 		_updateFromHeaderLine();
+	std::cout << "2\n";
 	if (_status == IN_CRLF_LINE)
 	{
 		_lineIndex++;
+		_bodyIndex = _lineIndex;
 		_status = IN_BODY_LINE;
 	}
+	std::cout << "3\n";
 	if (_status == IN_BODY_LINE)
 		_updateAfterHeaderLine();
+	std::cout << "4\n";
 	if (_isEndRecv == true)
 		_status = END_REQUEST_MSG;
 }
 
 void	Request::_updateRequestToVector(std::string &request)
 {
-    std::string::size_type 		start = 0;
     std::string::size_type		end = 0;
+	std::string::size_type		start = 0;
 	std::vector<std::string>	updateReq;
 	std::string					lessReq;
 
-	if (request_v.back().find('\n', \
-		request_v.back().size() - 1) != std::string::npos)
+	if (request_v.back().find('\n', 0) != std::string::npos)
 	{
+		std::cout << "test1\n"; 
 		updateReq = lineToVector(request);
 		vectorPlueVector(request_v, updateReq);
 	}
 	else
 	{
-		if ((end = request.find('\n', start)) != std::string::npos)
+		if ((end = request.find('\n', 0)) != std::string::npos)
 		{
-			request_v.back() += request.substr(start, end - start);
-			lessReq = request.substr(start, request.size() - start);
+			std::cout << "test2\n";
+			request_v.back() += request.substr(0, end + 1);
+			start = end + 1;
+			lessReq = request.substr(start, request.size() - end);
 			updateReq = lineToVector(lessReq);
 			vectorPlueVector(request_v, updateReq);
 		}
 		else
-			request_v.back() += request.substr(start, end - start);
+		{
+			std::cout << "test3\n";
+			request_v.back() += request;
+		}
 	}
 }
 
@@ -299,6 +313,7 @@ void	Request::_updateFromRequestLine( void )
 	if(!_httpVersionCheckNCollect(word_v[2]))
 		return ;
 	_lineIndex++;
+	_status = IN_HEADER_LINE;
 	return ;
 }
 
@@ -307,31 +322,60 @@ void	Request::_updateFromHeaderLine( void )
 	std::string					header_l;
 	std::vector<std::string>	word_v;
 
+	if (_lineIndex >= request_v.size())
+	{
+		return ;
+	}
+	std::cout << "test Hearder1\n";
 	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
 	{
-		if (request_v[_lineIndex].find('\n', 0) == std::string::npos)
+		if (request_v[_lineIndex].find('\n', 0) == std::string::npos \
+		&& request_v[_lineIndex].find(':', 0) == std::string::npos)
+		{
 			return ;
+		}
 		header_l = request_v[_lineIndex];
 		word_v = splitToVector(header_l, ':');
-		if (word_v.size() > 2)
+		std::cout << "test Hearder2\n";
+		if (word_v.size() != 2)
 		{
 			_reqErr = BAD_HEADERFIELD;
 			return ;
 		}
+		std::cout << "word_v[1] = " << word_v[1] << std::endl;
 		_trimSpaceWordVector(word_v);
+		std::cout << "test Hearder2\n";
+		trimNewline(word_v[1]);
+		std::cout << "test Hearder2\n";
 		_headerField_map[word_v[0]] = word_v[1];
 		_lineIndex++;
 	}
-	if (request_v[_lineIndex] == "\n")
+	if (request_v[_lineIndex - 1].find('\n', 0) == std::string::npos)
+		_lineIndex--;
+	if (_lineIndex < request_v.size() && request_v[_lineIndex] == "\n")
 		_status = IN_CRLF_LINE;
 }
 
 void	Request::_updateAfterHeaderLine( void )
 {
+    std::string::size_type end = _body.size();
+    while (end > 0 && (_body[end - 1] == '\n' || _body[end - 1] == '\r'))
+        --end;
+    if (end > 0 && end < _body.size()) {
+        _body = _body.substr(0, end);
+    }
+	else
+		_body = "";
 	while(_lineIndex < request_v.size()) 
 	{
 		_body +=  request_v[_lineIndex];
-		_lineIndex++;
+		if (request_v[_lineIndex].find('\n', 0) != std::string::npos)
+		{
+			std::cout << "_lineIndex = " << _lineIndex << std::endl;
+			_lineIndex++;
+		}
+		else
+			break;
 	}
 }
 

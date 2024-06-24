@@ -1,8 +1,21 @@
+
 #include "../include/Utils.hpp"
+
+std::string concat_path(std::string s1, std::string s2)
+{
+	std::string ret;
+	std::string mid = "/";
+
+	if (s1.back() == '/' || s1.front() == '/')
+		mid = "";
+	ret = s1 + mid + s2;
+	replace_str(ret, "//", "/");
+	return (ret);
+}
 
 bool readFile(std::string &buff, std::string const &filename)
 {
-	std::ifstream file(filename);
+	std::ifstream file(filename, std::ios::binary | std::ios::ate);
 	int length;
 	file.seekg(0, std::ios::end);
 
@@ -12,11 +25,13 @@ bool readFile(std::string &buff, std::string const &filename)
 	}
 	length = file.tellg();
 
+	std::cout << RED << length << RESET << std::endl; 
+
 	char *buffer = new char[length];
 	file.seekg(0, std::ios::beg);
 	file.read(buffer, length);
 	file.close();
-	buff = buffer;
+	buff = buffer; // ?????
 	return (true);
 
 }
@@ -71,10 +86,6 @@ std::vector<std::string> lineToVector(const std::string& str)
 			tokens.push_back("\n");
         start = end + 1;
     }
-	if (start < str.size())
-	{
-		push_back(str.substr(start, str.size() - start))
-	}
     return tokens;
 }
 
@@ -122,4 +133,26 @@ std::ostream &operator << (std::ostream &os, const t_method &method)
 			break;
 	}
 	return (os);
+}
+
+bool is_directory(std::string &str)
+{
+	struct stat s;
+
+	if (access(str.c_str(), F_OK) != 0)
+		return (false);
+
+	if (stat(str.c_str() ,&s) == 0)
+	{
+		if(s.st_mode & S_IFREG) // if it's file
+		{
+			return (false);
+		}
+		else if (s.st_mode & S_IFDIR) 
+		{
+			return (true);
+		} 
+		return (false);
+	}
+	return (false);
 }

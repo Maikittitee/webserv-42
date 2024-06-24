@@ -48,7 +48,7 @@ bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server &serv) {
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	addr.sin_port = htons(serv.port);
+	addr.sin_port = htons(serv.listen);
 	return true;
 }
 
@@ -146,33 +146,32 @@ bool	WebServer::_send_response(int fd) // write fd
 {
 	Client *client = _get_client(fd);
 	Server *server = client->server;
-	std::cout << "server fd in send" << client->server_fd << std::endl;
-	std::cout << server << std::endl;
-
-
+	
 	if (!client)
 		std::cerr << RED << "can't find client" << RESET << std::endl;
-	
 	if (!server)
 		std::cerr << RED << "can't find server" << RESET << std::endl;
 	
 	// CGI work here
-	std::cout << server->_config;
 	int return_code = _cgi.rout(*client, *server);
 
 	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
 	std::string msg;
-	if (return_code < 100) // return code is fd of child process
-		msg = _cgi.readfile(return_code);
-	else 
-		msg = _cgi.readfile(client->request->_path, *server, return_code); 
-		// need to check that return code is ok or not and if not ok -> check to find where error file is 
+	msg = _cgi.readfile(*client, *server, return_code); 
+
+	// check client body size
+	if (msg.size() > client->location->cliBodySize){
+		// return 413 too big
+	}
 
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
 	close(fd);
 	_clear_fd(fd, _write_fds);
+	
+	delete _clients[fd]->request; // MAYBE NO NEED 
+	delete _clients[fd];
 	_clients.erase(fd);
 	return (true);
 }
@@ -228,35 +227,67 @@ Server *WebServer::_get_server(int fd)
 
 bool	WebServer::_accept_connection(int server_fd)
 {
-	Client new_client;
+	Client *new_client = new Client;
 
-	std::cout << "bp0" << std::endl;
-	new_client.fd = accept(server_fd, (sockaddr *)&new_client.addr, &new_client.addrLen);
-	if (new_client.fd < 0){
+	new_client->fd = accept(server_fd, (sockaddr *)&new_client->addr, &new_client->addrLen);
+	if (new_client->fd < 0){
 		std::cerr << RED << "cannot accept connection." << RESET << std::endl;
 		return (false);
 	}
-	std::cout << "bp1" << std::endl;
-	_clients[new_client.fd] = new_client;
-	std::cout << "bp2" << std::endl;
-	new_client.server = _get_server(server_fd);
-	new_client.server_fd = server_fd;
-	std::cout << "server in accept: " << new_client.server << std::endl;
-	if (!new_client.server){
+	_clients[new_client->fd] = new_client;
+	new_client->server = _get_server(server_fd);
+	if (!new_client->server){
 		std::cerr << RED << "server not found" << RESET << std::endl;
 		return (false);
 	}
-	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << new_client.fd << RESET << std::endl;
-	_set_fd(new_client.fd, _read_fds);
-	std::cout << "server in accept2: " << new_client.server << std::endl;
-	std::cout << "server in accept2(in map): " << _clients[new_client.fd].server << std::endl;
+	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << new_client->fd << RESET << std::endl;
+	_set_fd(new_client->fd, _read_fds);
 	return (true);
+}
+
+Request* mock_get_file_request(void)
+{
+	Request *ret = new Request();
+
+	ret->_method = GET;
+	ret->_path = "test.html";
+	ret->_http_version = HTTP11;
+
+	ret->_body = "";
+	return (ret);
+}
+
+Request* mock_post_cgi_request(void)
+{
+	Request *ret = new Request();
+
+	ret->_method = GET;
+	ret->_path = "/cgi-bin/arg.py";
+	ret->_http_version = HTTP11;
+
+	ret->_body = "hello from request, how are you?";
+	return (ret);
+}
+
+Request *my_request_parser(char *buffer)
+{
+	std::istringstream f(buffer);
+	std::string line;
+	
+	std::getline(f, line);
+
+	Request *req = new Request;
+	std::cout << RED << line << RESET << std::endl;
+	std::vector<std::string> vec = splitToVector(line, ' ');
+	req->_path = vec[1];
+	req->_body = "this is body";
+	return (req);
 }
 
 bool WebServer::_parsing_request(int client_fd)
 {
-	Client client = *_get_client(client_fd);
-	Server *server = client.server;
+	Client *client = _get_client(client_fd);
+	Server *server = client->server;
 
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
 	if (client.bufSize > 0)
@@ -295,5 +326,5 @@ Client* WebServer::_get_client(int fd)
 {
 	if (!_clients.count(fd))
 		return (NULL);
-	return (&_clients[fd]);
+	return (_clients[fd]);
 }

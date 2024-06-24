@@ -5,110 +5,255 @@ CGI::CGI(void){}
 CGI::~CGI(void){}
 
 
-
-
-int CGI::rout(Client &client, Server &server)
+std::string _append_index(Client &client)
 {
+	// if not directory -> return;
+	struct stat s;
+	if (access(client.request->_path.c_str(), F_OK) != 0 || client.location->autoIndex) // ???
+		return (client.request->_path);
+	if (stat(client.request->_path.c_str(),&s) == 0)
+	{
+		if(s.st_mode & S_IFREG) // if it's file
+		{
+			std::cout << "it is a file" << std::endl;
+			return (client.request->_path);
+		}
+		else if (s.st_mode & S_IFDIR) 
+		{
+			std::cout << "it is a dir" << std::endl;
+			if (client.request->_path[client.request->_path.size() - 1] != '/')
+				client.request->_path += "/";
+			// loop index
+			std::string tmp_file;
+			std::cout << "hello1 index size: " << client.location->index.size() << std::endl;
+			for (int i = 0; i < client.location->index.size(); i++)
+			{
+				tmp_file = client.request->_path + client.location->index[i];
+				std::cout << "tmp_file: " << tmp_file << std::endl; 
+				if (access(tmp_file.c_str(), F_OK) == 0){
+					std::cout << "found index!!: " << tmp_file << std::endl;  
+					return (tmp_file);
+				}
+			}
+			return (client.request->_path);
+		} 
+		return (client.request->_path);
+
+	}
+	return (client.request->_path);
+}
+
+t_cgi_return CGI::rout(Client &client, Server &server)
+{
+	t_cgi_return ret;
+
 	client.location = _select_location(*client.request, server);
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
-	else {
-		std::cout << client.location;
-	}
+	// std::cout << GRN << *client.location << RESET << std::endl;
+	client.request->_path = concat_path(client.location->root, client.request->_path);
 	if (!_is_allow_method(client.request->_method, *client.location)) {
-		return (403);
-		//method not allow 
+		std::cout << YEL << client.request->_method << " method is not allow" << RESET << std::endl; 
+		if (client.request->_method == HEAD)
+			return (t_cgi_return){HEAD_RES, 403};
+		return (t_cgi_return){STATUS_CODE_RES, 403};
 	}
 	if (client.location->ret.have){
 		// redirect
 		client.request->_path = client.location->ret.text;
-		return (client.location->ret.code);
+		return ((t_cgi_return){STATUS_CODE_RES, client.location->ret.code});
 	}
 	if (client.request->_method == DELETE){
-		// delete file 
+		return (t_cgi_return){DELETE_RES, 0};	
 	}
-	if (!client.location->autoIndex && _is_path(client.request->_path)){
-		std::string tmp_file;
-		for (int i = 0; i < client.location->index.size(); i++){
-			tmp_file = client.request->_path + client.location->index[i];
-			if (access(tmp_file.c_str(), F_OK) == 0){
-				client.request->_path = tmp_file;
-				break;
-			}
+	if (!is_directory(client.request->_path) || client.location->autoIndex == false){ // if not autoindex
+		client.request->_path = _append_index(client);	// append index
+		// check access
+		std::cout << YEL << "after find index:" << client.request->_path << RESET << std::endl;
+		if (access(client.request->_path.c_str(), F_OK) != 0 || is_directory(client.request->_path))
+			return ((t_cgi_return){STATUS_CODE_RES, 404});
+
+	} else 
+		return ((t_cgi_return){AUTO_INDEX_RES, 0});
+	// else if (client.location->autoIndex && is_directory(client.request->_path)){
+	if (client.location->cgiPass) { // <=============== HELLO PTEW
+		// cgi
+		pipe(client.pipe_fd);
+		pipe(client.pipe_fd_out);
+		client.pipe_available = true;
+
+		client.child_pid = fork();
+		if (client.child_pid == 0){ // child
+			dup2(client.pipe_fd[0], STDIN_FILENO);
+			dup2(client.pipe_fd_out[1], STDOUT_FILENO);
+			// 
+			close(client.pipe_fd[0]);
+			close(client.pipe_fd[1]);
+			close(client.pipe_fd_out[0]);
+			close(client.pipe_fd_out[1]);
+			char *arg[] = {(char *)client.request->_path.c_str(), NULL};
+			execve((char *)client.request->_path.c_str(), arg, NULL);
+			exit(0);
+		}
+		else{ // perent
+			write(client.pipe_fd[1], client.request->_body.c_str(), client.request->_body.size());
+			return ((t_cgi_return){FORKING_RES, 0}); // return write able fd
 		}
 	}
-	// check access
-	if (access(client.request->_path.c_str(), F_OK) != 0)
-		return (404);
-	if (client.location->autoIndex){
-		// maybe send 1000
-		return (1000);
-	}
-	if (client.location->cgiPass)
+	return ((t_cgi_return){STATUS_CODE_RES, 200});
+
+}
+
+size_t read_line(int fd, char* buffer)
+{
+    char char_buf;
+    size_t buffer_size = 0;
+    while (read(fd, &char_buf, 1) > 0 && char_buf != '\n')
+        buffer[buffer_size++] = char_buf;
+    buffer[buffer_size] = '\0';
+
+    return buffer_size;
+}
+
+
+Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
+{
+	Response *response = new Response;
+	bool	readable = false;
+	char buffer[BUFFERSIZE];
+	int fd;
+	int length = 0;
+
+	std::cout << "in readfile" << std::endl; 
+	if (cgi_return.type == STATUS_CODE_RES && cgi_return.status_code >= 400)
 	{
-		if(client.request->getStatusIndex() != END_REQUEST_MSG)
-			_separateReadRequestProcess(client);
-		else // <=============== HELLO MAI
-			std::cout << "wanna run CGI" << std::endl; 
-	}
-	return (true);
-}
-
-void	CGI::_separateReadRequestProcess(Client &client)
-{
-	int	pid = fork();
-	if (pid = 0)
+		response = &server.errorPage(cgi_return.status_code);
+		readable = false;
+	} 
+	else if (cgi_return.type == STATUS_CODE_RES && cgi_return.status_code >= 100) 
 	{
-		do 
-		{
-			client.bufSize = recv(client.fd, client.buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
-			if (client.bufSize > 0)
-			{
-				client.buffer[client.bufSize] = '\0';
-				client.request->_updateRequest(client.buffer);
-			}
-			else
-			{
-				std::cout << "Handle With recv error do somethings!" << std::endl;
-				break;
-			}
-		} while (_checkRequestStatus(client)); // <=============== HELLO MAI
-		std::cout << "wanna run CGI" << std::endl;
+		std::cout << "read file: " << client.request->_path << std::endl;
+		fd = open(client.request->_path.c_str(), O_RDONLY);
+		readable = true;
 	}
+	else if (cgi_return.type == FORKING_RES)
+	{
+		std::cout << "read cgi" << std::endl;
+		response->cgiPass = true;
+		response->_return_code = 200;
+		fd = client.pipe_fd_out[0];
+		close(client.pipe_fd[0]);
+		close(client.pipe_fd[1]);
+		close(client.pipe_fd_out[1]);
+		readable = true;
+	}
+	else if (cgi_return.type == AUTO_INDEX_RES)
+	{
+		// return
+		response = &_auto_indexing(client, server); 
+		readable = false;
+	}
+	else if (cgi_return.type == DELETE_RES)
+	{
+		response = &_delete_method(client);
+		readable = false;
+	}
+	else if (cgi_return.type == HEAD_RES)
+	{
+		
+	}
+
+	std::cout << "fd: " << fd << std::endl;
+	int read_byte = 0;
+	while (readable)
+	{
+		bzero(buffer, length);
+		length = read(fd, buffer, BUFFERSIZE - 1);
+		buffer[length] = '\0';
+		if (length <= 0)
+			break;
+		response->_body.append(buffer, length);
+	}
+	if (cgi_return.type == STATUS_CODE_RES)
+		response->_return_code = cgi_return.status_code;
+	if (readable)
+		response->_content_type = _mime.get_mime_type(client.request->_path);
+	response->genarate_header();
+	return (*response);
 }
 
-bool	CGI::_checkRequestStatus(Client &client)
+// <!DOCTYPE html>
+// <html lang="en">
+// <head>
+//     <meta charset="UTF-8">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+Response&	CGI::_auto_indexing(Client &client, Server &server)
 {
-	if (client.request->_status == END_REQUEST_MSG)
-		return (false);
-	else if (client.request->_method == POST && client.request->_status >= IN_CRLF_LINE)
-		return (false);
-	return (true);
-}
+	Response *res = new Response;
+	DIR *dr;
+	struct dirent *en;
+	dr = opendir(client.request->_path.c_str());
+	if (!dr)
+		std::cerr << RED << "Cannot open " << client.request->_path << " directory (in auto indexing)" << RESET << std::endl;
 
-
-std::string CGI::readfile(std::string filename, Server &server, int return_code)
-{
-	Response response;
-
-	// mock
-	response._body = response.get_body_from_file("docs/test.html");
-	response.genarate_header();
-	return (response.get_response_text());
+	res->_body += "<!DOCTYPE html>\n";
+	res->_body += "<html lang=\"en\">\n";
+	res->_body += "<head>\n";
+	res->_body += "<meta charset=\"UTF-8\">\n";
+	res->_body += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n";
+	res->_body += "<title>auto index</title>\n";
+	res->_body += "</head>\n";
+	res->_body += "<body>\n";
+	res->_body += "<h1>\n";
+	res->_body += client.request->_path;
+	res->_body += "</h1>\n";
+	res->_body += "<hr>\n";
+	while ((en = readdir(dr)) != NULL){
+		std::string filename(en->d_name);
+		std::string url;
+		if (filename == ".") {
+			url = "#";
+		}
+		if (filename == "..") {
+			// dont forget
+		}
+		else {
+			url = concat_path(client.request->_path, filename);
+		}
+		std::cout << "root " << client.location->root << std::endl;
+		std::cout << "be" << url << std::endl;
+		replace_str(url, client.location->root, " ");
+		std::cout << "af" << url << std::endl;
+		res->_body += "<a href=\"";
+		res->_body += url;
+		res->_body += "\">";
+		res->_body += filename;
+		res->_body += "</a>\n";
+		res->_body += "<br>\n";
+	}
+	closedir(dr);
+	res->_body += "</body>\n";
+	res->_body += "</html>\n";
+	res->_content_type = "text/html";
+	res->_return_code = 200;
 	
+	return (*res);
+}
 
+Response&	CGI::_delete_method(Client &client)
+{
+	Response *res = new Response;
+
+	std::cout << "delete file: " << client.request->_path << std::endl;
+	if (access(client.request->_path.c_str(), F_OK) != 0)
+		return (client.server->errorPage(404));
+	if (remove(client.request->_path.c_str()) != 0) // remove ko
+		return (client.server->errorPage(500));
+	res->_return_code = 200;
+	return (*res);
 }
 		
-std::string CGI::readfile(int fd) // fd of child (cgi) process <=============== HELLOOOOO PTEW
-{
-	// อ่าน fd ของ child process แล้วเก็๋บไว้ใน buffer 
-	// response.body = buffer
-	// genate_header()
-	// return (response txt)
-	// close fd
-	return ("READFILE FROM FD");
-}
-
 bool CGI::_is_path(std::string path)
 {
 	if (path[path.size() - 1] == '/')
@@ -123,7 +268,6 @@ std::string CGI::_get_only_path(std::string path)
 
 	found = path.find_last_of("/\\");
 	str = path.substr(0, found);
-	std::cout << "cut " << str << std::endl;
 	return (str);
 }
 
@@ -131,12 +275,9 @@ Location* CGI::_compare_location(std::string str, std::map<std::string, Location
 {
 	std::map<std::string, Location>::iterator it;
 
-	std::cout << conf;
-	std::cout << "start compare" << std::endl;
 	for (it = conf.begin(); it != conf.end(); it++){
-		std::cout << "path checking" << it->first << std::endl;
 		if (it->first == str){
-			std::cout << YEL << "checked with " << it->first << RESET << std::endl;
+			std::cout << "match config " << it->first  << std::endl;
 			return (&(it->second));
 		}
 	}
@@ -148,28 +289,22 @@ Location* CGI::_select_location(Request &request, Server &server)
 {
 	bool match = false;
 	Location *select_loc;
+	struct stat s;
 	
 
-	std::cout << YEL << "request path is " << request._path << RESET << std::endl;
-	std::cout << YEL << "[ expect format: \"haha/eiei/index.html\" ]" << RESET << std::endl;;
-
-	std::string only_path = "/" + _get_only_path(request._path);
+	std::cout << YEL << "request path: " << request._path << RESET << std::endl;
+	if ((select_loc = _compare_location(request._path, server._config)) != NULL)
+		match = true;
+	std::string only_path = _get_only_path(request._path);
 	while (!match){
-		std::cout << YEL << "only_path is " <<  only_path << RESET << std::endl;
 		if ((select_loc = _compare_location(only_path, server._config)) != NULL){
 			std::cout << YEL << "config match!" << RESET << std::endl;
 			match = true;
-			// std::cout << *select_loc << std::endl;
 		}
 		else
-		{
-			std::cout << "renew" << std::endl;
 			only_path = _get_only_path(only_path);
-
-		}
-		std::cout << "after cut " << only_path << std::endl;
-		if (only_path == ""){
-			std::cout << "/ ja" << std::endl;
+		if (only_path.size() <= 1){
+			std::cout << "get / location" << std::endl;
 			select_loc = &server._config["/"];
 			break;
 		}
@@ -185,4 +320,29 @@ bool	CGI::_is_allow_method(t_method method, Location &location)
 			return (true);
 	}
 	return (false);
+}
+
+std::ostream& operator <<(std::ostream &os, const t_res_type &res_type)
+{
+	if (res_type == STATUS_CODE_RES)
+		os << "STATUS_CODE";
+	else if (res_type == FORKING_RES)
+		os << "FORKING";
+	else if (res_type == DELETE_RES)
+		os << "DELETE";
+	else if (res_type == AUTO_INDEX_RES)
+		os << "AUTO_INDEX";	
+	else if (res_type == HEAD_RES)
+		os << "HEAD";	
+	else
+		os << "Undefind response type";
+	return (os);
+}
+
+std::ostream& operator <<(std::ostream &os, const t_cgi_return &cgi_ret)
+{
+	os << "Resposne Type: " << cgi_ret.type;
+	if (cgi_ret.type == STATUS_CODE_RES)
+		os << ":: " << cgi_ret.status_code << std::endl;
+	return (os);
 }

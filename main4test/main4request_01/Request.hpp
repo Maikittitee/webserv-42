@@ -15,7 +15,7 @@
 #	include "Utils.hpp"
 
 
-#	define BUFFERSIZE 65535
+#	define BUFFERSIZE 1000000
 
 typedef enum e_requestErrorCode{
 			SUCESS_REQUEST,
@@ -49,7 +49,7 @@ class Request{
 
 	private:
 		size_t						_lineIndex;
-		std::vector<std::string>	request_v;
+		size_t						_bodyIndex;
 		t_reqStatus					_status;
 		int							write_fd;
 	
@@ -57,7 +57,7 @@ class Request{
 		std::map<std::string, std::string>	_headerField_map;
 
 		// Method
-		bool		_collectRequestToVector(std::string &request);
+		bool		_collectRequestToVector(std::string request);
 		bool		_readRequestLine( void );
 		bool		_readRequestHeaderField( void );
 		bool		_httpVersionCheckNCollect(std::string word);
@@ -83,6 +83,7 @@ class Request{
 		std::string	_body;
 		std::string	_query_string;
 		bool		_isEndRecv;
+		std::vector<std::string>	request_v;
 
 		// Constructor and Destructor
 		Request( void );
@@ -99,8 +100,13 @@ class Request{
 			return _status;
 		}
 
+
 		// Public Method
-		void		updateRequest(std::string &request);
+		void		updateRequest(std::string request);
+		void		updateStatus(t_reqStatus status)
+		{
+			_status = status;
+		}
 };
 
 

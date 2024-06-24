@@ -1,4 +1,5 @@
 #include "Utils.hpp"
+#include <iostream>
 
 std::vector<std::string> splitToVector(const std::string& str, char delimiter) 
 {
@@ -10,6 +11,8 @@ std::vector<std::string> splitToVector(const std::string& str, char delimiter)
 	{
         if (end != start)
             tokens.push_back(str.substr(start, end - start));
+        if(end == str.length() - 1)
+            return tokens;
         start = end + 1;
     }
     if (start < str.length())
@@ -25,14 +28,13 @@ std::vector<std::string> lineToVector(const std::string& str)
 
     while ((end = str.find('\n', start)) != std::string::npos)
 	{
-        if (end != start)
-            tokens.push_back(str.substr(start, end - start) + "\n");
-		else
-			tokens.push_back("\n");
+        std::cout << "tew1\n";
+        tokens.push_back(str.substr(start, end - start + 1));
         start = end + 1;
     }
 	if (start < str.size())
 	{
+        std::cout << "tew2\n";
 		tokens.push_back(str.substr(start, str.size() - start));
 	}
     return tokens;

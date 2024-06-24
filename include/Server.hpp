@@ -15,27 +15,22 @@ class Location;
 
 class Server{
 	public:
-		int _server_fd;
-		std::string							name; //? server_name
-		std::string							ipAddr; //? listen could be ip address or port
-		int									port; //? listen
-		
-		std::map<std::string, Location> _config; 
-		Mime _mime;
-		char **_env;
+		int					_server_fd;
+		std::string			ipAddr; //? listen could be ip address or port
+
+		u_int64_t			listen;
+		std::string			server_name;
+		std::vector<std::string>	error_page;
+		std::map<std::string, Location> _config;
+		Mime				_mime;
+		char				**_env;
 		Server();
+		
 		Server(int port, char **env);
 		~Server();
 
-		class PortNotExist: public std::exception{
-			char *what() const throw();
-		};
-
-		std::string rout(Request &request);
-		std::string do_cgi(Request &request);
-		Location& select_location(Request &request);
-		std::string errorPage(int error_code);
-		void send_response(const char *response, int client_fd);
+		Response& errorPage(int error_code);
+		std::string status_code_validate(int status_code);
 };
 
 std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map);

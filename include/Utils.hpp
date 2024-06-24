@@ -3,6 +3,16 @@
 
 # 	include "Common.hpp"
 
+typedef enum e_method{
+			ELSE,
+			GET,
+			POST,
+			DELETE,
+			HEAD,
+			PUT,
+			NONE
+} t_method;
+
 typedef enum e_version{
 	HTTP09, // HTTP/0.9
 	HTTP10, // HTTP/1.0
@@ -17,8 +27,8 @@ void						trimLeadingSpaces(std::string& str) ;
 void						trimSpaces(std::string& str) ;
 std::vector<std::string>	splitToVector(const std::string& str, char delimiter);
 std::vector<std::string> 	lineToVector(const std::string& str);
+std::ostream &operator << (std::ostream &os, const t_method &method);
+bool is_directory(std::string &str);
+std::string concat_path(std::string s1, std::string s2);
 
 #endif
-
-
-std::ostream &operator << (std::ostream &os, const t_method &method);

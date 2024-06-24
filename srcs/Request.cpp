@@ -1,15 +1,17 @@
-#include "../include/Request.hpp"
+#include "Request.hpp"
 
 Request::Request():
 _lineIndex(0),
+_bodyIndex(0),
 _status(IN_REQUEST_LINE),
+write_fd(-1),
 _reqErr(SUCESS_REQUEST),
 _method(NONE),
 _path(""),
 _http_version(HTTP00),
 _body(""),
 _query_string(""),
-write_fd(-1)
+_isEndRecv(false)
 {
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
@@ -18,16 +20,18 @@ write_fd(-1)
 	_method_map["HEAD"] = HEAD;
 }
 
-Request::Request(std::string request):
+Request::Request(const std::string request):
 _lineIndex(0),
+_bodyIndex(0),
 _status(IN_REQUEST_LINE),
+write_fd(-1),
 _reqErr(SUCESS_REQUEST),
 _method(NONE),
 _path(""),
 _http_version(HTTP00),
 _body(""),
 _query_string(""),
-write_fd(-1)
+_isEndRecv(false)
 {
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
@@ -38,7 +42,7 @@ write_fd(-1)
 	{
 		_reqErrMsg();
 	}
-	_intiRequestStatus();
+	_intiRequestStatus(request);
 	if(_status > IN_REQUEST_LINE)
 	{
 		_readRequestLine();
@@ -59,30 +63,39 @@ write_fd(-1)
 	}
 }
 
-void Request::_intiRequestStatus( void )
+void Request::_intiRequestStatus(std::string request)
 {
-	while (std::vector<std::string>::iterator it = request_v.begin(); it != request_v.end(); ++it)
+	for (std::vector<std::string>::iterator it = request_v.begin(); it != request_v.end(); ++it)
 	{
-		if ( it == request_v.begin()
+		if (request.size() < BUFFERSIZE)
+		{
+			_status = END_REQUEST_MSG;
+			return ;
+		}
+		if (it == request_v.begin()
 			&& _status == IN_REQUEST_LINE \
-			&& ((*it).find('\n', start) != std::string::npos))
+			&& ((*it).find('\n', (*it).size()- 1) != std::string::npos))
 		{
 				_status = IN_HEADER_LINE;
 		}
 		else if (_status == IN_HEADER_LINE)
 		{
 			if ((*it) == "\n")
+			{
 				_status = IN_CRLF_LINE;
+			}
 		}
 		else if (_status == IN_CRLF_LINE)
 		{
 			if(it != request_v.end())
+			{
 				_status = IN_BODY_LINE;
+			}
 		}
 	}
 }
 
-bool	Request::_collectRequestToVector(std::string &request)
+bool	Request::_collectRequestToVector(std::string request)
 {
 	std::string 		line;
 
@@ -136,6 +149,7 @@ bool	Request::_httpVersionCheckNCollect(std::string word)
 {
 	std::vector<std::string>	version_v;
 
+	trimNewline(word);
 	version_v = splitToVector(word, '/');
 	_trimSpaceWordVector(version_v);
 	if(version_v[0] != "HTTP")
@@ -144,13 +158,21 @@ bool	Request::_httpVersionCheckNCollect(std::string word)
 		return (false);
 	}
 	if(version_v[1] == "0.9")
+	{
 		_http_version = HTTP09;
+	}
 	else if(version_v[1] == "1.0")
+	{
 		_http_version = HTTP10;
+	}
 	else if(version_v[1] == "1.1")
+	{
 		_http_version = HTTP11;
+	}
 	else
+	{
 		_http_version = HTTP00;
+	}
 	return (true);
 }
 
@@ -161,8 +183,11 @@ bool	Request::_readRequestHeaderField( void )
 
 	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
 	{
-		if (request_v[_lineIndex].find('\n', 0) == std::string::npos)
+		if (request_v[_lineIndex].find('\n', 0) == std::string::npos \
+			&& request_v[_lineIndex].find(':', 0) == std::string::npos)
+		{
 			return true;
+		}
 		header_l = request_v[_lineIndex];
 		word_v = splitToVector(header_l, ':');
 		if (word_v.size() > 2)
@@ -171,6 +196,7 @@ bool	Request::_readRequestHeaderField( void )
 			return false;
 		}
 		_trimSpaceWordVector(word_v);
+		trimNewline(word_v[1]);
 		_headerField_map[word_v[0]] = word_v[1];
 		_lineIndex++;
 	}
@@ -200,14 +226,13 @@ void	Request::_collectQuery(std::string path_l)
 {
 	size_t 		start = path_l.find('?', 0) + 1;
 
-	std::cout << "start = " << start << "\n";
 	if (start != std::string::npos)
 		_query_string = path_l.substr(start, path_l.length());
 }
 
-void	Request::updateRequest(std::string &request)
+void	Request::updateRequest(std::string request)
 {
-	_updateRequestToVector(request)
+	_updateRequestToVector(request);
 	if (_status == IN_REQUEST_LINE)
 		_updateFromRequestLine();
 	if (_status == IN_HEADER_LINE)
@@ -215,35 +240,41 @@ void	Request::updateRequest(std::string &request)
 	if (_status == IN_CRLF_LINE)
 	{
 		_lineIndex++;
+		_bodyIndex = _lineIndex;
 		_status = IN_BODY_LINE;
 	}
 	if (_status == IN_BODY_LINE)
 		_updateAfterHeaderLine();
 	if (_isEndRecv == true)
-		_stats = END_REQUEST_MSG;
+		_status = END_REQUEST_MSG;
 }
 
 void	Request::_updateRequestToVector(std::string &request)
 {
-    std::string::size_type start = 0;
-    std::string::size_type end = 0;
+    std::string::size_type		end = 0;
+	std::string::size_type		start = 0;
+	std::vector<std::string>	updateReq;
+	std::string					lessReq;
 
-	if (request_v.back().find('\n', start) != std::string::npos)
+	if (request_v.back().find('\n', 0) != std::string::npos)
 	{
 		updateReq = lineToVector(request);
-		request_v.push_back(updateReq);
+		vectorPlueVector(request_v, updateReq);
 	}
 	else
 	{
-		if (end = request.find('\n', start) != std::string::npos)
+		if ((end = request.find('\n', 0)) != std::string::npos)
 		{
-			request_v.back() += request.substr(start, end - start);
-			lessReq = request.substr(start, str.size() - start);
-			updateReq = lineToVector(request);
-			request_v.push_back(updateReq);
+			request_v.back() += request.substr(0, end + 1);
+			start = end + 1;
+			lessReq = request.substr(start, request.size() - end);
+			updateReq = lineToVector(lessReq);
+			vectorPlueVector(request_v, updateReq);
 		}
 		else
-			request_v.back() += str.substr(start, end - start);
+		{
+			request_v.back() += request;
+		}
 	}
 }
 
@@ -269,6 +300,7 @@ void	Request::_updateFromRequestLine( void )
 	if(!_httpVersionCheckNCollect(word_v[2]))
 		return ;
 	_lineIndex++;
+	_status = IN_HEADER_LINE;
 	return ;
 }
 
@@ -277,31 +309,54 @@ void	Request::_updateFromHeaderLine( void )
 	std::string					header_l;
 	std::vector<std::string>	word_v;
 
+	if (_lineIndex >= request_v.size())
+	{
+		return ;
+	}
 	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
 	{
-		if (request_v[_lineIndex].find('\n', 0) == std::string::npos)
-			return true;
+		if (request_v[_lineIndex].find('\n', 0) == std::string::npos \
+		&& request_v[_lineIndex].find(':', 0) == std::string::npos)
+		{
+			return ;
+		}
 		header_l = request_v[_lineIndex];
 		word_v = splitToVector(header_l, ':');
-		if (word_v.size() > 2)
+		if (word_v.size() != 2)
 		{
 			_reqErr = BAD_HEADERFIELD;
-			return false;
+			return ;
 		}
 		_trimSpaceWordVector(word_v);
+		trimNewline(word_v[1]);
 		_headerField_map[word_v[0]] = word_v[1];
 		_lineIndex++;
 	}
-	if (request_v[_lineIndex] == "\n")
+	if (request_v[_lineIndex - 1].find('\n', 0) == std::string::npos)
+		_lineIndex--;
+	if (_lineIndex < request_v.size() && request_v[_lineIndex] == "\n")
 		_status = IN_CRLF_LINE;
 }
 
 void	Request::_updateAfterHeaderLine( void )
 {
+    std::string::size_type end = _body.size();
+    while (end > 0 && (_body[end - 1] == '\n'))
+        --end;
+    if (end > 0 && end < _body.size()) {
+        _body = _body.substr(0, end);
+    }
+	else
+		_body = "";
 	while(_lineIndex < request_v.size()) 
 	{
 		_body +=  request_v[_lineIndex];
-		_lineIndex++;
+		if (request_v[_lineIndex].find('\n', 0) != std::string::npos)
+		{
+			_lineIndex++;
+		}
+		else
+			break;
 	}
 }
 

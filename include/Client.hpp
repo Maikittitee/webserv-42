@@ -15,7 +15,10 @@ class Client
 		~Client();
 
 		int 				fd;
-		id_t				server_fd;
+		bool				pipe_available;
+		int 				child_pid;
+		int 				pipe_fd[2];
+		int					pipe_fd_out[2];
 		std::string			IPaddr;
 		socklen_t			addrLen;
 		struct sockaddr_in	addr;
@@ -23,7 +26,6 @@ class Client
 		char				buffer[BUFFERSIZE];
 
 		std::string			rawReqMsg;
-		std::string			IPaddr;
 
 		ssize_t				bufSize;
 

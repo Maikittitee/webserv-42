@@ -2,16 +2,18 @@
 
 Server::Server(void)
 {
-	name = "localhost"; //? server_name
+	server_name = "localhost"; //? server_name
 	ipAddr = "0.0.0.0"; //? listen could be ip address or port
-	port = 80;
+	listen = 80;
+	error_page.push_back("400");
+	error_page.push_back("403");
+	error_page.push_back("404");
+	error_page.push_back("405");
+	error_page.push_back("error.html");
 
 }
 
 Server::Server(int port, char **env){
-	if (port < 0 || port > 65535)
-		throw PortNotExist();
-	else
 	_env = env;
 }
 
@@ -19,135 +21,83 @@ Server::~Server (void) {
 	close(_server_fd);
 }
 
-
-void Server::send_response(const char *response, int client_fd)
+std::string Server::status_code_validate(int status_code)
 {
-	send(client_fd, response, strlen(response), 0);
+	switch (status_code) {
+        case 100: return "100 Continue";
+        case 101: return "101 Switching Protocols";
+        case 200: return "200 OK";
+        case 201: return "201 Created";
+        case 202: return "202 Accepted";
+        case 203: return "203 Non-Authoritative Information";
+        case 204: return "204 No Content";
+        case 205: return "205 Reset Content";
+        case 206: return "206 Partial Content";
+        case 300: return "300 Multiple Choices";
+        case 301: return "301 Moved Permanently";
+        case 302: return "302 Found";
+        case 303: return "303 See Other";
+        case 304: return "304 Not Modified";
+        case 305: return "305 Use Proxy";
+        case 307: return "307 Temporary Redirect";
+        case 400: return "400 Bad Request";
+        case 401: return "401 Unauthorized";
+        case 402: return "402 Payment Required";
+        case 403: return "403 Forbidden";
+        case 404: return "404 Not Found";
+        case 405: return "405 Method Not Allowed";
+        case 406: return "406 Not Acceptable";
+        case 407: return "407 Proxy Authentication Required";
+        case 408: return "408 Request Timeout";
+        case 409: return "409 Conflict";
+        case 410: return "410 Gone";
+        case 411: return "411 Length Required";
+        case 412: return "412 Precondition Failed";
+        case 413: return "413 Payload Too Large";
+        case 414: return "414 URI Too Long";
+        case 415: return "415 Unsupported Media Type";
+        case 416: return "416 Range Not Satisfiable";
+        case 417: return "417 Expectation Failed";
+        case 426: return "426 Upgrade Required";
+        case 500: return "500 Internal Server Error";
+        case 501: return "501 Not Implemented";
+        case 502: return "502 Bad Gateway";
+        case 503: return "503 Service Unavailable";
+        case 504: return "504 Gateway Timeout";
+        case 505: return "505 HTTP Version Not Supported";
+        default:  return "Unknown Status Code";
+    }
 }
 
-char *Server::PortNotExist::what() const throw(){
-	return ((char *)"Your port is not in range of 0 - 65535");
-}
-std::string Server::errorPage(int error_code)
-{
-	std::string body;
+Response& Server::errorPage(int error_code){ // return resposne
+	Response *response = new Response;
+	std::stringstream error_code_string;
+	char buffer[BUFFERSIZE];
+	int	fd;
+	int len;
 
-	switch (error_code){
-		case 404:
-			readFile(body, "docs/error.html");
-		case 405:
-			readFile(body, "docs/error.html");
-	}
-	return (body);
-}
+	error_code_string << error_code;
+	std::string filename = _config["def"].root + "/" + error_page.back();
 
-std::string Server::do_cgi(Request &request)
-{
-	int fd[2];
-	int pid;
-
-	pipe(fd);
-
-	pid = fork();
-	if (pid == 0){
-		char **arg = (char **)malloc(sizeof(char *) * 3);
-		arg[0] = (char *)request._path.c_str();
-		arg[1] = (char *)request._query_string.c_str();
-		arg[2] = NULL;
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd[1]);
-		close(fd[0]);
-		execve(arg[0], arg, _env);
-	}
-	// waitpid(pid ,NULL, NULL);
-	dup2(fd[0], STDIN_FILENO);
-	close(fd[1]);
-	close(fd[0]);
-
-	char buffer[1024];
-	read(STDIN_FILENO, buffer, 1024);	
-	return (std::string(buffer));
-}
-
-std::string Server::rout(Request &request)
-{
-	Response response;
-
-	// // find config;
-	// std::cout << "bp1" << std::endl;
-	// Location target_location = select_location(request);	
-	// std::cout << "bp2" << std::endl;
-
-	// // 	หา config location ของ request (ถ้าไม่มีส่ง default config ไป)
-	// // send request and target config to response;
-	// response.receive_request(request, target_location);
-	// if (response._return_code >= 400) // incase error => redirect to error file
-	// 	response.set_body(errorPage(response._return_code));
-	// if (response._return_code < 0) {// incase cgi => redirect to do cgi
-	// 	response._return_code = 200;
-	// 	response.cgiPass = true;
-	// 	response.set_body(do_cgi(request));
+	std::cout << "error code: " << error_code_string.str() << std::endl;
+	// if (std::count(error_page.begin(), error_page.end() - 1, error_code_string.str()) != 0){
+	// 	fd = open(filename.c_str(), O_RDONLY);
+	// 	if (fd < 0)
+	// 		std::cerr << RED << "Can't open " << filename << RESET << std::endl;
+	// 	std::cout << "bp1" << std::endl;
+	// 	len = read(fd, buffer, BUFFERSIZE - 1);
+	// 	buffer[len] = '\0';
+	// 	response->_body.append(buffer, len);
+	// 	std::cout << response->_body << std::endl;
 	// }
-	response.set_body(response.get_body_from_file("docs/test.html"));
-	response.genarate_header();
-	return (response.get_response_text());	
-}
+	// else {
+	// 	response->_return_code = error_code;
+	// 	response->_body = status_code_validate(error_code);
+	// }
+	response->_content_type = "text/html";
+	return (*response);
 
-static std::vector<std::string> get_keys(std::map<std::string, Location> map)
-{
-	std::vector<std::string> ret;
-	std::map<std::string, Location>::const_iterator iter;
-	while (iter != map.end()){
-		ret.insert(ret.end(), iter->first);
-		iter++;
-	}
-	return (ret);
-}
 
-static int get_match_length(std::string target, std::string src)
-{
-	int cnt = 0;
-	int i = 0;
-	while (i < target.size() && i < src.size()){
-		if (target[i] == src[i])
-			cnt += 1;
-		else
-			return (cnt);
-		i++;
-	}
-	return (cnt);
-
-}
-
-Location& Server::select_location(Request &request)
-{
-	std::string target_path = request._path;
-	std::cout << "bp3" << std::endl;
-	std::vector<std::string> rout_paths;
-	std::cout << "bp4" << std::endl;
-	std::map<std::string, Location>::const_iterator it;
-	for (it = _config.begin(); it != _config.end(); it++)
-	{
-		std::cout << it->first << std::endl;
-		std::cout << it->second << std::endl;
-	}
-	rout_paths = get_keys(_config);
-	std::cout << "bp5" << std::endl;
-	std::vector<int> acc_length;
-	
-	int	i = 0;
-	while (i < rout_paths.size()){
-		acc_length.insert(acc_length.end(), get_match_length(target_path, rout_paths[i]));
-		i++;
-		std::cout << i << std::endl;
-	}
-	std::cout << "bp7" << std::endl;
-	// auto index = std::max_element(acc_length.begin(), acc_length.end()) - acc_length.begin();
-	// if (rout_paths[index].size() > acc_length[index])
-	// 	return (_config["/"]);
-	// std::cout << "rout of  " << request._path << " is " << rout_paths[index]  << std::endl; 
-	// return (_config[rout_paths[index]]);
-	return (_config["/"]);
 }
 
 std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map)
