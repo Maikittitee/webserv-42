@@ -80,12 +80,13 @@ std::vector<std::string> lineToVector(const std::string& str)
 
     while ((end = str.find('\n', start)) != std::string::npos)
 	{
-        if (end != start)
-            tokens.push_back(str.substr(start, end - start));
-		else
-			tokens.push_back("\n");
+        tokens.push_back(str.substr(start, end - start + 1));
         start = end + 1;
     }
+	if (start < str.size())
+	{
+		tokens.push_back(str.substr(start, str.size() - start));
+	}
     return tokens;
 }
 
@@ -155,4 +156,32 @@ bool is_directory(std::string &str)
 		return (false);
 	}
 	return (false);
+}
+
+void	vectorPlueVector(std::vector<std::string>& v1, std::vector<std::string>& v2)
+{
+    for (std::vector<std::string>::iterator it = v2.begin(); it != v2.end(); ++it) 
+	{
+        v1.push_back(*it);
+    }	
+}
+
+void    trimNewline(std::string &str)
+{
+    // Find the first non-newline character from the beginning
+    std::string::size_type start = 0;
+    while (start < str.size() && (str[start] == '\n' || str[start] == '\r')) {
+        ++start;
+    }
+
+    // Find the last non-newline character from the end
+    std::string::size_type end = str.size();
+    while (end > start && (str[end - 1] == '\n' || str[end - 1] == '\r')) {
+        --end;
+    }
+
+    // If there are leading or trailing newlines, modify the string in place
+    if (start > 0 || end < str.size()) {
+        str = str.substr(start, end - start);
+    }
 }

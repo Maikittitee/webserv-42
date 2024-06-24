@@ -7,7 +7,7 @@ def read_stdin():
     return input_data
 
 # Start the response to the client
-print("Content-Type: text/plain\n")
+print("Content-Type: text/html\n")
 
 # Read and print the data from standard input
 data = read_stdin()

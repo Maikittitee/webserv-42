@@ -15,7 +15,7 @@ WebServer::WebServer(std::vector<Server> &servers)
 
 		// get server fd
 		servers[i]._server_fd = socket(AF_INET, SOCK_STREAM, 0);
-		if (servers[i]._server_fd < 0)
+		if (servers[i]._server_fd <= 0)
 			std::cerr << "create socket failed" << std::endl;
 
 		// set non blocking	
@@ -48,6 +48,7 @@ bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server &serv) {
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	// std::cout << "serv listen is " << serv.listen << std::endl;
 	addr.sin_port = htons(serv.listen);
 	return true;
 }
@@ -146,24 +147,28 @@ bool	WebServer::_send_response(int fd) // write fd
 {
 	Client *client = _get_client(fd);
 	Server *server = client->server;
-	
+	Response response;
+	t_cgi_return cgi_return;	
 	if (!client)
 		std::cerr << RED << "can't find client" << RESET << std::endl;
 	if (!server)
 		std::cerr << RED << "can't find server" << RESET << std::endl;
 	
 	// CGI work here
-	int return_code = _cgi.rout(*client, *server);
+	cgi_return = _cgi.rout(*client, *server);
+	std::cout << BLU << "cgi return: " << cgi_return << RESET << std::endl;
 
-	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
-	std::string msg;
-	msg = _cgi.readfile(*client, *server, return_code); 
+	// Get resource
+	response = _cgi.readfile(*client, *server, cgi_return); 
 
 	// check client body size
-	if (msg.size() > client->location->cliBodySize){
-		// return 413 too big
-	}
+	// if (response._body.size() > client->location->cliBodySize){
+	// 	// return 413 too big
+	// 	response = server->errorPage(413);
+	// }
 
+
+	std::string msg = response.get_response_text();
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
@@ -245,44 +250,55 @@ bool	WebServer::_accept_connection(int server_fd)
 	return (true);
 }
 
-Request* mock_get_file_request(void)
-{
-	Request *ret = new Request();
+// Request* mock_get_file_request(void)
+// {
+// 	Request *ret = new Request();
 
-	ret->_method = GET;
-	ret->_path = "test.html";
-	ret->_http_version = HTTP11;
+// 	ret->_method = GET;
+// 	ret->_path = "test.html";
+// 	ret->_http_version = HTTP11;
 
-	ret->_body = "";
-	return (ret);
-}
+// 	ret->_body = "";
+// 	return (ret);
+// }
 
-Request* mock_post_cgi_request(void)
-{
-	Request *ret = new Request();
+// Request* mock_post_cgi_request(void)
+// {
+// 	Request *ret = new Request();
 
-	ret->_method = GET;
-	ret->_path = "/cgi-bin/arg.py";
-	ret->_http_version = HTTP11;
+// 	ret->_method = GET;
+// 	ret->_path = "/cgi-bin/arg.py";
+// 	ret->_http_version = HTTP11;
 
-	ret->_body = "hello from request, how are you?";
-	return (ret);
-}
+// 	ret->_body = "hello from request, how are you?";
+// 	return (ret);
+// }
 
-Request *my_request_parser(char *buffer)
-{
-	std::istringstream f(buffer);
-	std::string line;
+// Request *my_request_parser(char *buffer)
+// {
+// 	std::istringstream f(buffer);
+// 	std::string line;
 	
-	std::getline(f, line);
+// 	std::getline(f, line);
 
-	Request *req = new Request;
-	std::cout << RED << line << RESET << std::endl;
-	std::vector<std::string> vec = splitToVector(line, ' ');
-	req->_path = vec[1];
-	req->_body = "this is body";
-	return (req);
-}
+// 	Request *req = new Request;
+// 	std::cout << RED << line << RESET << std::endl;
+// 	std::vector<std::string> vec = splitToVector(line, ' ');
+// 	req->_path = vec[1];
+	
+// 	if (vec[0] == "GET")
+// 		req->_method = GET;
+// 	else if (vec[0] == "POST")
+// 		req->_method = POST;
+// 	else if (vec[0] == "DELETE")
+// 		req->_method = DELETE;
+// 	else
+// 		req->_method = ELSE;
+// 	req->_body = "this is body";
+
+// 	std::cout << "method: " << req->_method << std::endl;
+// 	return (req);
+// }
 
 bool WebServer::_parsing_request(int client_fd)
 {
@@ -290,34 +306,34 @@ bool WebServer::_parsing_request(int client_fd)
 	Server *server = client->server;
 
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
-	if (client.bufSize > 0)
-		client.buffer[client.bufSize] = '\0';
+	if (client->bufSize > 0)
+		client->buffer[client->bufSize] = '\0';
 	else
 	{
 		std::cout << "Handle With recv error do somethings!" << std::endl;
-		break;
+		return false;
 	}
-	std::cout << GRN << client.buffer << RESET << std::endl;
-	if (!client.request)
+	std::cout << GRN << client->buffer << RESET << std::endl;
+	if (!client->request)
 	{
-		Request request(client.buffer);
-		client.request = &request;	
+		Request request(client->buffer);
+		client->request = &request;	
 	}
-	if (client.request->_method != POST \
-			&& client.request->_status >= IN_CRLF_LINE)
+	if (client->request->_method != POST \
+			&& client->request->getStatus() >= IN_CRLF_LINE)
 	{
 		_clear_fd(client_fd, _read_fds);
 		_set_fd(client_fd, _write_fds);
 	}
-	else if (client.request->_method == POST \
-			&& client.request->_status >= END_REQUEST_MSG)
+	else if (client->request->_method == POST \
+			&& client->request->getStatus() >= END_REQUEST_MSG)
 	{
 		_clear_fd(client_fd, _read_fds);
 		_set_fd(client_fd, _write_fds);	
 	}
-	else if (client.request->_status < END_REQUEST_MSG)
+	else if (client->request->getStatus() < END_REQUEST_MSG)
 	{
-		client.request->updateRequest(client.buffer);
+		client->request->updateRequest(client->buffer);
 	}
 	return (true);
 }
