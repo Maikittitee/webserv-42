@@ -12,6 +12,8 @@
 #include "../include/WebServer.hpp"
 #include "../include/Config.hpp"
 
+bool g_state;
+
 
 std::map<std::string, Location> mock_location(void)
 {
@@ -72,8 +74,20 @@ Server *mock_server(void)
 
 }
 
+void eiei(int sig)
+{
+	g_state = false;
+}
+
+
+
 int main(int ac, char **av, char **env)
 {
+	struct sigaction sa;
+	sa.sa_handler = &eiei;
+	sa.sa_flags = SA_RESTART;
+	sigaction(SIGTSTP, &sa, NULL); 
+	
 	std::vector<Server> sv;
 
 	if (parsing_config(ac, av, sv) == false)

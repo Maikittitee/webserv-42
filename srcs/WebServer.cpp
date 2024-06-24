@@ -106,7 +106,8 @@ bool WebServer::runServer(void)
 	fd_set tmp_write_fds;
 
 	_init_fds();
-	while (true)
+	g_state = true;
+	while (g_state)
 	{
 		tmp_read_fds = _read_fds;
 		tmp_write_fds = _write_fds;
