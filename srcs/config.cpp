@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ktunchar <ktunchar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/24 14:30:39 by ktunchar         ###   ########.fr       */
+/*   Updated: 2024/06/24 15:07:35 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -503,7 +503,9 @@ void	ft_get_default_config(Location &def_loc, std::string key, std::string value
 		}
 	}
 	else if (key == "index")
-		def_loc.index.clear();
+	{
+		def_loc.index = ft_split(value);
+	}
 	else if (key == "return")
 	{
 		sp = ft_split(value);
