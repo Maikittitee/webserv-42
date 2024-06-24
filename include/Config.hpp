@@ -4,6 +4,8 @@
 # include "Common.hpp"
 # include "Server.hpp"
 
+// NEED FIX
+
 std::ostream& operator<<(std::ostream& os, const Location& location);
 short   ft_stos(std::string str);
 uint64_t        ft_stouint(std::string str);
@@ -19,7 +21,7 @@ short   ft_getlocate(Location &location, std::string key, std::string value);
 void    ft_prt_server(Server &sv);
 void    ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::vector<t_method> allowMethod);
 void    ft_prt_only_location(Location lc);
-void    ft_prt_location(std::map<std::string, Location> _config);
+void    ft_prt_location(std::map<std::string, Location> _config); 
 int     ft_stoi(std::string str);
 Location        ft_init_location();
 void ft_prt_locate(short locate);
