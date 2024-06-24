@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ktunchar <ktunchar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/21 21:13:58 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/24 14:30:39 by ktunchar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ short	ft_getlocate(Location &location, std::string key, std::string value)
 	return (BETWEEN_LOCATION);
 }
 
-void	ft_prt_server(Server sv)
+void	ft_prt_server(Server &sv)
 {
 	
 	std::cout << GRN << "SERVER : " << RESET << std::endl;
@@ -651,20 +651,20 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 	return (true);	
 }
 
-int main(int ac, char **av, char **env)
-{
-	std::vector<Server> sv;
+// int main(int ac, char **av, char **env)
+// {
+// 	std::vector<Server> sv;
 
-	if (parsing_config(ac, av, sv) == false)
-	{
-		std::cerr << RED << "Error File" << RESET << std::endl;
-		return(1);
-	}
+// 	if (parsing_config(ac, av, sv) == false)
+// 	{
+// 		std::cerr << RED << "Error File" << RESET << std::endl;
+// 		return(1);
+// 	}
 
-	for (int i = 0; i < sv.size(); i++)
-	{
-		ft_prt_server(sv[i]);
-		ft_prt_location(sv[i]._config);
-	}
-	return (0);	
-}
+// 	for (int i = 0; i < sv.size(); i++)
+// 	{
+// 		ft_prt_server(sv[i]);
+// 		ft_prt_location(sv[i]._config);
+// 	}
+// 	return (0);	
+// }

@@ -15,7 +15,7 @@ WebServer::WebServer(std::vector<Server> &servers)
 
 		// get server fd
 		servers[i]._server_fd = socket(AF_INET, SOCK_STREAM, 0);
-		if (servers[i]._server_fd < 0)
+		if (servers[i]._server_fd <= 0)
 			std::cerr << "create socket failed" << std::endl;
 
 		// set non blocking	
@@ -48,6 +48,7 @@ bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server &serv) {
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	// std::cout << "serv listen is " << serv.listen << std::endl;
 	addr.sin_port = htons(serv.listen);
 	return true;
 }
@@ -146,24 +147,28 @@ bool	WebServer::_send_response(int fd) // write fd
 {
 	Client *client = _get_client(fd);
 	Server *server = client->server;
-	
+	Response response;
+	t_cgi_return cgi_return;	
 	if (!client)
 		std::cerr << RED << "can't find client" << RESET << std::endl;
 	if (!server)
 		std::cerr << RED << "can't find server" << RESET << std::endl;
 	
 	// CGI work here
-	int return_code = _cgi.rout(*client, *server);
+	cgi_return = _cgi.rout(*client, *server);
+	std::cout << BLU << "cgi return: " << cgi_return << RESET << std::endl;
 
-	std::cout << BLU << "return code is " << return_code << RESET << std::endl;
-	std::string msg;
-	msg = _cgi.readfile(*client, *server, return_code); 
+	// Get resource
+	response = _cgi.readfile(*client, *server, cgi_return); 
 
 	// check client body size
-	if (msg.size() > client->location->cliBodySize){
-		// return 413 too big
-	}
+	// if (response._body.size() > client->location->cliBodySize){
+	// 	// return 413 too big
+	// 	response = server->errorPage(413);
+	// }
 
+
+	std::string msg = response.get_response_text();
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
@@ -281,7 +286,18 @@ Request *my_request_parser(char *buffer)
 	std::cout << RED << line << RESET << std::endl;
 	std::vector<std::string> vec = splitToVector(line, ' ');
 	req->_path = vec[1];
+	
+	if (vec[0] == "GET")
+		req->_method = GET;
+	else if (vec[0] == "POST")
+		req->_method = POST;
+	else if (vec[0] == "DELETE")
+		req->_method = DELETE;
+	else
+		req->_method = ELSE;
 	req->_body = "this is body";
+
+	std::cout << "method: " << req->_method << std::endl;
 	return (req);
 }
 

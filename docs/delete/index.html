@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Request Test</title>
+    <script>
+        function sendDeleteRequest() {
+            const url = '/delete/please_dont_delete_me.txt';
+
+            fetch(url, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Delete request failed: ' + response.status);
+                }
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert('File deleted successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to delete the file.');
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Send DELETE Request</h1>
+    <button onclick="sendDeleteRequest()">Delete please_dont_delete_me.txt</button>
+</body>
+</html>
