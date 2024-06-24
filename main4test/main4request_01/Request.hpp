@@ -14,6 +14,9 @@
 #	include <sstream> 
 #	include "Utils.hpp"
 
+
+#	define BUFFERSIZE 1000000
+
 typedef enum e_requestErrorCode{
 			SUCESS_REQUEST,
 			EMPTHY_REQUEST,
@@ -31,6 +34,16 @@ typedef enum e_requestStatusCode{
 			IN_BODY_LINE,
 			END_REQUEST_MSG
 } t_reqStatus;
+
+typedef enum e_method{
+			ELSE,
+			GET,
+			POST,
+			DELETE,
+			HEAD,
+			PUT,
+			NONE
+} t_method;
 
 class Request{
 
