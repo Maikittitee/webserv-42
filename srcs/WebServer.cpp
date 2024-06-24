@@ -15,7 +15,7 @@ WebServer::WebServer(std::vector<Server> &servers)
 
 		// get server fd
 		servers[i]._server_fd = socket(AF_INET, SOCK_STREAM, 0);
-		if (servers[i]._server_fd < 0)
+		if (servers[i]._server_fd <= 0)
 			std::cerr << "create socket failed" << std::endl;
 
 		// set non blocking	
@@ -48,6 +48,7 @@ bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server &serv) {
 	bzero(&addr, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	// std::cout << "serv listen is " << serv.listen << std::endl;
 	addr.sin_port = htons(serv.listen);
 	return true;
 }

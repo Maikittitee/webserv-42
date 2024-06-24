@@ -6,7 +6,7 @@
 /*   By: ktunchar <ktunchar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/24 13:53:26 by ktunchar         ###   ########.fr       */
+/*   Updated: 2024/06/24 14:30:39 by ktunchar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ short	ft_getlocate(Location &location, std::string key, std::string value)
 	return (BETWEEN_LOCATION);
 }
 
-void	ft_prt_server(Server sv)
+void	ft_prt_server(Server &sv)
 {
 	
 	std::cout << GRN << "SERVER : " << RESET << std::endl;

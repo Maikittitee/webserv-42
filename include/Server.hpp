@@ -17,7 +17,6 @@ class Server{
 	public:
 		int					_server_fd;
 		std::string			ipAddr; //? listen could be ip address or port
-		int					Port;
 
 		u_int64_t			listen;
 		std::string			server_name;

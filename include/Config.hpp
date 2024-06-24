@@ -16,7 +16,7 @@ std::string     ft_getvalue(std::string key, std::string line);
 std::string ft_getkey(std::string sp_line);
 std::string     ft_trim_ispace(std::string line);
 short   ft_getlocate(Location &location, std::string key, std::string value);
-void    ft_prt_server(Server sv);
+void    ft_prt_server(Server &sv);
 void    ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::vector<t_method> allowMethod);
 void    ft_prt_only_location(Location lc);
 void    ft_prt_location(std::map<std::string, Location> _config);
