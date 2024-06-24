@@ -80,20 +80,20 @@ Response& Server::errorPage(int error_code){ // return resposne
 	std::string filename = _config["def"].root + "/" + error_page.back();
 
 	std::cout << "error code: " << error_code_string.str() << std::endl;
-	if (std::count(error_page.begin(), error_page.end() - 1, error_code_string.str()) != 0){
-		fd = open(filename.c_str(), O_RDONLY);
-		if (fd < 0)
-			std::cerr << RED << "Can't open " << filename << RESET << std::endl;
-		std::cout << "bp1" << std::endl;
-		len = read(fd, buffer, BUFFERSIZE - 1);
-		buffer[len] = '\0';
-		response->_body.append(buffer, len);
-		std::cout << response->_body << std::endl;
-	}
-	else {
-		response->_return_code = error_code;
-		response->_body = status_code_validate(error_code);
-	}
+	// if (std::count(error_page.begin(), error_page.end() - 1, error_code_string.str()) != 0){
+	// 	fd = open(filename.c_str(), O_RDONLY);
+	// 	if (fd < 0)
+	// 		std::cerr << RED << "Can't open " << filename << RESET << std::endl;
+	// 	std::cout << "bp1" << std::endl;
+	// 	len = read(fd, buffer, BUFFERSIZE - 1);
+	// 	buffer[len] = '\0';
+	// 	response->_body.append(buffer, len);
+	// 	std::cout << response->_body << std::endl;
+	// }
+	// else {
+	// 	response->_return_code = error_code;
+	// 	response->_body = status_code_validate(error_code);
+	// }
 	response->_content_type = "text/html";
 	return (*response);
 
