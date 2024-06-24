@@ -50,7 +50,7 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 	client.location = _select_location(*client.request, server);
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
-	std::cout << GRN << *client.location << RESET << std::endl;
+	// std::cout << GRN << *client.location << RESET << std::endl;
 	client.request->_path = concat_path(client.location->root, client.request->_path);
 	if (!_is_allow_method(client.request->_method, *client.location)) {
 		std::cout << YEL << client.request->_method << " method is not allow" << RESET << std::endl; 
@@ -277,7 +277,7 @@ Location* CGI::_compare_location(std::string str, std::map<std::string, Location
 
 	for (it = conf.begin(); it != conf.end(); it++){
 		if (it->first == str){
-			std::cout << "checked with " << it->first  << std::endl;
+			std::cout << "match config " << it->first  << std::endl;
 			return (&(it->second));
 		}
 	}
@@ -296,7 +296,6 @@ Location* CGI::_select_location(Request &request, Server &server)
 	if ((select_loc = _compare_location(request._path, server._config)) != NULL)
 		match = true;
 	std::string only_path = _get_only_path(request._path);
-	std::cout << "only_path: " << only_path << std::endl;
 	while (!match){
 		if ((select_loc = _compare_location(only_path, server._config)) != NULL){
 			std::cout << YEL << "config match!" << RESET << std::endl;
