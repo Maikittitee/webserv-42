@@ -1,5 +1,17 @@
 #include "../include/Utils.hpp"
 
+std::string concat_path(std::string s1, std::string s2)
+{
+	std::string ret;
+	std::string mid = "/";
+
+	if (s1.back() == '/' || s1.front() == '/')
+		mid = "";
+	ret = s1 + mid + s2;
+	replace_str(ret, "//", "/");
+	return (ret);
+}
+
 bool readFile(std::string &buff, std::string const &filename)
 {
 	std::ifstream file(filename, std::ios::binary | std::ios::ate);

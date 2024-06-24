@@ -29,4 +29,6 @@ std::vector<std::string>	splitToVector(const std::string& str, char delimiter);
 std::vector<std::string> 	lineToVector(const std::string& str);
 std::ostream &operator << (std::ostream &os, const t_method &method);
 bool is_directory(std::string &str);
+std::string concat_path(std::string s1, std::string s2);
+
 #endif

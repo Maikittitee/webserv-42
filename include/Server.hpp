@@ -17,7 +17,6 @@ class Server{
 	public:
 		int					_server_fd;
 		std::string			ipAddr; //? listen could be ip address or port
-		int					Port;
 
 		u_int64_t			listen;
 		std::string			server_name;
@@ -30,7 +29,8 @@ class Server{
 		Server(int port, char **env);
 		~Server();
 
-		std::string errorPage(int error_code);
+		Response& errorPage(int error_code);
+		std::string status_code_validate(int status_code);
 };
 
 std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map);
