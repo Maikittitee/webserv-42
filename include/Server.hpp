@@ -29,7 +29,7 @@ class Server{
 		Server(int port, char **env);
 		~Server();
 
-		Response& errorPage(int error_code);
+		bool errorPage(int error_code, Response &response);
 };
 
 std::ostream &operator<<(std::ostream &os, std::map<std::string, Location>map);

@@ -47,8 +47,8 @@ class CGI{
 		Location* _compare_location(std::string str, std::map<std::string, Location> &conf);
 		std::string _get_only_path(std::string path);
 		bool _is_path(std::string path);
-		Response&	_delete_method(Client &client);
-		Response&	_auto_indexing(Client &client, Server &server);
+		bool _delete_method(Client &client, Response &response);
+		bool _auto_indexing(Client &client, Server &server, Response &response);
 };
 
 std::ostream& operator <<(std::ostream &os, const t_res_type &res_type);

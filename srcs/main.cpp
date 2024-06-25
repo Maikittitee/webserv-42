@@ -106,7 +106,7 @@ int main(int ac, char **av, char **env)
 
 	try {
 		webserv.runServer();
-		webserv.downServer();
+		// webserv.downServer();
 	}
 	catch (...){
 		std::cout << "bye bye ..." << std::endl;

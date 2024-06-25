@@ -48,6 +48,7 @@ std::string Response::get_response_text(void)
 {
 	std::string response;
 
+	genarate_header();
 	response += _header;
 	if (!cgiPass)
 		response += "\r\n";
