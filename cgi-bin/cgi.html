@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-<a href="./cgi-bin/hello.py">
+<a href="cgi-bin/hello.py">
     Click Hello
 </a>
 
@@ -31,13 +31,13 @@ Last Name: <input type = "text" name = "last_name" />
 </form> -->
 
 <h2>Upload a File</h2>
-<form enctype="multipart/form-data" action="/cgi-bin/test_upload.py" method="post">
+<form enctype="multipart/form-data" action="cgi-bin/test_upload.py" method="post">
     <p>File: <input type="file" name="filename" /></p>
     <p><input type="submit" value="Upload" /></p>
 </form>
 
 <h2>Download a File</h2>
-    <form action="/cgi-bin/download_file.py" method="get">
+    <form action="cgi-bin/download_file.py" method="get">
         <p>Filename: <input type="text" name="filename" /></p>
         <p><input type="submit" value="Download" /></p>
     </form>
