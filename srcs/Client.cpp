@@ -6,5 +6,5 @@ Client::Client(void) {
 }
 
 Client::~Client(){
-
+	delete request;
 }
