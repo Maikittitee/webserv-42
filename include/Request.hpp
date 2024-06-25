@@ -78,7 +78,7 @@ class Request{
 		~Request( void ) {}
 
 		// Getter
-		std::map<std::string, std::string>	getHeaderFieldMap ( void )
+		std::map<std::string, std::string>	getHeaderFieldMap ( void ) const
 		{
 			return _headerField_map;
 		}
@@ -96,5 +96,6 @@ class Request{
 		}
 };
 
+std::ostream &operator <<(std::ostream &os, const Request &req);
 
 # endif

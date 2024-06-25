@@ -25,7 +25,7 @@ void Response::genarate_header(void)
 	header << "HTTP/1.1 ";
 	header << _return_code;
 	header << " ";
-	header << "OK";
+	header << status_code_validate(_return_code);
 	header << "\r\n";
 	header << "Date: "; 
 	header << get_date();
@@ -48,6 +48,7 @@ std::string Response::get_response_text(void)
 {
 	std::string response;
 
+	genarate_header();
 	response += _header;
 	if (!cgiPass)
 		response += "\r\n";

@@ -22,7 +22,9 @@
 # include <dirent.h>
 # include <sys/types.h>
 # include "Utils.hpp"
+# include <signal.h>
 
 # define BUFFERSIZE 65535
+extern bool	g_state;
 
 #endif
