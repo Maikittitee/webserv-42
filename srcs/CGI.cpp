@@ -127,6 +127,7 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	std::cout << "in readfile" << std::endl; 
 	if (cgi_return.type == STATUS_CODE_RES && cgi_return.status_code >= 400)
 	{
+		std::cout << "error page" << std::endl;
 		response = &server.errorPage(cgi_return.status_code);
 		readable = false;
 	} 
