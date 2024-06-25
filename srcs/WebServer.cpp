@@ -143,6 +143,15 @@ bool WebServer::runServer(void)
 	return (true);
 
 }
+bool	WebServer::downServer(void)
+{
+	// free every client
+	std::map<int, Client *>::iterator it;
+
+	for (it = _clients.begin(); it != _clients.end(); it++){
+		delete it->second;
+	}
+}
 
 bool	WebServer::_send_response(int fd) // write fd
 {
@@ -163,10 +172,10 @@ bool	WebServer::_send_response(int fd) // write fd
 	response = _cgi.readfile(*client, *server, cgi_return); 
 
 	// check client body size
-	// if (response._body.size() > client->location->cliBodySize){
-	// 	// return 413 too big
-	// 	response = server->errorPage(413);
-	// }
+	if (response._body.size() > client->location->cliBodySize){
+		// return 413 too big
+		response = server->errorPage(413);
+	}
 
 
 	std::string msg = response.get_response_text();
@@ -176,7 +185,7 @@ bool	WebServer::_send_response(int fd) // write fd
 	close(fd);
 	_clear_fd(fd, _write_fds);
 	
-	delete _clients[fd]->request; // MAYBE NO NEED 
+	// delete _clients[fd]->request; // MAYBE NO NEED 
 	delete _clients[fd];
 	_clients.erase(fd);
 	return (true);
