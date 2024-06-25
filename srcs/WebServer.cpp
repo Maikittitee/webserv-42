@@ -180,7 +180,6 @@ bool	WebServer::_send_response(int fd) // write fd
 	delete _clients[fd];
 	_clients.erase(fd);
 	return (true);
-
 }
 
 bool	WebServer::_is_match_server(int fd)
@@ -252,55 +251,55 @@ bool	WebServer::_accept_connection(int server_fd)
 	return (true);
 }
 
-Request* mock_get_file_request(void)
-{
-	Request *ret = new Request();
+// Request* mock_get_file_request(void)
+// {
+// 	Request *ret = new Request();
 
-	ret->_method = GET;
-	ret->_path = "test.html";
-	ret->_http_version = HTTP11;
+// 	ret->_method = GET;
+// 	ret->_path = "test.html";
+// 	ret->_http_version = HTTP11;
 
-	ret->_body = "";
-	return (ret);
-}
+// 	ret->_body = "";
+// 	return (ret);
+// }
 
-Request* mock_post_cgi_request(void)
-{
-	Request *ret = new Request();
+// Request* mock_post_cgi_request(void)
+// {
+// 	Request *ret = new Request();
 
-	ret->_method = GET;
-	ret->_path = "/cgi-bin/arg.py";
-	ret->_http_version = HTTP11;
+// 	ret->_method = GET;
+// 	ret->_path = "/cgi-bin/arg.py";
+// 	ret->_http_version = HTTP11;
 
-	ret->_body = "hello from request, how are you?";
-	return (ret);
-}
+// 	ret->_body = "hello from request, how are you?";
+// 	return (ret);
+// }
 
-Request *my_request_parser(char *buffer)
-{
-	std::istringstream f(buffer);
-	std::string line;
+// Request *my_request_parser(char *buffer)
+// {
+// 	std::istringstream f(buffer);
+// 	std::string line;
 	
-	std::getline(f, line);
+// 	std::getline(f, line);
 
-	Request *req = new Request;
-	std::cout << RED << line << RESET << std::endl;
-	std::vector<std::string> vec = splitToVector(line, ' ');
-	req->_path = vec[1];
+// 	Request *req = new Request;
+// 	std::cout << RED << line << RESET << std::endl;
+// 	std::vector<std::string> vec = splitToVector(line, ' ');
+// 	req->_path = vec[1];
 	
-	if (vec[0] == "GET")
-		req->_method = GET;
-	else if (vec[0] == "POST")
-		req->_method = POST;
-	else if (vec[0] == "DELETE")
-		req->_method = DELETE;
-	else
-		req->_method = ELSE;
-	req->_body = "this is body";
+// 	if (vec[0] == "GET")
+// 		req->_method = GET;
+// 	else if (vec[0] == "POST")
+// 		req->_method = POST;
+// 	else if (vec[0] == "DELETE")
+// 		req->_method = DELETE;
+// 	else
+// 		req->_method = ELSE;
+// 	req->_body = "this is body";
 
-	std::cout << "method: " << req->_method << std::endl;
-	return (req);
-}
+// 	std::cout << "method: " << req->_method << std::endl;
+// 	return (req);
+// }
 
 bool WebServer::_parsing_request(int client_fd)
 {
@@ -308,17 +307,35 @@ bool WebServer::_parsing_request(int client_fd)
 	Server *server = client->server;
 
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
-	client->buffer[client->bufSize] = '\0';
-
+	if (client->bufSize > 0)
+		client->buffer[client->bufSize] = '\0';
+	else
+	{
+		std::cout << "Handle With recv error do somethings!" << std::endl;
+		return false;
+	}
 	std::cout << GRN << client->buffer << RESET << std::endl;
-
-	Request request(client->buffer);
-	// client.request = &request;
-	client->request = my_request_parser(client->buffer);
-	// client->request = mock_post_cgi_request();
-	_clear_fd(client_fd, _read_fds);
-	_set_fd(client_fd, _write_fds);
-
+	if (!client->request)
+	{
+		Request request(client->buffer);
+		client->request = &request;	
+	}
+	if (client->request->_method != POST \
+			&& client->request->getStatus() >= IN_CRLF_LINE)
+	{
+		_clear_fd(client_fd, _read_fds);
+		_set_fd(client_fd, _write_fds);
+	}
+	else if (client->request->_method == POST \
+			&& client->request->getStatus() >= END_REQUEST_MSG)
+	{
+		_clear_fd(client_fd, _read_fds);
+		_set_fd(client_fd, _write_fds);	
+	}
+	else if (client->request->getStatus() < END_REQUEST_MSG)
+	{
+		client->request->updateRequest(client->buffer);
+	}
 	return (true);
 }
 
