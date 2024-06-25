@@ -221,10 +221,13 @@ bool	CGI::_auto_indexing(Client &client, Server &server, Response &response)
 	response._body += "<head>\n";
 	response._body += "<meta charset=\"UTF-8\">\n";
 	response._body += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n";
-	response._body += "<title>auto index</title>\n";
+	response._body += "<title>";
+	response._body += client.request->_path; 
+	response._body += "</title>\n";
 	response._body += "</head>\n";
 	response._body += "<body>\n";
 	response._body += "<h1>\n";
+	response._body += "index of ";
 	response._body += client.request->_path;
 	response._body += "</h1>\n";
 	response._body += "<hr>\n";
