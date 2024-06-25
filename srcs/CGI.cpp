@@ -58,8 +58,9 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 			return (t_cgi_return){HEAD_RES, 403};
 		return (t_cgi_return){STATUS_CODE_RES, 403};
 	}
-	if (client.location->ret.have){
+	if (client.location->ret.code){ // here
 		// redirect
+		std::cout << "redirect" << std::endl;
 		client.request->_path = client.location->ret.text;
 		return ((t_cgi_return){STATUS_CODE_RES, client.location->ret.code});
 	}
@@ -136,6 +137,10 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 		std::cout << "read file: " << client.request->_path << std::endl;
 		fd = open(client.request->_path.c_str(), O_RDONLY);
 		readable = true;
+		if (fd <= 0){
+			response = &server.errorPage(404);
+			readable = false;
+		}
 	}
 	else if (cgi_return.type == FORKING_RES)
 	{
