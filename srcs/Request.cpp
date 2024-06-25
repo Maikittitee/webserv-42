@@ -293,23 +293,16 @@ void	Request::_updateFromHeaderLine( void )
 	std::vector<std::string>	word_v;
 
 	if (_lineIndex >= request_v.size())
-	{
 		return ;
-	}
 	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
 	{
 		if (request_v[_lineIndex].find('\n', 0) == std::string::npos \
 		&& request_v[_lineIndex].find(':', 0) == std::string::npos)
-		{
 			return ;
-		}
 		header_l = request_v[_lineIndex];
 		word_v = splitToVector(header_l, ':');
 		if (word_v.size() != 2)
-		{
-			_reqErr = BAD_HEADERFIELD;
 			return ;
-		}
 		_trimSpaceWordVector(word_v);
 		trimNewline(word_v[1]);
 		_headerField_map[word_v[0]] = word_v[1];
