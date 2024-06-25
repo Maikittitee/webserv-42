@@ -97,7 +97,14 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 			exit(0);
 		}
 		else{ // perent
-			write(client.pipe_fd[1], client.request->_body.c_str(), client.request->_body.size());
+			std::string msg;
+			if (client.request->_method == GET)
+				msg = client.request->_query_string;
+			else if (client.request->_method == POST)
+				msg = client.request->_body;
+			else
+				msg = std::string("unknown method");
+			write(client.pipe_fd[1], msg.c_str(), msg.size());
 			return ((t_cgi_return){FORKING_RES, 0}); // return write able fd
 		}
 	}
