@@ -303,7 +303,10 @@ void	Request::_updateFromHeaderLine( void )
 
 	if (_lineIndex >= request_v.size())
 		return ;
-	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
+	while(_lineIndex < request_v.size() \
+		&& request_v[_lineIndex] != "\n" \
+		&& request_v[_lineIndex] != "\r\n" \
+		&& request_v[_lineIndex] != "\r") 
 	{
 		if (request_v[_lineIndex].find('\n', 0) == std::string::npos \
 		&& request_v[_lineIndex].find(':', 0) == std::string::npos)
@@ -319,7 +322,9 @@ void	Request::_updateFromHeaderLine( void )
 	}
 	if (request_v[_lineIndex - 1].find('\n', 0) == std::string::npos)
 		_lineIndex--;
-	if (_lineIndex < request_v.size() && request_v[_lineIndex] == "\n")
+	if (_lineIndex < request_v.size() && (request_v[_lineIndex] == "\n" \
+		|| request_v[_lineIndex] == "\r\n" \
+		|| request_v[_lineIndex] == "\r"))
 		_status = IN_CRLF_LINE;
 }
 
