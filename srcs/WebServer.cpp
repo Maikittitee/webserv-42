@@ -296,11 +296,11 @@ bool WebServer::_parsing_request(int client_fd)
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
 
 	// mai's 
-	client->request = my_request_parser(client->buffer);
-	_clear_fd(client_fd, _read_fds);
-	_set_fd(client_fd, _write_fds);	
-	return (true);
-
+	// client->request = my_request_parser(client->buffer);
+	// _clear_fd(client_fd, _read_fds);
+	// _set_fd(client_fd, _write_fds);	
+	// return (true);
+	std::cout << BLU << "current clients: " << _clients.size() << std::endl;
 	if (client->bufSize > 0)
 		client->buffer[client->bufSize] = '\0';
 	else
@@ -311,6 +311,7 @@ bool WebServer::_parsing_request(int client_fd)
 	std::cout << GRN << client->buffer << RESET << std::endl;
 	if (!client->request)
 	{
+		std::cout << YEL << "new client" << RESET << std::endl;
 		client->request = new Request(client->buffer);	
 	}
 
@@ -318,12 +319,14 @@ bool WebServer::_parsing_request(int client_fd)
 	if (client->request->_method != POST \
 			&& client->request->getStatus() >= IN_CRLF_LINE)
 	{
+		std::cout << YEL << "end of GET method" << RESET << std::endl;	
 		_clear_fd(client_fd, _read_fds);
 		_set_fd(client_fd, _write_fds);
 	}
 	else if (client->request->_method == POST \
 			&& client->request->getStatus() >= END_REQUEST_MSG)
 	{
+		std::cout << YEL << "end of POST method" << RESET << std::endl;	
 		_clear_fd(client_fd, _read_fds);
 		_set_fd(client_fd, _write_fds);	
 	}
