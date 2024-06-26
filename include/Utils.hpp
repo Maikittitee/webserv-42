@@ -2,6 +2,8 @@
 # define WS_UTILS_HPP
 
 # 	include "Common.hpp"
+#	include <algorithm>
+#	include <cstring>
 
 typedef enum e_method{
 			ELSE,
@@ -28,6 +30,7 @@ void						trimSpaces(std::string& str);
 void						trimNewline(std::string &str);
 std::vector<std::string>	splitToVector(const std::string& str, char delimiter);
 std::vector<std::string> 	lineToVector(const std::string& str);
+std::vector<std::string> 	headerSplit(const std::string& str, char delimiter);
 void						vectorPlueVector(std::vector<std::string>& v1, std::vector<std::string>& v2);
 std::ostream &operator << (std::ostream &os, const t_method &method);
 bool is_directory(std::string &str);

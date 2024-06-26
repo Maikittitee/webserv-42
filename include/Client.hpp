@@ -23,7 +23,7 @@ class Client
 		socklen_t			addrLen;
 		struct sockaddr_in	addr;
 	
-		char				buffer[BUFFERSIZE];
+		char				buffer[BUFFERSIZE + 1];
 
 		std::string			rawReqMsg;
 

@@ -191,7 +191,8 @@ bool	Request::_readRequestHeaderField( void )
 			return true;
 		}
 		header_l = request_v[_lineIndex];
-		word_v = splitToVector(header_l, ':');
+		word_v = headerSplit(header_l, ':');
+		// word_v = splitToVector(header_l, ':');
 		if (word_v.size() > 2)
 		{
 			_reqErr = BAD_HEADERFIELD;
@@ -226,10 +227,13 @@ void	Request::_readRequestMassageBody( void )
 
 void	Request::_collectQuery(std::string path_l)
 {
-	size_t 		start = path_l.find('?', 0) + 1;
+	size_t 		start = path_l.find('?', 0);
 
 	if (start != std::string::npos)
+	{
+		start = start + 1;
 		_query_string = path_l.substr(start, path_l.length());
+	}
 }
 
 void	Request::updateRequest(std::string request)
@@ -335,7 +339,7 @@ void	Request::_updateFromHeaderLine( void )
 			return ;
 		}
 		header_l = request_v[_lineIndex];
-		word_v = splitToVector(header_l, ':');
+		word_v = headerSplit(header_l, ':');
 		std::cout << "test Hearder2\n";
 		if (word_v.size() != 2)
 		{
