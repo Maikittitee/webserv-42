@@ -166,18 +166,27 @@ bool	Request::_readRequestHeaderField( void )
 	std::string					header_l;
 	std::vector<std::string>	word_v;
 
-	while(_lineIndex < request_v.size() && request_v[_lineIndex] != "\n") 
+	while(_lineIndex < request_v.size() \
+		&& request_v[_lineIndex] != "\n" \
+		&& request_v[_lineIndex] != "\r\n" \
+		&& request_v[_lineIndex] != "\r") 
 	{
 		if (request_v[_lineIndex].find('\n', 0) == std::string::npos \
 			&& request_v[_lineIndex].find(':', 0) == std::string::npos)
 			return true;
 		header_l = request_v[_lineIndex];
-		word_v = splitToVector(header_l, ':');
+		word_v = headerSplit(header_l, ':');
 		if (word_v.size() > 2)
 			return false;
 		_trimSpaceWordVector(word_v);
 		trimNewline(word_v[1]);
 		_headerField_map[word_v[0]] = word_v[1];
+		// if (request_v[_lineIndex].find("\n\r", 0))
+		// 	std::cout << "request_v[" << _lineIndex << "] rn\n";
+		// else if (request_v[_lineIndex].find("\n", 0))
+		// 	std::cout << "request_v[" << _lineIndex << "] n\n";
+		// else if (request_v[_lineIndex].find("\r", 0))
+		// 	std::cout << "request_v[" << _lineIndex << "] r\n";
 		_lineIndex++;
 	}
 	return true;
@@ -300,7 +309,7 @@ void	Request::_updateFromHeaderLine( void )
 		&& request_v[_lineIndex].find(':', 0) == std::string::npos)
 			return ;
 		header_l = request_v[_lineIndex];
-		word_v = splitToVector(header_l, ':');
+		word_v = headerSplit(header_l, ':');
 		if (word_v.size() != 2)
 			return ;
 		_trimSpaceWordVector(word_v);
