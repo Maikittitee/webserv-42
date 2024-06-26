@@ -72,6 +72,29 @@ std::vector<std::string> splitToVector(const std::string& str, char delimiter)
     return tokens;
 }
 
+std::vector<std::string> headerSplit(const std::string& str, char delimiter)
+{
+    std::vector<std::string> tokens;
+    std::string::size_type start = 0;
+    std::string::size_type end = 0;
+    bool    stop = false;
+
+    while (((end = str.find(delimiter, start)) != std::string::npos && stop == false))
+	{
+        if (end != start)
+        {
+            tokens.push_back(str.substr(start, end - start));
+            stop = true;
+        }
+        if(end == str.length() - 1)
+            return tokens;
+        start = end + 1;
+    }
+    if (start < str.length())
+        tokens.push_back(str.substr(start));
+    return tokens;
+}
+
 std::vector<std::string> lineToVector(const std::string& str) 
 {
     std::vector<std::string> tokens;
