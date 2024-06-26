@@ -10,7 +10,7 @@ Location::Location(void)
 	cliBodySize = 5000;
 	root = "";
 	index.clear();
-	ret.have = false;
+	ret.have = NOT_HAVE;
 	ret.code = 0;
 	ret.text = "";
 }
