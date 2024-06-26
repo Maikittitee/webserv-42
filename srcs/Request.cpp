@@ -68,7 +68,7 @@ void Request::_intiRequestStatus(std::string request)
 		}
 		else if (_status == IN_HEADER_LINE)
 		{
-			if ((*it) == "\n")
+			if ((*it) == "\n" || (*it) == "\r\n" || (*it) == "\r")
 			{
 				_status = IN_CRLF_LINE;
 			}
