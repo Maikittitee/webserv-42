@@ -166,6 +166,13 @@ bool	WebServer::_send_response(int fd) // write fd
 		std::cerr << RED << "can't find server" << RESET << std::endl;
 	
 	std::cout << BLU << *client->request << RESET << std::endl;
+<<<<<<< HEAD
+=======
+	
+	close(fd);
+	_clear_fd(fd, _write_fds);
+	return (true);
+>>>>>>> d2f7a21fed072bca328fb3b194f623b48ab1c396
 	// CGI work here
 	cgi_return = _cgi.rout(*client, *server);
 	std::cout << BLU << "cgi return: " << cgi_return << RESET << std::endl;
