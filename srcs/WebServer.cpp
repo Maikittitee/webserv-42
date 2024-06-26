@@ -166,7 +166,6 @@ bool	WebServer::_send_response(int fd) // write fd
 		std::cerr << RED << "can't find server" << RESET << std::endl;
 	
 	std::cout << BLU << *client->request << RESET << std::endl;
-
 	// CGI work here
 	cgi_return = _cgi.rout(*client, *server);
 	std::cout << BLU << "cgi return: " << cgi_return << RESET << std::endl;
@@ -296,10 +295,10 @@ bool WebServer::_parsing_request(int client_fd)
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE - 1, MSG_DONTWAIT);
 
 	// mai's 
-	client->request = my_request_parser(client->buffer);
-	_clear_fd(client_fd, _read_fds);
-	_set_fd(client_fd, _write_fds);	
-	return (true);
+	// client->request = my_request_parser(client->buffer);
+	// _clear_fd(client_fd, _read_fds);
+	// _set_fd(client_fd, _write_fds);	
+	// return (true);
 
 	if (client->bufSize > 0)
 		client->buffer[client->bufSize] = '\0';
