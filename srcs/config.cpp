@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/26 16:27:51 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/27 12:08:50 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -474,7 +474,6 @@ void	ft_get_default_config(Location &def_loc, std::string key, std::string value
 	std::vector<std::string> sp;
 	
 	sp.clear();
-	// std::cout << "Entry get default config" << std::endl;
 	if (key == "client_max_body_size")
 		def_loc.cliBodySize = ft_stouint(value);
 	else if (key == "root")
@@ -497,7 +496,6 @@ void	ft_get_default_config(Location &def_loc, std::string key, std::string value
 		sp = ft_split(value);
 		def_loc.ret.code = ft_stos(sp[0]);
 		def_loc.ret.have =  HAVE;
-		// std::cout << "ret[state] : " << def_loc.ret.code << std::endl;
 		def_loc.ret.text = sp[1];
 	}
 	else if (key == "autoindex")
