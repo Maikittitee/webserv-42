@@ -23,7 +23,6 @@ void    ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::ve
 void    ft_prt_only_location(Location lc);
 void    ft_prt_location(std::map<std::string, Location> _config); 
 int     ft_stoi(std::string str);
-Location        ft_init_location();
 void ft_prt_locate(short locate);
 bool ft_check_name(std::string key);
 bool    ft_check_sameport(std::vector<Server> sv);
