@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 #include <string>
 
-void handle_post_request(const std::string& post_data) {
+void handle_post_request(const std::string& post_data, char **env) {
     int pipe_fd[2];
     if (pipe(pipe_fd) == -1) {
         perror("pipe");
@@ -29,6 +29,9 @@ void handle_post_request(const std::string& post_data) {
         setenv("CONTENT_LENGTH", std::to_string(post_data.size()).c_str(), 1);
         setenv("CONTENT_TYPE", "application/x-www-form-urlencoded", 1);
 
+
+		char *arg[] = {"/usr/bin/python3", "python3", "hello.py", NULL};
+		execve(arg[0], arg, env);
         execl("/usr/bin/python3", "python3", "hello.py", NULL);
         perror("execl");
         exit(EXIT_FAILURE);
@@ -48,11 +51,11 @@ void handle_post_request(const std::string& post_data) {
     }
 }
 
-int main() {
+int main(int ac, char **av, char **env) {
     // Simulate receiving POST data
     std::string post_data = "name=MAIZA&age=20";
 
-    handle_post_request(post_data);
+    handle_post_request(post_data, env);
 
     return 0;
 }
