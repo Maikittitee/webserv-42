@@ -6,7 +6,7 @@
 /*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/24 15:07:35 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/06/27 12:08:50 by nkietwee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,7 +251,7 @@ short	ft_getlocate(Location &location, std::string key, std::string value)
 	else if (key == "return")
 	{
 		sp = ft_split(value);
-		location.ret.code  = true;
+		location.ret.have  = true;
 		location.ret.code = ft_stoi(sp[0]);
 		location.ret.text = sp[1]; 
 	}
@@ -387,22 +387,6 @@ int	ft_stoi(std::string str)
     return (res * sym);
 }
 
-Location	ft_init_location()
-{
-	Location location;
-
-	location.cgiPass = OFF;
-	location.autoIndex = OFF;
-	location.allowMethod.clear();
-	location.cliBodySize = 5000;
-	location.root = "";
-	location.index.clear();
-	location.ret.have = false;
-	location.ret.code = 0;
-	location.ret.text = "";
-	return (location);
-}
-
 void ft_prt_locate(short locate)
 {
 	if (locate == DEFAULT)
@@ -508,9 +492,10 @@ void	ft_get_default_config(Location &def_loc, std::string key, std::string value
 	}
 	else if (key == "return")
 	{
+		
 		sp = ft_split(value);
 		def_loc.ret.code = ft_stos(sp[0]);
-		def_loc.ret.have =  true;
+		def_loc.ret.have =  HAVE;
 		def_loc.ret.text = sp[1];
 	}
 	else if (key == "autoindex")
