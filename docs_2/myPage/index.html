@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Page Navigation</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#text">Text</a></li>
+                <li><a href="#upload">Upload</a></li>
+                <li><a href="#download">Download</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home">
+        <h1>Home</h1>
+		<p>Welcome to our website!</p>
+		<a href="./cgi-bin/hello.py" >
+			First Cgi
+		</a>
+    </section>
+	<section id="text">
+		<div class="grid-container">
+			<div class="bg-get">
+				<h2> GET</h2>
+				<p>London is the capital city of England.</p>
+				<form action = "/cgi-bin/hello_get.py" method = "get">
+					First Name: <input type = "text" name = "first_name">  <br />
+					Last Name: <input type = "text" name = "last_name" />
+					<input type = "submit" value = "Submit" />
+				</form>	
+			</div>
+	
+			<div class="bg-post">
+				<h2>  POST </h2>
+				<p>Oslo is the capital city of Norway.</p>
+				<form action = "/cgi-bin/hello_get.py" method = "post">
+					First Name: <input type = "text" name = "first_name">  <br />
+					Last Name: <input type = "text" name = "last_name" />
+					<input type = "submit" value = "Submit" />
+				</form>
+			</div>
+	
+		</div>  
+	<section id="download">
+			<h1>Download</h1>
+			<!-- <p>We offer a variety of services...</p> -->
+			<a href="./cgi-bin/list.py"> 
+				List File
+			</a>
+	</section>
+
+	<section id="upload">
+		<h1>Upload</h1>
+		<!-- <p>We are a company that values...</p> -->
+		<form enctype="multipart/form-data" action="/cgi-bin/upload.py" method="post">
+			<p>File: <input type="file" name="filename" /></p>
+			<p><input type="submit" value="Upload" /></p>
+		</form>
+	</section>
+
+</body>
+</html>
+

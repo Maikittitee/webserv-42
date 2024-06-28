@@ -11,8 +11,7 @@ else:
 	print("filename not Found", file=sys.stderr)
 	sys.exit(1) # Exit Fail
 
-upload_dir = "./upload/"
-upload_dir_2 = "./upload_2/"
+upload_dir = "../upload/"
 
 # if not os.path.exists(upload_dir_2):
 #     os.makedirs(upload_dir_2)
@@ -44,12 +43,15 @@ print("<head>")
 print('<meta charset="UTF-8">')
 print('<meta name="viewport" content="width=device-width, initial-scale=1.0">')
 print('<title>Document</title>')
+print('<style>h1 {text-align: center; font-size: 40px;}</style>')
 print('</head>')
 print('<body>')
-for file in existing_files:
-    print(f'<h2>file : {file}</h2>')
-
+# for file in existing_files:
+#     print(f'<li>file : {file}</li>')
 # print(f'<h1> "form : {form}" </h1>')
 print(f'<h1> "{message}" </h1>')
+# print("<a href=\"/cgi-bin/list.py\">Go Back</a>")
+print("<a href=\"/../index.html\">Go Back</a>")
 print('</body>')
-   
+
+ 
