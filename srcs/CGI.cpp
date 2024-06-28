@@ -47,7 +47,8 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 {
 	t_cgi_return ret;
 
-	client.location = _select_location(*client.request, server);
+	// client.location = _select_location(*client.request, server);
+	client.location = &server._config["/"];
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
 	// std::cout << GRN << *client.location << RESET << std::endl;

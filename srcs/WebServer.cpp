@@ -301,7 +301,6 @@ bool WebServer::_parsing_request(int client_fd)
 
 	i += 1;
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE, MSG_DONTWAIT);
-
 	// mai's 
 	// client->request = my_request_parser(client->buffer);
 	// _clear_fd(client_fd, _read_fds);
@@ -320,6 +319,10 @@ bool WebServer::_parsing_request(int client_fd)
 	{
 		std::cout << YEL << "new client" << RESET << std::endl;
 		client->request = new Request(client->buffer);	
+	}
+    if (client->bufSize < BUFFERSIZE)
+    {
+        client->request->_isEndRecv = true;
 	}
 	// for end parsing reqeust
 	if (client->request->_method != POST \
@@ -342,7 +345,8 @@ bool WebServer::_parsing_request(int client_fd)
 		client->request->updateRequest(client->buffer);
 	}
 	std::cout << YEL << *client->request << RESET << std::endl;
-	// exit(0);
+	// if (i == 11)
+	// 	exit(0);
 	return (true);
 }
 
