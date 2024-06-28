@@ -87,17 +87,28 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 		if (client.child_pid == 0){ // child
 			dup2(client.pipe_fd[0], STDIN_FILENO);
 			dup2(client.pipe_fd_out[1], STDOUT_FILENO);
-			// 
 			close(client.pipe_fd[0]);
 			close(client.pipe_fd[1]);
 			close(client.pipe_fd_out[0]);
 			close(client.pipe_fd_out[1]);
+
+
+			std::cout << "body in rout: " << client.request->_body << std::endl;
+			std::string content_length = std::to_string(client.request->_body.size());
+			char *envp[] = {
+            (char*)"REQUEST_METHOD=POST",
+            (char*)("CONTENT_LENGTH=" + content_length).c_str(),
+            (char*)"CONTENT_TYPE=application/x-www-form-urlencoded",
+            nullptr
+        	};
+
 			char *arg[] = {(char *)client.request->_path.c_str(), NULL};
-			execve((char *)client.request->_path.c_str(), arg, NULL);
+			execve((char *)client.request->_path.c_str(), arg, envp);
 			exit(0);
 		}
 		else{ // perent
 			std::string msg;
+
 			if (client.request->_method == GET)
 				msg = client.request->_query_string;
 			else if (client.request->_method == POST)

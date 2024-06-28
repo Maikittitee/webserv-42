@@ -1,8 +1,8 @@
 NAME	= webserv
 
-CC		= c++
+CC		= g++
 RM		= rm -f
-CFLAGS	= -Wall -Wextra -Werror -std=c++98
+CFLAGS	= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 
 SRCS_PATH = srcs
 
