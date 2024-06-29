@@ -74,19 +74,22 @@ Server *mock_server(void)
 
 }
 
-void eiei(int sig)
+void sig_handler(int signum)
 {
-	g_state = false;
+	if (signum == SIGINT)
+	{
+		g_state = true;
+	}
 }
-
 
 
 int main(int ac, char **av, char **env)
 {
-	struct sigaction sa;
-	sa.sa_handler = &eiei;
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGTSTP, &sa, NULL); 
+	struct sigaction sigint;
+	sigint.sa_handler = sig_handler;
+	sigemptyset(&sigint.sa_mask);
+	sigint.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sigint, NULL);
 	
 	std::vector<Server> sv;
 
