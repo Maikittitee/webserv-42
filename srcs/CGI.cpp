@@ -48,6 +48,7 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 	t_cgi_return ret;
 
 	client.location = _select_location(*client.request, server);
+	// client.location = &server._config["/"];
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
 	// std::cout << GRN << *client.location << RESET << std::endl;
@@ -329,7 +330,8 @@ Location* CGI::_select_location(Request &request, Server &server)
 	struct stat s;
 	
 
-	std::cout << YEL << "request path: " << request._path << RESET << std::endl;
+	std::cout << RED << "request path: " << request._path << RESET << std::endl;
+	std::cout << RED << "request path size: " << request._path.size() << RESET << std::endl;
 	if ((select_loc = _compare_location(request._path, server._config)) != NULL)
 		match = true;
 	std::string only_path = _get_only_path(request._path);

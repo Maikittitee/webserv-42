@@ -75,29 +75,19 @@ int main(int argc, char **argv)
         bytes = read(fd, buffer, BUFFERSIZE);
         if (bytes < BUFFERSIZE)
         {
-            std::cout << "bored\n";
             req._isEndRecv = true;
         }
         buffer[bytes] = '\0';
         std::cout << "Round: " << round << std::endl;
         std::cout << std::endl << "buffer" << std::endl << buffer << std::endl;
         req.updateRequest(buffer);
-        printVector(req);
+        std::cout << "status = " << req.getStatus() << std::endl;
+        // printVector(req);
         printResule(req);
         std::cout << std::endl << "------------------------" << std::endl;
-        // if (round == 2)
-        //     exit(0);
         round++;
         // sleep(1);
     }
-    if(bytes < BUFFERSIZE)
-        req.updateStatus(END_REQUEST_MSG);
-    std::cout << "Round: " << round << std::endl;
-    std::cout << std::endl << "buffer" << std::endl << buffer << std::endl;
-    req.updateRequest(buffer);
-    printVector(req);
-    printResule(req);
-    std::cout << std::endl << "------------------------" << std::endl;
     close(fd);
     return 0;
 }

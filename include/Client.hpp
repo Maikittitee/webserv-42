@@ -34,8 +34,6 @@ class Client
 		Server 				*server;
 		Request				*request;
 		Location			*location;
-
-
 };
 
 #endif

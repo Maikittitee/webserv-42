@@ -55,5 +55,4 @@ std::string Response::get_response_text(void)
 	response += _body;
 
 	return (response);
-
 }

@@ -82,7 +82,7 @@ class Request{
 		{
 			return _headerField_map;
 		}
-		t_reqStatus	getStatus( void )
+		t_reqStatus	getStatus( void ) const 
 		{
 			return _status;
 		}

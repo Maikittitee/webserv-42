@@ -108,8 +108,8 @@ int main(int ac, char **av, char **env)
 		webserv.runServer();
 		// webserv.downServer();
 	}
-	catch (...){
-		std::cout << "bye bye ..." << std::endl;
+	catch (const std::exception& ex){
+		std::cout << "catch error: " << ex.what() << std::endl;
 	}
 
 

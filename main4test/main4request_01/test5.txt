@@ -1,0 +1,106 @@
+POST /cgi-bin/test_upload.py HTTP/1.1
+Host: localhost:8030
+Connection: keep-alive
+Content-Length: 103549
+Cache-Control: max-age=0
+sec-ch-ua: "Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+Upgrade-Insecure-Requests: 1
+Origin: http://localhost:8030
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryjr3ej0n89dJY48QO
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: http://localhost:8030/cgi.html
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: en-US,en;q=0.9
+
+0. Uninstall previous SSQ's "SIMULIA FlexNet Server" if one is installed
+
+
+1. Install or update the SolidSQUAD Universal License Server for vendor DSSimulia
+
+   If SolidSQUAD Universal License Server has never been installed
+   on the computer:
+
+     - unzip the "SolidSQUAD_License_Servers" folder from 
+     "SSQ_UniversalLicenseServer_Core_<release-date>.zip" to any DRIVE ROOT 
+     folder X:\ (like C:\, D:\, E:\ etc), so the path will be:
+
+	X:\SolidSQUAD_License_Servers
+
+     - unzip the "Vendors" folder from 
+      "SSQ_UniversalLicenseServer_Module_DSSimulia_<release-date>.zip"
+      to the "SolidSQUAD_License_Servers" folder
+
+     - for Windows as administrator run "install_or_update.bat" from 
+       "SolidSQUAD_License_Servers" folder and wait until it completes
+
+     - for Linux as root run "install_or_update.sh" from 
+       "SolidSQUAD_License_Servers" folder and wait until it completes
+
+   -- OR --
+
+   If SolidSQUAD Universal License Server is already installed, 
+   but the release-date of "SSQ_UniversalLicenseServer_Core_<release-date>.zip"
+   is newer than the installed one, update the server installation:
+
+     - for Windows as administrator run "uninstall.bat" from 
+       "SolidSQUAD_License_Servers" folder and wait until it completes
+
+     - for Linux as root run "uninstall.sh" from 
+       "SolidSQUAD_License_Servers" folder and wait until it completes
+
+     - unzip the "SolidSQUAD_License_Servers" folder from 
+     "SSQ_UniversalLicenseServer_Core_<release-date>.zip" to any DRIVE ROOT 
+     folder X:\ (like C:\, D:\, E:\ etc), so the path will be:
+
+	X:\SolidSQUAD_License_Servers
+
+     - unzip the "Vendors" folder from 
+      "SSQ_UniversalLicenseServer_Module_DSSimulia_<release-date>.zip"
+      to the "SolidSQUAD_License_Servers" folder
+
+     - for Windows as administrator run "install_or_update.bat" from 
+       "SolidSQUAD_License_Servers" folder and wait until it completes
+
+     - for Linux as root run "install_or_update.sh" from 
+       "SolidSQUAD_License_Servers" folder and wait until it completes
+
+   -- OR --
+
+   If the release-date of "SSQ_UniversalLicenseServer_Core_<release-date>.zip" 
+   is not newer than the installed one but the release-date of 
+   "SSQ_UniversalLicenseServer_Module_DSSimulia_<release-date>.zip" is newer than the 
+   installed one, update DSSimulia module only:
+
+     - unzip the "Vendors" folder from 
+      "SSQ_UniversalLicenseServer_Module_DSSimulia_<release-date>.zip"
+      to the "SolidSQUAD_License_Servers" folder
+
+     - for Windows as administrator run "install_or_update.bat" from 
+       "SolidSQUAD_License_Servers" folder and wait until it completes
+
+     - for Linux as root run "install_or_update.sh" from 
+       "SolidSQUAD_License_Servers" folder and wait until it completes
+
+2. To bypass FlexNET License server check set the environment variable
+
+     NOLICENSECHECK=true
+
+3. Run DS.SIMULIA.SUITE.2022.WIN64.iso > 1 > setup.exe
+
+   Select products to install
+
+   DO NOT install original "FLEXnet License server" from setup media!
+
+4. In window "License Server configuration" select: "SIMULIA FLEXnet"
+   In window for "SIMULIA FLEXnet License server" input for "License Server1": 27800@localhost
+
+5. Finish setup
+
+6. Enjoy!
