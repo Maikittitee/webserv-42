@@ -112,7 +112,9 @@ bool WebServer::runServer(void)
 		tmp_read_fds = _read_fds;
 		tmp_write_fds = _write_fds;
 		
+		std::cout << "Hi Tiew7" << std::endl;
 		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, NULL);
+		std::cout << "Hi Tiew8" << std::endl;
 		if (status == -1){
 			std::cerr << RED << "select error " << RESET << std::endl;
 			return (false);
@@ -120,26 +122,37 @@ bool WebServer::runServer(void)
 		for (int fd = 0; fd <= _max_fd; fd++){
 			if (FD_ISSET(fd, &tmp_read_fds))
 			{
-				if (_is_match_server(fd)){	// is match listen fd of server (handshake)
+				std::cout << "Hi Tiew1" << std::endl;
+				if (_is_match_server(fd)) // is match listen fd of server (handshake)
+				{
+					std::cout << "Hi Tiew2" << std::endl;
 					if (_accept_connection(fd))
+					{
+						std::cout << "Hi Tiew3" << std::endl;
 						continue;
+					}
 				}
 				else
 				{
+					std::cout << "Hi Tiew4" << std::endl;
 					std::cout << YEL << "receiving request..." << RESET << std::endl;
 					_parsing_request(fd);
 				}
 			}
+
 			else if (FD_ISSET(fd, &tmp_write_fds))
 			{
+				std::cout << "Hi Tiew5" << std::endl;
 				std::cout << YEL << "sending..." << RESET << std::endl;
 				// std::cout << _servers.begin()->_config;
 				_send_response(fd);
 
 			}
+			std::cout << "Hi Tiew6" << std::endl;
 			continue;
 		}
 	}
+	std::cout << "Hi Tiew9" << std::endl;
 	return (true);
 
 }
@@ -192,9 +205,10 @@ bool	WebServer::_send_response(int fd) // write fd
 	write(fd, msg.c_str(), msg.size());
 	close(fd);
 	_clear_fd(fd, _write_fds);
-	
-	delete _clients[fd];
+	// delete _clients[fd];
 	_clients.erase(fd);
+
+	std::cout << "finish send response" << std::endl;
 	return (true);
 }
 
@@ -328,14 +342,14 @@ bool WebServer::_parsing_request(int client_fd)
 	if (client->request->_method != POST \
 			&& client->request->getStatus() >= IN_CRLF_LINE)
 	{
-		std::cout << YEL << "end of GET method" << RESET << std::endl;	
+		std::cout << RED << "end of GET method" << RESET << std::endl;	
 		_clear_fd(client_fd, _read_fds);
 		_set_fd(client_fd, _write_fds);
 	}
-	else if (i == 2 && client->request->_method == POST \
+	else if (client->request->_method == POST \
 			&& client->request->getStatus() >= END_REQUEST_MSG)
 	{
-		std::cout << YEL << "end of POST method" << RESET << std::endl;	
+		std::cout << RED << "end of POST method" << RESET << std::endl;	
 		std::cout << "status: " << client->request->getStatus() << std::endl;
 		_clear_fd(client_fd, _read_fds);
 		_set_fd(client_fd, _write_fds);	
