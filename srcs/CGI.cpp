@@ -95,7 +95,7 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 
 
 			// std::cout << "body in rout: " << client.request->_body << std::endl;
-			std::string content_length = std::to_string(11);
+			std::string content_length = std::to_string(18);
 			char *envp[] = {
             (char*)"REQUEST_METHOD=POST",
             (char*)("CONTENT_LENGTH=" + content_length).c_str(),
@@ -104,8 +104,7 @@ t_cgi_return CGI::rout(Client &client, Server &server)
         	};
 
 			char *arg[] = {(char *)client.request->_path.c_str(), NULL};
-			// std::cout << "\nkuay cgi" << std::endl;
-			// execve((char *)client.request->_path.c_str(), arg, envp);
+			execve((char *)client.request->_path.c_str(), arg, envp);
 			exit(0);
 		}
 		else{ // perent
@@ -117,6 +116,8 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 				msg = client.request->_body;
 			else
 				msg = std::string("unknown method");
+			msg = "hello im from cpp";
+			std::cout << BLU << "msg: " << msg << RESET << std::endl;
 			write(client.pipe_fd[1], msg.c_str(), msg.size());
 			return ((t_cgi_return){FORKING_RES, 0}); // return write able fd
 		}

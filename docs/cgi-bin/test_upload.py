@@ -2,6 +2,8 @@
 import cgi, os, sys, time
 
 form = cgi.FieldStorage()
+print("Content-type: text/html")
+print()
 print(form)
 print(os.environ)
 # Get filename here.

@@ -23,7 +23,6 @@ class Client
 		std::string			IPaddr;
 		socklen_t			addrLen;
 		struct sockaddr_in	addr;
-		std::time_t			lastTimeConnected;
 	
 		char				buffer[BUFFERSIZE + 1];
 
@@ -34,6 +33,7 @@ class Client
 		Server 				*server;
 		Request				*request;
 		Location			*location;
+		std::time_t			lastTimeConnected;
 };
 
 #endif
