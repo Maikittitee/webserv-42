@@ -8,3 +8,8 @@ Client::Client(void) {
 Client::~Client(){
 	delete request;
 }
+
+void	Client::updateTime(void) {
+	std::time(&lastTimeConnected);		// get current time.
+	lastTimeConnected += KEEPALIVETIME;
+}

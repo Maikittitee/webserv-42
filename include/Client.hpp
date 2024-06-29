@@ -13,6 +13,7 @@ class Client
 	public:
 		Client();
 		~Client();
+		void	updateTime(void);
 
 		int 				fd;
 		bool				pipe_available;
@@ -22,6 +23,7 @@ class Client
 		std::string			IPaddr;
 		socklen_t			addrLen;
 		struct sockaddr_in	addr;
+		std::time_t			lastTimeConnected;
 	
 		char				buffer[BUFFERSIZE + 1];
 

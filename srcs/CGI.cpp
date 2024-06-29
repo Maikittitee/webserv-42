@@ -103,7 +103,8 @@ t_cgi_return CGI::rout(Client &client, Server &server)
         	};
 
 			char *arg[] = {(char *)client.request->_path.c_str(), NULL};
-			execve((char *)client.request->_path.c_str(), arg, envp);
+			// std::cout << "\nkuay cgi" << std::endl;
+			// execve((char *)client.request->_path.c_str(), arg, envp);
 			exit(0);
 		}
 		else{ // perent
