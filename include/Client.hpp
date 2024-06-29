@@ -13,6 +13,7 @@ class Client
 	public:
 		Client();
 		~Client();
+		void	updateTime(void);
 
 		int 				fd;
 		bool				pipe_available;
@@ -32,6 +33,7 @@ class Client
 		Server 				*server;
 		Request				*request;
 		Location			*location;
+		std::time_t			lastTimeConnected;
 };
 
 #endif

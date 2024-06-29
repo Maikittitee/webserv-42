@@ -26,6 +26,7 @@
 
 // # define BUFFERSIZE 65535
 # define BUFFERSIZE 65535
+# define KEEPALIVETIME	5
 extern bool	g_state;
 
 #endif

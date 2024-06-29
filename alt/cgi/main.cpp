@@ -5,8 +5,36 @@
 #include <sys/wait.h>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <sstream>
 
-void handle_post_request(const std::string& post_data) {
+// Function to extract boundary from the multipart/form-data
+std::string get_boundary(const std::string& post_body) {
+    std::string boundary_prefix = "--";
+    std::istringstream stream(post_body);
+    std::string first_line;
+
+    // Get the first line from the post_body
+    if (std::getline(stream, first_line)) {
+        std::size_t boundary_start = first_line.find(boundary_prefix);
+
+        if (boundary_start != std::string::npos) {
+            // Remove the boundary prefix
+            std::string boundary = first_line.substr(boundary_start + boundary_prefix.length());
+
+            // Remove any trailing newline or carriage return characters
+            boundary.erase(std::remove(boundary.begin(), boundary.end(), '\r'), boundary.end());
+            boundary.erase(std::remove(boundary.begin(), boundary.end(), '\n'), boundary.end());
+            
+            return boundary;
+        }
+    }
+
+    return ""; // Boundary not found
+}
+
+// Function to handle the POST request and invoke Python CGI script
+void handle_post_request(const std::string& post_data, const std::string& boundary) {
     int pipe_fd[2];
     if (pipe(pipe_fd) == -1) {
         perror("pipe");
@@ -27,10 +55,11 @@ void handle_post_request(const std::string& post_data) {
 
         // Set environment variables
         std::string content_length = std::to_string(post_data.size());
+        std::string content_type = "multipart/form-data; boundary=" + boundary;
         char *envp[] = {
             (char*)"REQUEST_METHOD=POST",
             (char*)("CONTENT_LENGTH=" + content_length).c_str(),
-            (char*)"CONTENT_TYPE=application/x-www-form-urlencoded",
+            (char*)("CONTENT_TYPE=" + content_type).c_str(),
             nullptr
         };
 
@@ -57,10 +86,23 @@ void handle_post_request(const std::string& post_data) {
 }
 
 int main() {
-    // Simulate receiving POST data
-    std::string post_data = "name=John&age=30";
+    // Simulate raw multipart/form-data POST body
+    std::string post_body = "------WebKitFormBoundaryE7NhyyOUKHo0iEZB\r\n"
+                            "Content-Disposition: form-data; name=\"name\"\r\n\r\n"
+                            "Mai\r\n"
+                            "------WebKitFormBoundaryE7NhyyOUKHo0iEZB\r\n"
+                            "Content-Disposition: form-data; name=\"age\"\r\n\r\n"
+                            "12\r\n"
+                            "------WebKitFormBoundaryE7NhyyOUKHo0iEZB--\r\n";
 
-    handle_post_request(post_data);
+    std::string boundary = get_boundary(post_body);
+
+    if (!boundary.empty()) {
+        std::cout << "Boundary: " << boundary << std::endl;
+        handle_post_request(post_body, boundary);
+    } else {
+        std::cout << "Boundary not found" << std::endl;
+    }
 
     return 0;
 }

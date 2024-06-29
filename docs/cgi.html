@@ -30,6 +30,14 @@ Last Name: <input type = "text" name = "last_name" />
     <p><input type = "submit" value = "Upload" /></p>
 </form> -->
 
+<h2>Name</h2>
+<form  action="cgi-bin/name.py" method="post">
+    <p>Name: <input type="text" name="name" /></p>
+    <p>Age: <input type="text" name="age" /></p>
+    <p><input type="submit" value="Upload" /></p>
+</form>
+
+
 <h2>Upload a File</h2>
 <form enctype="multipart/form-data" action="cgi-bin/test_upload.py" method="post">
     <p>File: <input type="file" name="filename" /></p>

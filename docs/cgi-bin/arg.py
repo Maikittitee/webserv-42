@@ -11,5 +11,6 @@ print("Content-Type: text/html\n")
 
 # Read and print the data from standard input
 data = read_stdin()
-print("Received Data:")
+print()
+print("<h1>Received Data</h1>")
 print(data)

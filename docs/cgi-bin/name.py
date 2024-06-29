@@ -1,13 +1,16 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 import cgi
 import os
+import sys
 
 def main():
     print("Content-Type: text/html\n")
     print("<html><body>")
     
     form = cgi.FieldStorage()
+    print(form, file=sys.stderr)
+    print()
     
     if "name" not in form or "age" not in form:
         print("<h1>Error</h1>")
