@@ -15,7 +15,7 @@
 #	include "Utils.hpp"
 
 
-#	define BUFFERSIZE 16
+#	define BUFFERSIZE 500
 
 typedef enum e_requestErrorCode{
 			SUCESS_REQUEST,

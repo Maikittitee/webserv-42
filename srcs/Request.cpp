@@ -85,13 +85,12 @@ void Request::_intiRequestStatus(std::string request)
 
 bool	Request::_collectRequestToVector(std::string request)
 {
-	std::string 		line;
-
 	if (request.empty())
 	{
 		_reqErr = EMPTHY_REQUEST;
 		return false;
 	}
+	
 	request_v = lineToVector(request);
 	return true;
 }
@@ -333,10 +332,11 @@ void	Request::_updateAfterHeaderLine( void )
     std::string::size_type end = _body.size();
     while (end > 0 && (_body[end - 1] == '\n'))
         --end;
-    if (end > 0 && end < _body.size()) {
+    if (end > 0 && end < _body.size())
+	{
         _body = _body.substr(0, end);
     }
-	else
+	else if (end == 0)
 		_body = "";
 	while(_lineIndex < request_v.size()) 
 	{
@@ -394,5 +394,6 @@ std::ostream &operator <<(std::ostream &os, const Request &req)
             os << "Key: " << it->first << ", Value: " << it->second << std::endl;
         }
         os << "Body: " << req._body << std::endl;
+		os << "Status: " << req.getStatus() << std::endl;
 		return (os);
 }
