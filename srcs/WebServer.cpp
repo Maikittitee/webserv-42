@@ -41,6 +41,13 @@ WebServer::WebServer(std::vector<Server> &servers)
 
 WebServer::~WebServer(){
 	delete[] buffer;
+	// std::map<int, Client *>	_clients;
+    // Iterating over the map using iterators
+    // std::map<int, Client *>::iterator iter;
+    // for (iter = _clients.begin(); iter !=_clients.end(); ++iter)
+	// {
+    //      close(iter->second->fd);
+    // }
 }
 
 bool	WebServer::_setSockAddr(struct sockaddr_in &addr, Server &serv) {
@@ -207,7 +214,7 @@ bool	WebServer::_send_response(int fd) // write fd
 	_clear_fd(fd, _write_fds);
 	// delete _clients[fd];
 	_clients.erase(fd);
-
+	// delete response;
 	std::cout << "finish send response" << std::endl;
 	return (true);
 }
