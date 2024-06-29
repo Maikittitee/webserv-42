@@ -1,8 +1,14 @@
 #include "../include/Response.hpp"
 
-Response::Response(void): cgiPass(false) {}
+Response::Response(void): cgiPass(false) 
+{
 
-Response::~Response(void) {}
+}
+
+Response::~Response(void) 
+{
+	
+}
 
 std::string Response::get_date(void)
 {

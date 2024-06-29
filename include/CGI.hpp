@@ -38,7 +38,7 @@ class CGI{
 		Mime		_mime;
 
 		t_cgi_return rout(Client &client, Server &server);
-		Response& readfile(Client &client, Server &server, t_cgi_return cgi_return);
+		Response* readfile(Client &client, Server &server, t_cgi_return cgi_return);
 		std::string	get_response(void);
 
 	// private:
