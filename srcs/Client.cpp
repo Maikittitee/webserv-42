@@ -4,8 +4,8 @@ Client::Client(void):
 fd(-1),
 pipe_available(false),
 child_pid(-1),
-pipe_fd{-1, -1},
-pipe_fd_out{-1, -1},
+// pipe_fd((int *){-1, -1}),
+// pipe_fd_out((int{-1, -1}),
 IPaddr(""),
 addrLen(0),
 buffer(""),
@@ -21,4 +21,9 @@ location(nullptr)
 
 Client::~Client(){
 	delete request;
+}
+
+void	Client::updateTime(void) {
+	std::time(&lastTimeConnected);		// get current time.
+	lastTimeConnected += KEEPALIVETIME;
 }
