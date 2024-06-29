@@ -43,6 +43,28 @@ std::string _append_index(Client &client)
 	return (client.request->_path);
 }
 
+std::string get_boundary(const std::string& post_data) {
+    std::string boundary_prefix = "------";
+    std::size_t boundary_start = post_data.find(boundary_prefix);
+
+    if (boundary_start != std::string::npos) {
+        boundary_start += boundary_prefix.length(); // Move past the prefix
+        std::size_t boundary_end = post_data.find("\n", boundary_start);
+        if (boundary_end == std::string::npos) {
+            boundary_end = post_data.find("\r", boundary_start);
+        }
+        if (boundary_end != std::string::npos) {
+            std::string boundary = post_data.substr(boundary_start, boundary_end - boundary_start);
+            // Remove any trailing newline or carriage return characters
+            boundary.erase(std::remove(boundary.begin(), boundary.end(), '\r'), boundary.end());
+            boundary.erase(std::remove(boundary.begin(), boundary.end(), '\n'), boundary.end());
+            return boundary;
+        }
+    }
+
+    return ""; // Boundary not found
+}
+
 t_cgi_return CGI::rout(Client &client, Server &server)
 {
 	t_cgi_return ret;
@@ -77,12 +99,23 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 
 	} else 
 		return ((t_cgi_return){AUTO_INDEX_RES, 0});
-	// else if (client.location->autoIndex && is_directory(client.request->_path)){
+
+	std::string msg;
+
+	if (client.request->_method == GET)
+		msg = client.request->_query_string;
+	else if (client.request->_method == POST)
+		msg = client.request->_body;
+	else
+		msg = std::string("unknown method");
 	if (client.location->cgiPass) { // <=============== HELLO PTEW
 		// cgi
 		pipe(client.pipe_fd);
 		pipe(client.pipe_fd_out);
 		client.pipe_available = true;
+
+		std::string boundary = get_boundary(msg);
+		std::cout << GRN << "boundary: " << boundary << RESET << std::endl;
 
 		client.child_pid = fork();
 		if (client.child_pid == 0){ // child
@@ -93,30 +126,29 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 			close(client.pipe_fd_out[0]);
 			close(client.pipe_fd_out[1]);
 
-
 			// std::cout << "body in rout: " << client.request->_body << std::endl;
-			std::string content_length = std::to_string(18);
+			std::string content_length = "CONTENT_LENGTH=" + std::to_string(msg.size());
+			std::string content_type = "CONTENT_TYPE=application/x-www-form-urlencoded"; 
+			
+			// "boundary=" + boundary; 
 			char *envp[] = {
             (char*)"REQUEST_METHOD=POST",
-            (char*)("CONTENT_LENGTH=" + content_length).c_str(),
-            (char*)"CONTENT_TYPE=application/x-www-form-urlencoded",
+            (char*)content_length.c_str(),
+            (char*)content_type.c_str(),
             nullptr
         	};
 
-			char *arg[] = {(char *)client.request->_path.c_str(), NULL};
-			execve((char *)client.request->_path.c_str(), arg, envp);
-			exit(0);
+			std::cout << BLU << "execute file: " << client.request->_path.c_str() << RESET << std::endl ;
+			char *arg[] = {(char *)client.request->_path.c_str(), nullptr};
+			// char *arg[] = {(char *)"docs/cgi-bin/name.py", nullptr};
+			// char *arg[] = {(char *)"docs/cgi-bin/hello.py", nullptr};
+			// char *arg[] = {(char *)"alt/cgi/hello.py", nullptr};
+			if (execve(arg[0], arg, envp) != 0)
+				perror("execve");
+			exit(1);
 		}
 		else{ // perent
-			std::string msg;
-
-			if (client.request->_method == GET)
-				msg = client.request->_query_string;
-			else if (client.request->_method == POST)
-				msg = client.request->_body;
-			else
-				msg = std::string("unknown method");
-			msg = "hello im from cpp";
+			// msg = "name=mai&age=20";
 			std::cout << BLU << "msg: " << msg << RESET << std::endl;
 			write(client.pipe_fd[1], msg.c_str(), msg.size());
 			return ((t_cgi_return){FORKING_RES, 0}); // return write able fd

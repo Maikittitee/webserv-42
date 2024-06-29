@@ -1,11 +1,12 @@
 #!/usr/bin/python3
+
 import cgi, os, sys, time
 
 form = cgi.FieldStorage()
 print("Content-type: text/html")
 print()
 print(form)
-print(os.environ)
+# print(os.environ)
 # Get filename here.
 if 'filename' in form:
 	fileitem = form['filename']
@@ -54,4 +55,3 @@ for file in existing_files:
 # print(f'<h1> "form : {form}" </h1>')
 print(f'<h1> "{message}" </h1>')
 print('</body>')
-   

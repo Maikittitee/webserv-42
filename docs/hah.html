@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Data to CGI Script</title>
+<script>
+function submitForm() {
+    var form = document.getElementById("myForm");
+    form.submit();
+}
+</script>
+</head>
+<body>
+    <form id="myForm" action="cgi-bin/name.py" method="post">
+        <input type="text" name="name" value="John">
+        <input type="text" name="age" value="30">
+        <input type="button" value="Submit" onclick="submitForm();">
+    </form>
+</body>
+</html>
