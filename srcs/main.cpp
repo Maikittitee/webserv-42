@@ -61,18 +61,18 @@ std::map<std::string, Location> mock_location(void)
 }
 
 
-Server *mock_server(void)
-{
-	Server *serv = new Server();
-	serv->server_name = "localhost";
-	serv->ipAddr = "0.0.0.0";
-	serv->listen = 6969;
-	serv->_config = mock_location();
+// Server *mock_server(void)
+// {
+// 	Server *serv = new Server();
+// 	serv->server_name = "localhost";
+// 	serv->ipAddr = "0.0.0.0";
+// 	serv->listen = 6969;
+// 	serv->_config = mock_location();
 
-	std::cout << serv->_config << std::endl;
-	return (serv);
+// 	std::cout << serv->_config << std::endl;
+// 	return (serv);
 
-}
+// }
 
 void sig_handler(int signum)
 {
@@ -90,7 +90,6 @@ int main(int ac, char **av, char **env)
 	sigemptyset(&sigint.sa_mask);
 	sigint.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sigint, NULL);
-	
 	std::vector<Server> sv;
 
 	if (parsing_config(ac, av, sv) == false)
