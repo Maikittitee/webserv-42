@@ -93,8 +93,8 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 			close(client.pipe_fd_out[1]);
 
 
-			std::cout << "body in rout: " << client.request->_body << std::endl;
-			std::string content_length = std::to_string(client.request->_body.size());
+			// std::cout << "body in rout: " << client.request->_body << std::endl;
+			std::string content_length = std::to_string(11);
 			char *envp[] = {
             (char*)"REQUEST_METHOD=POST",
             (char*)("CONTENT_LENGTH=" + content_length).c_str(),
