@@ -33,6 +33,8 @@ class WebServer{
 		bool	_parsing_request(int read_fd);
 		Client* _get_client(int fd);
 		bool	_send_response(int fd);
+		bool	_disconnectClienet(int fd);
+		bool	_disconnectAllClienets( void );
 
 		std::map<int, Client *>	_clients;
 		std::vector<Server> 	_servers;

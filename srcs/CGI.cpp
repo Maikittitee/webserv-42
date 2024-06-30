@@ -127,8 +127,9 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 			close(client.pipe_fd_out[1]);
 
 			// std::cout << "body in rout: " << client.request->_body << std::endl;
-			std::string content_length = "CONTENT_LENGTH=" + std::to_string(msg.size());
-			std::string content_type = "CONTENT_TYPE=application/x-www-form-urlencoded"; 
+			std::string content_length = "CONTENT_LENGTH=" + client.request->getHeaderFieldMap()["Content-Length"];
+			std::string content_type = "CONTENT_TYPE=" + client.request->getHeaderFieldMap()["Content-Type"]; 
+			
 			
 			// "boundary=" + boundary; 
 			char *envp[] = {
@@ -138,17 +139,13 @@ t_cgi_return CGI::rout(Client &client, Server &server)
             nullptr
         	};
 
-			std::cout << BLU << "execute file: " << client.request->_path.c_str() << RESET << std::endl ;
+			std::cerr << BLU << "execute file: " << client.request->_path.c_str() << RESET << std::endl ;
 			char *arg[] = {(char *)client.request->_path.c_str(), nullptr};
-			// char *arg[] = {(char *)"docs/cgi-bin/name.py", nullptr};
-			// char *arg[] = {(char *)"docs/cgi-bin/hello.py", nullptr};
-			// char *arg[] = {(char *)"alt/cgi/hello.py", nullptr};
 			if (execve(arg[0], arg, envp) != 0)
 				perror("execve");
 			exit(1);
 		}
 		else{ // perent
-			// msg = "name=mai&age=20";
 			std::cout << BLU << "msg: " << msg << RESET << std::endl;
 			write(client.pipe_fd[1], msg.c_str(), msg.size());
 			return ((t_cgi_return){FORKING_RES, 0}); // return write able fd

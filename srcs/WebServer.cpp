@@ -112,9 +112,7 @@ bool WebServer::runServer(void)
 		tmp_read_fds = _read_fds;
 		tmp_write_fds = _write_fds;
 		
-		std::cout << "Hi Tiew7" << std::endl;
 		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, NULL);
-		std::cout << "Hi Tiew8" << std::endl;
 		if (status == -1){
 			std::cerr << RED << "select error " << RESET << std::endl;
 			return (false);
@@ -122,33 +120,24 @@ bool WebServer::runServer(void)
 		for (int fd = 0; fd <= _max_fd; fd++){
 			if (FD_ISSET(fd, &tmp_read_fds))
 			{
-				std::cout << "Hi Tiew1" << std::endl;
 				if (_is_match_server(fd)) // is match listen fd of server (handshake)
 				{
-					std::cout << "Hi Tiew2" << std::endl;
 					if (_accept_connection(fd))
-					{
-						std::cout << "Hi Tiew3" << std::endl;
 						continue;
-					}
 				}
 				else
 				{
-					std::cout << "Hi Tiew4" << std::endl;
-					std::cout << YEL << "receiving request..." << RESET << std::endl;
+					std::cout << YEL << "receiving request... from: " << fd << RESET << std::endl;
 					_parsing_request(fd);
 				}
 			}
 
 			else if (FD_ISSET(fd, &tmp_write_fds))
 			{
-				std::cout << "Hi Tiew5" << std::endl;
 				std::cout << YEL << "sending..." << RESET << std::endl;
-				// std::cout << _servers.begin()->_config;
 				_send_response(fd);
 
 			}
-			std::cout << "Hi Tiew6" << std::endl;
 			continue;
 		}
 	}
@@ -205,7 +194,7 @@ bool	WebServer::_send_response(int fd) // write fd
 	write(fd, msg.c_str(), msg.size());
 	close(fd);
 	_clear_fd(fd, _write_fds);
-	// delete _clients[fd];
+	delete _clients[fd];
 	_clients.erase(fd);
 
 	std::cout << "finish send response" << std::endl;
@@ -326,7 +315,10 @@ bool WebServer::_parsing_request(int client_fd)
 	else
 	{
 		std::cerr << RED << "Handle With recv error, do somethings!" << RESET << std::endl;
+		// clear client
+		_disconnectClienet(client_fd);
 		return false;
+		
 	}
 	std::cout << GRN << client->buffer << RESET << std::endl;
 	if (!client->request)
@@ -369,4 +361,36 @@ Client* WebServer::_get_client(int fd)
 	if (!_clients.count(fd))
 		return (NULL);
 	return (_clients[fd]);
+}
+
+bool WebServer::_disconnectClienet(int fd)
+{
+	if (!_clients.count(fd))
+		return (false);
+	std::map<int, Client *>::iterator it;
+	for (it = _clients.begin(); it != _clients.end(); it++){
+		if (it->first == fd){
+			std::cout << RED << "disconnect client: " << fd << RESET << std::endl;
+			_clients.erase(fd);
+			delete it->second;
+			close(fd);
+			_clear_fd(fd, _read_fds);
+			return (true);
+		}
+	}
+	return (false);
+	
+
+	
+}
+
+bool	WebServer::_disconnectAllClienets( void )
+{
+		std::map<int, Client *>::iterator it;
+
+		for (it = _clients.begin(); it != _clients.end(); it++){
+			std::cout << RED << "disconnect client: " << it->first << RESET << std::endl;
+			delete it->second;
+		}
+		_clients.clear();
 }
