@@ -148,11 +148,7 @@ bool WebServer::runServer(void)
 bool	WebServer::downServer(void)
 {
 	// free every client
-	std::map<int, Client *>::iterator it;
-
-	for (it = _clients.begin(); it != _clients.end(); it++){
-		delete it->second;
-	}
+	_disconnectAllClienets();	
 	return (true);
 }
 
@@ -374,7 +370,10 @@ bool WebServer::_disconnectClienet(int fd)
 			_clients.erase(fd);
 			delete it->second;
 			close(fd);
-			_clear_fd(fd, _read_fds);
+			if (FD_ISSET(fd, &_read_fds))
+				_clear_fd(fd, _read_fds);
+			else if (FD_ISSET(fd, &_write_fds))
+				_clear_fd(fd, _write_fds);
 			return (true);
 		}
 	}
@@ -386,11 +385,21 @@ bool WebServer::_disconnectClienet(int fd)
 
 bool	WebServer::_disconnectAllClienets( void )
 {
+
+	// neet fix
 		std::map<int, Client *>::iterator it;
 
 		for (it = _clients.begin(); it != _clients.end(); it++){
 			std::cout << RED << "disconnect client: " << it->first << RESET << std::endl;
+			// _clients.erase(it->first);
 			delete it->second;
+			close(it->first);
+			if (FD_ISSET(it->first, &_read_fds))
+				_clear_fd(it->first, _read_fds);
+			else if (FD_ISSET(it->first, &_write_fds))
+				_clear_fd(it->first, _write_fds);
+
 		}
 		_clients.clear();
+		return (true);
 }
