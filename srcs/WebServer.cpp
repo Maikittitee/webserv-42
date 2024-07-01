@@ -114,7 +114,8 @@ bool WebServer::runServer(void)
 		
 		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, NULL);
 		if (status == -1){
-			std::cerr << RED << "select error " << RESET << std::endl;
+			// std::cerr << RED << "select error " << RESET << std::endl;
+			perror("select");
 			return (false);
 		}
 		for (int fd = 0; fd <= _max_fd; fd++){
@@ -167,9 +168,6 @@ bool	WebServer::_send_response(int fd) // write fd
 	
 	std::cout << BLU << *client->request << RESET << std::endl;
 	
-	// close(fd);
-	// _clear_fd(fd, _write_fds);
-	// return (true);
 	// CGI work here
 	cgi_return = _cgi.rout(*client, *server);
 	std::cout << BLU << "cgi return: " << cgi_return << RESET << std::endl;
@@ -262,32 +260,6 @@ bool	WebServer::_accept_connection(int server_fd)
 	return (true);
 }
 
-Request *my_request_parser(char *buffer)
-{
-	std::istringstream f(buffer);
-	std::string line;
-	
-	std::getline(f, line);
-
-	Request *req = new Request;
-	std::cout << RED << line << RESET << std::endl;
-	std::vector<std::string> vec = splitToVector(line, ' ');
-	req->_path = vec[1];
-	
-	if (vec[0] == "GET")
-		req->_method = GET;
-	else if (vec[0] == "POST")
-		req->_method = POST;
-	else if (vec[0] == "DELETE")
-		req->_method = DELETE;
-	else
-		req->_method = ELSE;
-	req->_body = "this is body";
-
-	std::cout << "method: " << req->_method << std::endl;
-	return (req);
-}
-
 bool WebServer::_parsing_request(int client_fd)
 {
 	static int i;
@@ -365,11 +337,11 @@ bool WebServer::_disconnectClienet(int fd)
 			std::cout << RED << "disconnect client: " << fd << RESET << std::endl;
 			_clients.erase(fd);
 			delete it->second;
-			close(fd);
 			if (FD_ISSET(fd, &_read_fds))
 				_clear_fd(fd, _read_fds);
 			else if (FD_ISSET(fd, &_write_fds))
 				_clear_fd(fd, _write_fds);
+			close(fd);
 			return (true);
 		}
 	}

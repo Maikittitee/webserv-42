@@ -234,8 +234,10 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 		bzero(buffer, length);
 		length = read(fd, buffer, BUFFERSIZE - 1);
 		buffer[length] = '\0';
-		if (length <= 0)
+		if (length <= 0){
+			close(fd);
 			break;
+		}
 		response->_body.append(buffer, length);
 	}
 	if (cgi_return.type == STATUS_CODE_RES)
