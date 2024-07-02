@@ -140,7 +140,7 @@ size_t read_line(int fd, char* buffer)
 }
 
 
-Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
+Response* CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 {
 	Response *response = new Response;
 	bool	readable = false;
@@ -216,7 +216,7 @@ Response& CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 		response->_return_code = cgi_return.status_code;
 	if (readable)
 		response->_content_type = _mime.get_mime_type(client.request->_path);
-	return (*response);
+	return (response);
 }
 
 bool	CGI::_auto_indexing(Client &client, Server &server, Response &response)
