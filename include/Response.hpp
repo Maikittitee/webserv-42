@@ -26,6 +26,8 @@ class Response{
 		void genarate_header();
 		std::string get_response_text(void);
 		std::string get_date();
+		
+		std::string _get_content_type_from_cgi_body(std::string body);
 };
 
 #endif
