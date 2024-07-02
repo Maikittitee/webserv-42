@@ -111,6 +111,7 @@ bool WebServer::runServer(void)
 	
 	fd_set tmp_read_fds;
 	fd_set tmp_write_fds;
+	struct timeval	timeOut;
 
 	_init_fds();
 	g_state = true;
@@ -118,59 +119,50 @@ bool WebServer::runServer(void)
 	{
 		tmp_read_fds = _read_fds;
 		tmp_write_fds = _write_fds;
+		timeOut = _timeOut;
 		
-		std::cout << "Hi Tiew7" << std::endl;
-		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, NULL);
-		std::cout << "Hi Tiew8" << std::endl;
+		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, &timeOut);
 		if (status == -1){
 			std::cerr << RED << "select error " << RESET << std::endl;
+			perror("select");
 			return (false);
+		}
+		if (status == 0){
+			std::cerr << YEL << "checking for timeout..." << RESET << std::endl;
+			_checkTimeout();
+			continue;
 		}
 		for (int fd = 0; fd <= _max_fd; fd++){
 			if (FD_ISSET(fd, &tmp_read_fds))
 			{
-				std::cout << "Hi Tiew1" << std::endl;
 				if (_is_match_server(fd)) // is match listen fd of server (handshake)
 				{
-					std::cout << "Hi Tiew2" << std::endl;
 					if (_accept_connection(fd))
-					{
-						std::cout << "Hi Tiew3" << std::endl;
 						continue;
-					}
 				}
 				else
 				{
-					std::cout << "Hi Tiew4" << std::endl;
-					std::cout << YEL << "receiving request..." << RESET << std::endl;
+					std::cout << YEL << "receiving request... from: " << fd << RESET << std::endl;
 					_parsing_request(fd);
 				}
 			}
 
 			else if (FD_ISSET(fd, &tmp_write_fds))
 			{
-				std::cout << "Hi Tiew5" << std::endl;
 				std::cout << YEL << "sending..." << RESET << std::endl;
-				// std::cout << _servers.begin()->_config;
 				_send_response(fd);
 
 			}
-			std::cout << "Hi Tiew6" << std::endl;
 			continue;
 		}
 	}
-	std::cout << "Hi Tiew9" << std::endl;
 	return (true);
 
 }
 bool	WebServer::downServer(void)
 {
 	// free every client
-	std::map<int, Client *>::iterator it;
-
-	for (it = _clients.begin(); it != _clients.end(); it++){
-		delete it->second;
-	}
+	_disconnectAllClienets();	
 	return (true);
 }
 
@@ -189,9 +181,6 @@ bool	WebServer::_send_response(int fd) // write fd
 	
 	std::cout << BLU << *client->request << RESET << std::endl;
 	
-	// close(fd);
-	// _clear_fd(fd, _write_fds);
-	// return (true);
 	// CGI work here
 	cgi_return = _cgi.rout(*client, *server);
 	std::cout << BLU << "cgi return: " << cgi_return << RESET << std::endl;
@@ -207,12 +196,8 @@ bool	WebServer::_send_response(int fd) // write fd
 	std::cout << BLU << "sending response:" << RESET << std::endl;
 	std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
-	close(fd);
-	_clear_fd(fd, _write_fds);
-	// delete _clients[fd];
-	_clients.erase(fd);
+	_disconnectClienet(fd);
 	delete response;
-	delete client;
 	std::cout << "finish send response" << std::endl;
 	return (true);
 }
@@ -233,6 +218,8 @@ void	WebServer::_init_fds(void)
 	_max_fd = 0;
 	FD_ZERO(&_read_fds);
 	FD_ZERO(&_write_fds);
+	_timeOut.tv_sec = KEEPALIVETIME;
+	_timeOut.tv_usec = 0;
 	for (size_t i = 0; i < _servers.size(); i++) {
 		iter_fd = _servers[i]._server_fd; 
 		_set_fd(iter_fd, _read_fds);
@@ -286,32 +273,6 @@ bool	WebServer::_accept_connection(int server_fd)
 	return (true);
 }
 
-Request *my_request_parser(char *buffer)
-{
-	std::istringstream f(buffer);
-	std::string line;
-	
-	std::getline(f, line);
-
-	Request *req = new Request;
-	std::cout << RED << line << RESET << std::endl;
-	std::vector<std::string> vec = splitToVector(line, ' ');
-	req->_path = vec[1];
-	
-	if (vec[0] == "GET")
-		req->_method = GET;
-	else if (vec[0] == "POST")
-		req->_method = POST;
-	else if (vec[0] == "DELETE")
-		req->_method = DELETE;
-	else
-		req->_method = ELSE;
-	req->_body = "this is body";
-
-	std::cout << "method: " << req->_method << std::endl;
-	return (req);
-}
-
 bool WebServer::_parsing_request(int client_fd)
 {
 	static int i;
@@ -331,7 +292,10 @@ bool WebServer::_parsing_request(int client_fd)
 	else
 	{
 		std::cerr << RED << "Handle With recv error, do somethings!" << RESET << std::endl;
+		// clear client
+		_disconnectClienet(client_fd);
 		return false;
+		
 	}
 	std::cout << GRN << client->buffer << RESET << std::endl;
 	if (!client->request)
@@ -374,4 +338,70 @@ Client* WebServer::_get_client(int fd)
 	if (!_clients.count(fd))
 		return (NULL);
 	return (_clients[fd]);
+}
+
+bool WebServer::_disconnectClienet(int fd)
+{
+	if (!_clients.count(fd))
+		return (false);
+	std::map<int, Client *>::iterator it;
+	for (it = _clients.begin(); it != _clients.end(); it++){
+		if (it->first == fd){
+			std::cout << RED << "disconnect client: " << fd << RESET << std::endl;
+			_clients.erase(fd);
+			delete it->second;
+			if (FD_ISSET(fd, &_read_fds))
+				_clear_fd(fd, _read_fds);
+			else if (FD_ISSET(fd, &_write_fds))
+				_clear_fd(fd, _write_fds);
+			close(fd);
+			return (true);
+		}
+	}
+	return (false);
+	
+
+	
+}
+
+bool	WebServer::_disconnectAllClienets( void )
+{
+
+	// neet fix
+		std::map<int, Client *>::iterator it;
+
+		for (it = _clients.begin(); it != _clients.end(); it++){
+			std::cout << RED << "disconnect client: " << it->first << RESET << std::endl;
+			// _clients.erase(it->first);
+			delete it->second;
+			close(it->first);
+			if (FD_ISSET(it->first, &_read_fds))
+				_clear_fd(it->first, _read_fds);
+			else if (FD_ISSET(it->first, &_write_fds))
+				_clear_fd(it->first, _write_fds);
+
+		}
+		_clients.clear();
+		return (true);
+}
+
+
+bool WebServer::_checkTimeout( void ){
+	std::vector<int> fd_list;
+	std::time_t	currentTime;
+	std::map<int, Client *>::iterator it;
+
+	std::time(&currentTime);
+
+	for (it = _clients.begin(); it != _clients.end(); it++){
+		if (it->second->lastTimeConnected > currentTime){
+			fd_list.push_back(it->first);
+		}
+	}
+
+	for (int i = 0; i < fd_list.size(); i++){
+		std::cerr << RED << "timeout" << RESET << std::endl;
+		_disconnectClienet(fd_list[i]);
+	}
+	return (true);
 }

@@ -25,11 +25,9 @@ std::string _append_index(Client &client)
 				client.request->_path += "/";
 			// loop index
 			std::string tmp_file;
-			std::cout << "hello1 index size: " << client.location->index.size() << std::endl;
 			for (int i = 0; i < client.location->index.size(); i++)
 			{
 				tmp_file = client.request->_path + client.location->index[i];
-				std::cout << "tmp_file: " << tmp_file << std::endl; 
 				if (access(tmp_file.c_str(), F_OK) == 0){
 					std::cout << "found index!!: " << tmp_file << std::endl;  
 					return (tmp_file);
@@ -43,37 +41,13 @@ std::string _append_index(Client &client)
 	return (client.request->_path);
 }
 
-std::string get_boundary(const std::string& post_data) {
-    std::string boundary_prefix = "------";
-    std::size_t boundary_start = post_data.find(boundary_prefix);
-
-    if (boundary_start != std::string::npos) {
-        boundary_start += boundary_prefix.length(); // Move past the prefix
-        std::size_t boundary_end = post_data.find("\n", boundary_start);
-        if (boundary_end == std::string::npos) {
-            boundary_end = post_data.find("\r", boundary_start);
-        }
-        if (boundary_end != std::string::npos) {
-            std::string boundary = post_data.substr(boundary_start, boundary_end - boundary_start);
-            // Remove any trailing newline or carriage return characters
-            boundary.erase(std::remove(boundary.begin(), boundary.end(), '\r'), boundary.end());
-            boundary.erase(std::remove(boundary.begin(), boundary.end(), '\n'), boundary.end());
-            return boundary;
-        }
-    }
-
-    return ""; // Boundary not found
-}
-
 t_cgi_return CGI::rout(Client &client, Server &server)
 {
 	t_cgi_return ret;
 
 	client.location = _select_location(*client.request, server);
-	// client.location = &server._config["/"];
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
-	// std::cout << GRN << *client.location << RESET << std::endl;
 	client.request->_path = concat_path(client.location->root, client.request->_path);
 	if (!_is_allow_method(client.request->_method, *client.location)) {
 		std::cout << YEL << client.request->_method << " method is not allow" << RESET << std::endl; 
@@ -114,9 +88,6 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 		pipe(client.pipe_fd_out);
 		client.pipe_available = true;
 
-		std::string boundary = get_boundary(msg);
-		std::cout << GRN << "boundary: " << boundary << RESET << std::endl;
-
 		client.child_pid = fork();
 		if (client.child_pid == 0){ // child
 			dup2(client.pipe_fd[0], STDIN_FILENO);
@@ -126,29 +97,28 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 			close(client.pipe_fd_out[0]);
 			close(client.pipe_fd_out[1]);
 
-			// std::cout << "body in rout: " << client.request->_body << std::endl;
-			std::string content_length = "CONTENT_LENGTH=" + std::to_string(msg.size());
-			std::string content_type = "CONTENT_TYPE=application/x-www-form-urlencoded"; 
+			std::string content_length = "CONTENT_LENGTH=" + client.request->getHeaderFieldMap()["Content-Length"];
+			std::string content_type = "CONTENT_TYPE=" + client.request->getHeaderFieldMap()["Content-Type"];
+			std::string request_method = "REQUEST_METHOD=";
+			if (client.request->_method == POST)
+				request_method += "POST";
+			else if (client.request->_method == GET)
+				request_method += "GET";
 			
-			// "boundary=" + boundary; 
 			char *envp[] = {
-            (char*)"REQUEST_METHOD=POST",
+            (char*)request_method.c_str(),
             (char*)content_length.c_str(),
             (char*)content_type.c_str(),
             nullptr
         	};
 
-			std::cout << BLU << "execute file: " << client.request->_path.c_str() << RESET << std::endl ;
+			std::cerr << BLU << "execute file: " << client.request->_path.c_str() << RESET << std::endl ;
 			char *arg[] = {(char *)client.request->_path.c_str(), nullptr};
-			// char *arg[] = {(char *)"docs/cgi-bin/name.py", nullptr};
-			// char *arg[] = {(char *)"docs/cgi-bin/hello.py", nullptr};
-			// char *arg[] = {(char *)"alt/cgi/hello.py", nullptr};
 			if (execve(arg[0], arg, envp) != 0)
 				perror("execve");
 			exit(1);
 		}
 		else{ // perent
-			// msg = "name=mai&age=20";
 			std::cout << BLU << "msg: " << msg << RESET << std::endl;
 			write(client.pipe_fd[1], msg.c_str(), msg.size());
 			return ((t_cgi_return){FORKING_RES, 0}); // return write able fd
@@ -231,14 +201,15 @@ Response* CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	}
 
 	std::cout << "fd: " << fd << std::endl;
-	int read_byte = 0;
 	while (readable)
 	{
 		bzero(buffer, length);
 		length = read(fd, buffer, BUFFERSIZE - 1);
 		buffer[length] = '\0';
-		if (length <= 0)
+		if (length <= 0){
+			close(fd);
 			break;
+		}
 		response->_body.append(buffer, length);
 	}
 	if (cgi_return.type == STATUS_CODE_RES)
@@ -247,12 +218,6 @@ Response* CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 		response->_content_type = _mime.get_mime_type(client.request->_path);
 	return (response);
 }
-
-// <!DOCTYPE html>
-// <html lang="en">
-// <head>
-//     <meta charset="UTF-8">
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 bool	CGI::_auto_indexing(Client &client, Server &server, Response &response)
 {
