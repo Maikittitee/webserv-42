@@ -104,6 +104,7 @@ bool WebServer::runServer(void)
 	
 	fd_set tmp_read_fds;
 	fd_set tmp_write_fds;
+	struct timeval	timeOut;
 
 	_init_fds();
 	g_state = true;
@@ -111,12 +112,18 @@ bool WebServer::runServer(void)
 	{
 		tmp_read_fds = _read_fds;
 		tmp_write_fds = _write_fds;
+		timeOut = _timeOut;
 		
-		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, NULL);
+		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, &timeOut);
 		if (status == -1){
-			// std::cerr << RED << "select error " << RESET << std::endl;
+			std::cerr << RED << "select error " << RESET << std::endl;
 			perror("select");
 			return (false);
+		}
+		if (status == 0){
+			std::cerr << YEL << "checking for timeout..." << RESET << std::endl;
+			_checkTimeout();
+			continue;
 		}
 		for (int fd = 0; fd <= _max_fd; fd++){
 			if (FD_ISSET(fd, &tmp_read_fds))
@@ -142,7 +149,6 @@ bool WebServer::runServer(void)
 			continue;
 		}
 	}
-	std::cout << "Hi Tiew9" << std::endl;
 	return (true);
 
 }
@@ -207,6 +213,8 @@ void	WebServer::_init_fds(void)
 	_max_fd = 0;
 	FD_ZERO(&_read_fds);
 	FD_ZERO(&_write_fds);
+	_timeOut.tv_sec = KEEPALIVETIME;
+	_timeOut.tv_usec = 0;
 	for (size_t i = 0; i < _servers.size(); i++) {
 		iter_fd = _servers[i]._server_fd; 
 		_set_fd(iter_fd, _read_fds);
@@ -370,4 +378,25 @@ bool	WebServer::_disconnectAllClienets( void )
 		}
 		_clients.clear();
 		return (true);
+}
+
+
+bool WebServer::_checkTimeout( void ){
+	std::vector<int> fd_list;
+	std::time_t	currentTime;
+	std::map<int, Client *>::iterator it;
+
+	std::time(&currentTime);
+
+	for (it = _clients.begin(); it != _clients.end(); it++){
+		if (it->second->lastTimeConnected > currentTime){
+			fd_list.push_back(it->first);
+		}
+	}
+
+	for (int i = 0; i < fd_list.size(); i++){
+		std::cerr << RED << "timeout" << RESET << std::endl;
+		_disconnectClienet(fd_list[i]);
+	}
+	return (true);
 }

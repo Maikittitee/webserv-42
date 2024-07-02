@@ -35,6 +35,7 @@ class WebServer{
 		bool	_send_response(int fd);
 		bool	_disconnectClienet(int fd);
 		bool	_disconnectAllClienets( void );
+		bool	_checkTimeout( void );
 
 		std::map<int, Client *>	_clients;
 		std::vector<Server> 	_servers;
