@@ -107,7 +107,7 @@ bool 	Request::_readRequestLine( void )
 	_trimSpaceWordVector(word_v);
 	if(!_methodCheckNCollect(word_v[0]))
 		return (false);
-	_path = word_v[1];
+	_path = splitToVector(word_v[1], '?')[0];
 	_collectQuery(word_v[1]);
 	if(!_httpVersionCheckNCollect(word_v[2]))
 		return (false);
