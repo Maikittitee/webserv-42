@@ -162,6 +162,7 @@ bool WebServer::runServer(void)
 bool	WebServer::downServer(void)
 {
 	// free every client
+	std::cout << BLU <<  "downServer() called" << RESET << std::endl;
 	_disconnectAllClienets();	
 	return (true);
 }

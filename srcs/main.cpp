@@ -78,7 +78,8 @@ void sig_handler(int signum)
 {
 	if (signum == SIGINT)
 	{
-		g_state = true;
+		g_state = false;
+	std::cout << "signal called " << std::endl;
 	}
 }
 
@@ -108,7 +109,7 @@ int main(int ac, char **av, char **env)
 
 	try {
 		webserv.runServer();
-		// webserv.downServer();
+		webserv.downServer();
 	}
 	catch (const std::exception& ex){
 		std::cout << "catch error: " << ex.what() << std::endl;

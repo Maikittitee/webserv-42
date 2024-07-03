@@ -5,7 +5,7 @@ import cgi, os, sys, time
 form = cgi.FieldStorage()
 print("Content-type: text/html")
 print()
-print(f"recieve form: {form}")
+print(f"recieve form: {form}", file=sys.stderr)
 
 # Get filename here.
 if 'filename' in form:
