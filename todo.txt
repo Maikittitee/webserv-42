@@ -1,0 +1,5 @@
+
+[] check forbidden function => perror (use strerror instead)
+[] check leaks;
+[] fix leaks;
+[] test on ubuntu
