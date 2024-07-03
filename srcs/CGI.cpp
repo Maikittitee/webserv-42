@@ -97,6 +97,7 @@ t_cgi_return CGI::rout(Client &client, Server &server)
 			close(client.pipe_fd_out[0]);
 			close(client.pipe_fd_out[1]);
 
+			std::string query_string = "QUERY_STRING=" + client.request->_query_string;
 			std::string content_length = "CONTENT_LENGTH=" + client.request->getHeaderFieldMap()["Content-Length"];
 			std::string content_type = "CONTENT_TYPE=" + client.request->getHeaderFieldMap()["Content-Type"];
 			std::string request_method = "REQUEST_METHOD=";
@@ -109,6 +110,7 @@ t_cgi_return CGI::rout(Client &client, Server &server)
             (char*)request_method.c_str(),
             (char*)content_length.c_str(),
             (char*)content_type.c_str(),
+			(char*)query_string.c_str(),
             nullptr
         	};
 
