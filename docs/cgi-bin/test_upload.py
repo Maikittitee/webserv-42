@@ -17,10 +17,7 @@ else:
 print(fileitem)
 
 if fileitem.filename:
-	# if (os.path.exists(dir_upload_2) == False):
-	# 	os.makedirs(dir_upload_2)
 	fn = os.path.basename(fileitem.filename)
-	# print(f"fn: {fn}", file=sys.stderr)
 	f = open("file_pool/" + fn, 'wb')
 	f.write(fileitem.file.read())
 	message = 'The file "' + fn + '" was uploaded successfully'
@@ -28,8 +25,7 @@ if fileitem.filename:
 else:
    message = 'No file was uploaded'
 
-existing_files = os.listdir(upload_dir)
-
+existing_files = os.listdir("file_pool")
 
 print("Content-Type: text/html")
 
