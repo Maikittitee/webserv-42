@@ -28,6 +28,10 @@ void Response::genarate_header(void)
 {
 	std::stringstream header;
 
+	if (cgiPass)
+		std::cout << "response from CGI" << std::endl;
+	else 
+		std::cout << "response not CGI" << std::endl;
 	header << "HTTP/1.1 ";
 	header << _return_code;
 	header << " ";
@@ -36,6 +40,7 @@ void Response::genarate_header(void)
 	header << "Date: "; 
 	header << get_date();
 	header << "\r\n";
+	std::cout << "cgiPass in gen header: " <<std::boolalpha << cgiPass << std::endl;
 	if (!cgiPass){
 		header << "Content-Type: ";
 		header << _content_type;
@@ -43,11 +48,34 @@ void Response::genarate_header(void)
 	}
 	if (_body.size()){
 		header << "Content-Length: ";
-		header << _body.size();
+		if (!cgiPass)
+			header << _body.size();
+		else 
+			header << (_body.size() - _get_content_type_from_cgi_body(_body).size() - 2);
 		header << "\r\n";
-	}
 
+	}
 	this->_header = header.str();
+}
+
+std::string Response::_get_content_type_from_cgi_body(std::string body)
+{
+	std::string ret;
+	std::vector<std::string> vec;
+
+	vec = splitToVector(body, '\n');
+	for (int i = 0; i < vec.size(); i++){
+		if (vec[i].find("Content-Type") != std::string::npos)
+			return (vec[i]);
+		if (vec[i].find("content-type") != std::string::npos)
+			return (vec[i]);
+		if (vec[i].find("Content-type") != std::string::npos)
+			return (vec[i]);
+		if (vec[i].find("content-Type") != std::string::npos)
+			return (vec[i]);
+
+	}
+	return ("");
 }
 
 std::string Response::get_response_text(void)

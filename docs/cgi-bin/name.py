@@ -10,6 +10,7 @@ def main():
     
     form = cgi.FieldStorage()
     print(form, file=sys.stderr)
+    print(os.environ, file=sys.stderr)
     print()
     
     if "name" not in form or "age" not in form:
