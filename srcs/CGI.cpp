@@ -115,7 +115,7 @@ t_cgi_return CGI::rout(Client &client, Server &server)
         	};
 
 			std::cerr << BLU << "execute file: " << client.request->_path.c_str() << RESET << std::endl ;
-			char *arg[] = {(char *)client.request->_path.c_str(), nullptr};
+			char *arg[2] = {(char *)client.request->_path.c_str(), nullptr};
 			if (execve(arg[0], arg, envp) != 0)
 				perror("execve");
 			exit(1);
@@ -216,8 +216,9 @@ Response* CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	}
 	if (cgi_return.type == STATUS_CODE_RES)
 		response->_return_code = cgi_return.status_code;
-	if (readable)
+	if (readable && client.location->cgiPass != true)
 		response->_content_type = _mime.get_mime_type(client.request->_path);
+	std::cout << std::boolalpha << response->cgiPass << std::endl;
 	return (response);
 }
 

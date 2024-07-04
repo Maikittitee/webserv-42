@@ -40,6 +40,7 @@ void Response::genarate_header(void)
 	header << "Date: "; 
 	header << get_date();
 	header << "\r\n";
+	std::cout << "cgiPass in gen header: " <<std::boolalpha << cgiPass << std::endl;
 	if (!cgiPass){
 		header << "Content-Type: ";
 		header << _content_type;
