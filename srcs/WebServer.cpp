@@ -9,7 +9,7 @@ WebServer::WebServer(std::vector<Server> &servers)
 	buffer = new char[BUFFERSIZE];
 	struct sockaddr_in	sockAddr;
 	socklen_t addr_len = sizeof(sockAddr);
-	for (int i = 0; i < servers.size(); i++){
+	for (unsigned long i = 0; i < servers.size(); i++){
 		if (_setSockAddr(sockAddr, servers[i]) == 0)
 			std::cerr << "setup socket failed" << std::endl;
 
@@ -75,7 +75,7 @@ bool WebServer::initServer(std::vector<Server> &servers)
 {
 	struct sockaddr_in	sockAddr;
 	socklen_t addr_len = sizeof(sockAddr);
-	for (int i = 0; i < servers.size(); i++){
+	for (unsigned long i = 0; i < servers.size(); i++){
 		if (_setSockAddr(sockAddr, servers[i]) == 0)
 			std::cerr << "setup socket failed" << std::endl;
 
@@ -205,7 +205,7 @@ bool	WebServer::_send_response(int fd) // write fd
 
 bool	WebServer::_is_match_server(int fd)
 {
-	for (int i = 0; i < _servers.size(); i++){
+	for (unsigned long i = 0; i < _servers.size(); i++){
 		if (_servers[i]._server_fd == fd)
 			return (true);
 	}
@@ -247,7 +247,7 @@ bool	WebServer::_clear_fd(int fd, fd_set &set) {
 
 Server *WebServer::_get_server(int fd)
 {
-	for (int i = 0; i < _servers.size(); i++){
+	for (unsigned long i = 0; i < _servers.size(); i++){
 		if (_servers[i]._server_fd == fd)
 			return (&(_servers[i]));
 	}
@@ -276,11 +276,8 @@ bool	WebServer::_accept_connection(int server_fd)
 
 bool WebServer::_parsing_request(int client_fd)
 {
-	static int i;
 	Client *client = _get_client(client_fd);
-	Server *server = client->server;
 
-	i += 1;
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE, MSG_DONTWAIT);
 	// mai's 
 	// client->request = my_request_parser(client->buffer);
@@ -395,7 +392,7 @@ bool WebServer::_checkTimeout( void ){
 		}
 	}
 
-	for (int i = 0; i < fd_list.size(); i++){
+	for (unsigned long i = 0; i < fd_list.size(); i++){
 		std::cerr << RED << "timeout" << RESET << std::endl;
 		_disconnectClienet(fd_list[i]);
 	}

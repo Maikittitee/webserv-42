@@ -39,7 +39,6 @@ class Request{
 		size_t						_bodyIndex;
 		size_t						_contentLength;
 		t_reqStatus					_status;
-		int							write_fd;
 	
 		std::map<std::string, int>	_method_map;
 		std::map<std::string, std::string>	_headerField_map;

@@ -13,17 +13,13 @@ Server::Server(void)
 
 }
 
-Server::Server(int port, char **env){
-	_env = env;
-}
-
 Server::~Server (void) {
 	close(_server_fd);
 }
 
 bool count_promax(std::vector<std::string> vec, std::string target)
 {
-	for (int i = 0; i < vec.size(); i++){
+	for (unsigned long i = 0; i < vec.size(); i++){
 		if (vec[i] == target)
 			return (true);
 	}

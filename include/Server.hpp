@@ -26,7 +26,6 @@ class Server{
 		char				**_env;
 		Server();
 		
-		Server(int port, char **env);
 		~Server();
 
 		bool errorPage(int error_code, Response &response);
