@@ -405,3 +405,21 @@ int		Request::_reqErrMsg( void )
 	}
 	return (0);
 }
+
+std::ostream &operator <<(std::ostream &os, const Request &req)
+{
+	    os << std::endl;
+        os << "Method: " << req._method << std::endl;
+        os << "Path: " << req._path << std::endl;
+        os << "Query: " << req._query_string << std::endl;
+        os << "Version: " << req._http_version << std::endl;
+        std::map<std::string, std::string> header = req.getHeaderFieldMap();
+        std::map<std::string, std::string>::iterator it;
+        for (it = header.begin(); it != header.end(); ++it) 
+        {
+            os << "Key: " << it->first << ", Value: " << it->second << std::endl;
+        }
+        os << "Body: " << req._body << std::endl;
+		os << "Status: " << req.getStatus() << std::endl;
+		return (os);
+}
