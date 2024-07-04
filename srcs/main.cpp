@@ -33,7 +33,10 @@ std::map<std::string, Location> mock_location(void)
 	Location r(def);
 	Location redir(def);
 	
-	redir.ret = (return_t){true, 301, "/sample.html"};
+	// redir.ret = (return_t){true, 301, "/sample.html"};
+	redir.ret.have = true;
+	redir.ret.code = 301;
+	redir.ret.text = "/sample.html";
 	
 	Location blog(def);
 	blog.autoIndex = true;
