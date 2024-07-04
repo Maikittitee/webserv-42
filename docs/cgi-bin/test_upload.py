@@ -5,35 +5,27 @@ import cgi, os, sys, time
 form = cgi.FieldStorage()
 print("Content-type: text/html")
 print()
-print(form)
-# print(os.environ)
+print(f"recieve form: {form}", file=sys.stderr)
+
 # Get filename here.
 if 'filename' in form:
 	fileitem = form['filename']
 else:
-	print("filename not Found", file=sys.stderr)
+	print("no filename contained in form", file=sys.stderr)
 	sys.exit(1) # Exit Fail
 
-upload_dir = "./upload/"
-upload_dir_2 = "./upload_2/"
+print(fileitem)
 
-# if not os.path.exists(upload_dir_2):
-#     os.makedirs(upload_dir_2)
 if fileitem.filename:
-	# if (os.path.exists(dir_upload_2) == False):
-	# 	os.makedirs(dir_upload_2)
 	fn = os.path.basename(fileitem.filename)
-	if (os.path.isfile(upload_dir + fn) == True):
-		message = " File have already exist"
-	else:
-		f = open(upload_dir + fn, 'wb').write(fileitem.file.read())
-		message = 'The file "' + fn + '" was uploaded successfully'
-	# f.close()
+	f = open("file_pool/" + fn, 'wb')
+	f.write(fileitem.file.read())
+	message = 'The file "' + fn + '" was uploaded successfully'
+	f.close()
 else:
    message = 'No file was uploaded'
 
-existing_files = os.listdir(upload_dir)
-
+existing_files = os.listdir("file_pool")
 
 print("Content-Type: text/html")
 

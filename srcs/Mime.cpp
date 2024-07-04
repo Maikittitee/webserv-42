@@ -89,14 +89,15 @@ std::string Mime::get_mime_type(std::string filename)
 
 	pos = filename.find('.');
 
-
+	std::cout << "bp3.4" << std::endl;
 	if (pos == std::string::npos)
 		std::cerr << "file name not contain \'.\' Charactor." << std::endl;
-	
+	std::cout << "bp3.5" << std::endl;
 	lastname = filename.substr(pos);
+	std::cout << "bp3.6" << std::endl;
 	std::map<std::string, std::string>::iterator mime_pair = _mime_dict.find(lastname);
 
-
-	return (mime_pair->second);
+	std::cout << "bp3.7" << std::endl;
+	return (std::string(mime_pair->second));
 
 }
