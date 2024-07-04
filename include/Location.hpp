@@ -37,6 +37,23 @@ struct return_t {
 	bool		have;	// if there is a return 1 (true)
 	short int	code;	// Status Code
 	std::string	text;	// Option
+
+    // Constructor to initialize the struct members
+	return_t():
+	have(NOT_HAVE),
+	code(0),
+	text("") 
+	{
+
+	}
+
+	return_t(bool have, short int code, std::string	text):
+	have(have),
+	code(code),
+	text(text) 
+	{
+
+	}
 };
 
 class Location{

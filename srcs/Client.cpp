@@ -24,6 +24,7 @@ location(nullptr)
 
 Client::~Client(){
 	delete request;
+	request = NULL;
 
 	if (pipe_fd[0] != -1)
 		close(pipe_fd[0]);

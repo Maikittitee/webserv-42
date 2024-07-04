@@ -15,8 +15,8 @@ class Location;
 
 class Response{
 	public:
-		int _return_code;
-		std::string _header;
+		int 		_return_code;
+		std::string	_header;
 		std::string _body;
 		std::string _content_type;
 		bool		cgiPass;
