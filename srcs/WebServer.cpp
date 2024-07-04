@@ -128,7 +128,7 @@ bool WebServer::runServer(void)
 			return (false);
 		}
 		if (status == 0){
-			std::cerr << YEL << "checking for timeout..." << RESET << std::endl;
+			// std::cerr << YEL << "checking for timeout..." << RESET << std::endl;
 			_checkTimeout();
 			continue;
 		}
@@ -194,8 +194,8 @@ bool	WebServer::_send_response(int fd) // write fd
 		server->errorPage(413, *response);
 	}
 	std::string msg = response->get_response_text();
-	std::cout << BLU << "sending response:" << RESET << std::endl;
-	std::cout << YEL << msg << RESET << std::endl;
+	// std::cout << BLU << "sending response:" << RESET << std::endl;
+	// std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
 	_disconnectClienet(fd);
 	delete response;
@@ -345,6 +345,7 @@ bool WebServer::_disconnectClienet(int fd)
 			std::cout << RED << "disconnect client: " << fd << RESET << std::endl;
 			_clients.erase(fd);
 			delete it->second;
+			it->second = NULL;
 			if (FD_ISSET(fd, &_read_fds))
 				_clear_fd(fd, _read_fds);
 			else if (FD_ISSET(fd, &_write_fds))
