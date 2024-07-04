@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 import os
+import sys
 
-upload_dir = "../upload/"
+upload_dir = os.getcwd() + "/file_pool/"
 mylist = []
 found = True
 
@@ -10,7 +11,7 @@ if os.path.exists(upload_dir) and os.path.isdir(upload_dir):
 	for filename in os.listdir(upload_dir):
 		# create bottom for download
 		sublist = []
-		sublist.append('<a href="' + "/upload/" + filename + '"download>')
+		sublist.append('<a href="' + upload_dir + filename + '"download>')
 		sublist.append(filename)
 		sublist.append("</a>")
 		mylist.append(sublist)
@@ -22,6 +23,8 @@ def listToString(s):
 	for ele in s:
 		str1 += ele
 	return str1
+
+print(f"working directory: {os.getcwd()}", file=sys.stderr)
 
 print("Content-Type: text/html")
 
