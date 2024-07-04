@@ -2,7 +2,7 @@
 import os
 import sys
 
-upload_dir = os.getcwd() + "/file_pool/"
+upload_dir = "file_pool/"
 mylist = []
 found = True
 
