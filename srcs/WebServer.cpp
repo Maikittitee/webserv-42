@@ -304,10 +304,6 @@ bool WebServer::_parsing_request(int client_fd)
 		std::cout << YEL << "new client" << RESET << std::endl;
 		client->request = new Request(client->buffer);	
 	}
-    if (client->bufSize < BUFFERSIZE)
-    {
-        client->request->_isEndRecv = true;
-	}
 	// for end parsing reqeust
 	if (client->request->_method != POST \
 			&& client->request->getStatus() >= IN_CRLF_LINE)
@@ -329,8 +325,6 @@ bool WebServer::_parsing_request(int client_fd)
 		client->request->updateRequest(client->buffer);
 	}
 	std::cout << YEL << *client->request << RESET << std::endl;
-	// if (i == 11)
-	// 	exit(0);
 	return (true);
 }
 

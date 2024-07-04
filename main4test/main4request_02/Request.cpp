@@ -1,4 +1,4 @@
-#include "../include/Request.hpp"
+#include "Request.hpp"
 
 Request::Request():
 _lineIndex(0),
@@ -11,7 +11,8 @@ _method(NONE),
 _path(""),
 _http_version(HTTP00),
 _body(""),
-_query_string("")
+_query_string(""),
+_isEndRecv(false)
 {
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
@@ -31,7 +32,8 @@ _method(NONE),
 _path(""),
 _http_version(HTTP00),
 _body(""),
-_query_string("")
+_query_string(""),
+_isEndRecv(false)
 {
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
@@ -404,22 +406,4 @@ int		Request::_reqErrMsg( void )
 		return (1);
 	}
 	return (0);
-}
-
-std::ostream &operator <<(std::ostream &os, const Request &req)
-{
-	    os << std::endl;
-        os << "Method: " << req._method << std::endl;
-        os << "Path: " << req._path << std::endl;
-        os << "Query: " << req._query_string << std::endl;
-        os << "Version: " << req._http_version << std::endl;
-        std::map<std::string, std::string> header = req.getHeaderFieldMap();
-        std::map<std::string, std::string>::iterator it;
-        for (it = header.begin(); it != header.end(); ++it) 
-        {
-            os << "Key: " << it->first << ", Value: " << it->second << std::endl;
-        }
-        os << "Body: " << req._body << std::endl;
-		os << "Status: " << req.getStatus() << std::endl;
-		return (os);
 }
