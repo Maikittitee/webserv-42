@@ -86,9 +86,8 @@ int main(int argc, char **argv)
         printResule(req);
         std::cout << std::endl << "------------------------" << std::endl;
         round++;
-        // sleep(1);
+        // sleep(10);
     }
-    std::cout << "body size = " << req._body.size() << std::endl;
     close(fd);
     return 0;
 }
