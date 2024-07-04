@@ -14,6 +14,9 @@
 #	include <sstream> 
 #	include "Utils.hpp"
 
+
+#	define BUFFERSIZE 500
+
 typedef enum e_requestErrorCode{
 			SUCESS_REQUEST,
 			EMPTHY_REQUEST,
@@ -31,6 +34,16 @@ typedef enum e_requestStatusCode{
 			IN_BODY_LINE,
 			END_REQUEST_MSG
 } t_reqStatus;
+
+typedef enum e_method{
+			ELSE,
+			GET,
+			POST,
+			DELETE,
+			HEAD,
+			PUT,
+			NONE
+} t_method;
 
 class Request{
 
@@ -64,13 +77,14 @@ class Request{
 
 	public:
 		// Attribute
-		t_reqErr					_reqErr;
-		t_method					_method;
-		std::string					_path;
-		t_version					_http_version;
-		std::string					_host;
-		std::string					_body;
-		std::string					_query_string;
+		t_reqErr	_reqErr;
+		t_method	_method;
+		std::string	_path;
+		t_version	_http_version;
+		std::string	_host;
+		std::string	_body;
+		std::string	_query_string;
+		bool		_isEndRecv;
 		std::vector<std::string>	request_v;
 
 		// Constructor and Destructor
@@ -79,11 +93,11 @@ class Request{
 		~Request( void ) {}
 
 		// Getter
-		std::map<std::string, std::string>	getHeaderFieldMap ( void ) const
+		std::map<std::string, std::string>	getHeaderFieldMap ( void )
 		{
 			return _headerField_map;
 		}
-		t_reqStatus	getStatus( void ) const 
+		t_reqStatus	getStatus( void )
 		{
 			return _status;
 		}
@@ -97,6 +111,5 @@ class Request{
 		}
 };
 
-std::ostream &operator <<(std::ostream &os, const Request &req);
 
 # endif

@@ -1,4 +1,4 @@
-#include "../include/Request.hpp"
+#include "Request.hpp"
 
 Request::Request():
 _lineIndex(0),
@@ -11,7 +11,8 @@ _method(NONE),
 _path(""),
 _http_version(HTTP00),
 _body(""),
-_query_string("")
+_query_string(""),
+_isEndRecv(false)
 {
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
@@ -31,7 +32,8 @@ _method(NONE),
 _path(""),
 _http_version(HTTP00),
 _body(""),
-_query_string("")
+_query_string(""),
+_isEndRecv(false)
 {
 	_method_map["GET"] = GET;
 	_method_map["POST"] = POST;
