@@ -1,12 +1,27 @@
 #include "../include/WebServer.hpp"
 
-WebServer::WebServer(){
-	buffer = new char[BUFFERSIZE];
+WebServer::WebServer():
+_clients(),
+_servers(),
+_timeOut(),
+_read_fds(),
+_write_fds(),
+buffer(new char[BUFFERSIZE + 1]),
+_max_fd(0)
+{
+
 }
 
-WebServer::WebServer(std::vector<Server> &servers)
+WebServer::WebServer(std::vector<Server> &servers):
+_clients(),
+_servers(),
+_timeOut(),
+_read_fds(),
+_write_fds(),
+buffer(new char[BUFFERSIZE + 1]),
+_max_fd(0)
 {
-	buffer = new char[BUFFERSIZE];
+	buffer = new char[BUFFERSIZE + 1];
 	struct sockaddr_in	sockAddr;
 	socklen_t addr_len = sizeof(sockAddr);
 	for (unsigned long i = 0; i < servers.size(); i++){
@@ -26,9 +41,13 @@ WebServer::WebServer(std::vector<Server> &servers)
 			std::cerr << "setup socket option failed" << std::endl;
 		
 		// Bind the socket to the specified address and port
-		if (bind(servers[i]._server_fd, (sockaddr *)&sockAddr, addr_len) < 0)
-			std::cerr << "bilded failed" << std::endl;
-		
+		int bindIndex = bind(servers[i]._server_fd, (sockaddr *)&sockAddr, addr_len);
+		if (bindIndex < 0)
+		{
+			std::cout << "bindIndex = " << bindIndex << std::endl;
+			std::cerr << "bind failed in constructor: " << strerror(errno) << std::endl;
+		}
+
 		// Prepare socket for incoming connection
 		if (listen(servers[i]._server_fd, 512) < 0)
 			std::cout << "listen failded" << std::endl;
@@ -93,7 +112,7 @@ bool WebServer::initServer(std::vector<Server> &servers)
 		
 		// Bind the socket to the specified address and port
 		if (bind(servers[i]._server_fd, (sockaddr *)&sockAddr, addr_len) < 0)
-			std::cerr << "bilded failed" << std::endl;
+			std::cerr << "bilded failed in init" << std::endl;
 		
 		// Prepare socket for incoming connection
 		if (listen(servers[i]._server_fd, 512) < 0)
@@ -256,21 +275,24 @@ Server *WebServer::_get_server(int fd)
 
 bool	WebServer::_accept_connection(int server_fd)
 {
-	Client *new_client = new Client;
+	int 	fd;
+	socklen_t			addrLen;
+	struct sockaddr_in	addr;
 
-	new_client->fd = accept(server_fd, (sockaddr *)&new_client->addr, &new_client->addrLen);
-	if (new_client->fd < 0){
+	fd = accept(server_fd, (sockaddr *)&addr, &addrLen);
+	if (fd < 0){
 		std::cerr << RED << "cannot accept connection." << RESET << std::endl;
 		return (false);
 	}
-	_clients[new_client->fd] = new_client;
-	new_client->server = _get_server(server_fd);
-	if (!new_client->server){
+	_clients[fd] = new Client;
+	_clients[fd]->server = _get_server(server_fd);
+	_clients[fd]->fd = fd;
+	if (!_clients[fd]->server){
 		std::cerr << RED << "server not found" << RESET << std::endl;
 		return (false);
 	}
-	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << new_client->fd << RESET << std::endl;
-	_set_fd(new_client->fd, _read_fds);
+	std::cout << BLU << "Accept connection (server<-client): " << server_fd << "<-" << fd << RESET << std::endl;
+	_set_fd(_clients[fd]->fd, _read_fds);
 	return (true);
 }
 
@@ -351,10 +373,8 @@ bool WebServer::_disconnectClienet(int fd)
 			return (true);
 		}
 	}
-	return (false);
-	
 
-	
+	return (false);	
 }
 
 bool	WebServer::_disconnectAllClienets( void )

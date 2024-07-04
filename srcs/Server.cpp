@@ -1,15 +1,15 @@
 #include "../include/Server.hpp"
 
-Server::Server(void)
+Server::Server(void):
+_server_fd(0),
+ipAddr("0.0.0.0"),
+listen(80),
+server_name("localhost"),
+error_page{"400", "403", "404", "405", "error.html"},
+_config(),
+_mime(),
+_env(nullptr)
 {
-	server_name = "localhost"; //? server_name
-	ipAddr = "0.0.0.0"; //? listen could be ip address or port
-	listen = 80;
-	error_page.push_back("400");
-	error_page.push_back("403");
-	error_page.push_back("404");
-	error_page.push_back("405");
-	error_page.push_back("error.html");
 
 }
 

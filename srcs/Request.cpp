@@ -36,9 +36,10 @@ _query_string("")
 	_method_map["DELETE"] = DELETE;
 	_method_map["PUT"] = PUT;
 	_method_map["HEAD"] = HEAD;
-	if(!_collectRequestToVector(request))
-		_reqErrMsg();
+
+	_collectRequestToVector(request);
 	_intiRequestStatus();
+	std::cout << "status after init = " << _status << std::endl;
 	if(_status > IN_REQUEST_LINE)
 		_readRequestLine();
 	if(_status >= IN_HEADER_LINE)
@@ -49,7 +50,7 @@ _query_string("")
 		_readRequestMassageBody();
 	if(_isEndRead())
 	{
-		std::cout << "say hi!!" << std::endl;
+		std::cout << "request constructor call" << std::endl;
 		_status = END_REQUEST_MSG;
 	}
 }
@@ -261,7 +262,11 @@ void	Request::updateRequest(std::string request)
 	if (_status == IN_BODY_LINE)
 		_updateAfterHeaderLine();
 	if(_isEndRead())
+	{
+		std::cout << "update request call" << std::endl;
+		std::cout << "_contentLength = " << _contentLength << std::endl; 
 		_status = END_REQUEST_MSG; 
+	}
 }
 
 void	Request::_updateRequestToVector(std::string &request)

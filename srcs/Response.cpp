@@ -1,6 +1,11 @@
 #include "../include/Response.hpp"
 
-Response::Response(void): cgiPass(false) 
+Response::Response(void):
+_return_code(-1),
+_header(""),
+_body(""),
+_content_type(""),
+cgiPass(false)
 {
 
 }

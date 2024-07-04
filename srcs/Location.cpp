@@ -1,23 +1,30 @@
 #include "../include/Location.hpp"
 
 // Location::Location(void) : _client_max(3) {}
-Location::Location(void) 
+Location::Location(void):
+cgiPass(OFF),
+autoIndex(OFF),
+allowMethod(),
+cliBodySize(5000),
+root(""),
+index(),
+ret()
 {
-	// std::cout << BCYN << "Constructor Location called"  << RESET << std::endl;
-	cgiPass = OFF;
-	autoIndex = OFF;
-	allowMethod.clear();
-	cliBodySize = 5000;
-	root = "";
-	index.clear();
-	ret.have = NOT_HAVE;
-	ret.code = 0;
-	ret.text = "";
+
 }
 
 // Location::Location() : _client_max(3) {}
-
-Location::Location(const Location &other):cgiPass(other.cgiPass), autoIndex(other.autoIndex), allowMethod(other.allowMethod), cliBodySize(other.cliBodySize), root(other.root), index(other.index), ret(other.ret){}
+Location::Location(const Location &other):
+cgiPass(other.cgiPass),
+autoIndex(other.autoIndex),
+allowMethod(other.allowMethod),
+cliBodySize(other.cliBodySize),
+root(other.root),
+index(other.index),
+ret(other.ret)
+{
+	
+}
 
 Location& Location::operator= (const Location &rhs){
 			if (this == &rhs)
