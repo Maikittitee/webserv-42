@@ -174,6 +174,7 @@ bool WebServer::runServer(void)
 			}
 			continue;
 		}
+		_checkTimeout();
 	}
 	return (true);
 
@@ -405,9 +406,8 @@ bool WebServer::_checkTimeout( void ){
 	std::map<int, Client *>::iterator it;
 
 	std::time(&currentTime);
-
 	for (it = _clients.begin(); it != _clients.end(); it++){
-		if (it->second->lastTimeConnected > currentTime){
+		if (it->second->lastTimeConnected < currentTime){
 			fd_list.push_back(it->first);
 		}
 	}

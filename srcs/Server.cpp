@@ -5,11 +5,12 @@ _server_fd(0),
 ipAddr("0.0.0.0"),
 listen(80),
 server_name("localhost"),
-error_page{"400", "403", "404", "405", "error.html"},
+// error_page{"400", "403", "404", "405", "error.html"},
 _config(),
 _mime(),
 _env(nullptr)
 {
+	error_page.clear();
 
 }
 
