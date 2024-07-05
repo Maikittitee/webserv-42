@@ -47,6 +47,7 @@ bool Server::errorPage(int error_code, Response &response){ // return resposne
 			response._body.append(buffer, len);
 			std::cout << response._body << std::endl;
 			response._content_type = "text/html";
+			close(fd);
 			return (true);
 		}
 	}

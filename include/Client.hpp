@@ -32,8 +32,6 @@ class Client
 		Request				*request;
 		Location			*location;
 		std::time_t			lastTimeConnected;
-
-		int *haha;
 };
 
 #endif
