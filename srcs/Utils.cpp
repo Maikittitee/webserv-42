@@ -6,34 +6,11 @@ std::string concat_path(std::string s1, std::string s2)
 	std::string ret;
 	std::string mid = "/";
 
-	if (s1.back() == '/' || s1.front() == '/')
+	if (s1[s1.size() - 1] == '/' || s1[0] == '/')
 		mid = "";
 	ret = s1 + mid + s2;
 	replace_str(ret, "//", "/");
 	return (ret);
-}
-
-bool readFile(std::string &buff, std::string const &filename)
-{
-	std::ifstream file(filename, std::ios::binary | std::ios::ate);
-	int length;
-	file.seekg(0, std::ios::end);
-
-	if (!file.is_open()){
-		std::cerr << "Can't Open The File" << std::endl;
-		return (false);
-	}
-	length = file.tellg();
-
-	std::cout << RED << length << RESET << std::endl; 
-
-	char *buffer = new char[length];
-	file.seekg(0, std::ios::beg);
-	file.read(buffer, length);
-	file.close();
-	buff = buffer; // ?????
-	return (true);
-
 }
 
 void	replace_str(std::string &str, std::string s1, std::string s2)

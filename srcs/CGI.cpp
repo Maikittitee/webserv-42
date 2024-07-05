@@ -109,11 +109,11 @@ t_cgi_return CGI::rout(Client &client, Server &server)
             (char*)content_length.c_str(),
             (char*)content_type.c_str(),
 			(char*)query_string.c_str(),
-            nullptr
+            NULL
         	};
 
 			std::cerr << BLU << "execute file: " << client.request->_path.c_str() << RESET << std::endl ;
-			char *arg[2] = {(char *)client.request->_path.c_str(), nullptr};
+			char *arg[2] = {(char *)client.request->_path.c_str(), NULL};
 			if (execve(arg[0], arg, envp) != 0)
 				perror("execve");
 			exit(1);

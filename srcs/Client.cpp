@@ -9,9 +9,9 @@ addrLen(0),
 buffer(""),
 rawReqMsg(""),
 bufSize(0),
-server(nullptr),
-request(nullptr),
-location(nullptr)
+server(NULL),
+request(NULL),
+location(NULL)
 {
 	updateTime();
 	std::cout << "client last connect time: " << lastTimeConnected << std::endl;

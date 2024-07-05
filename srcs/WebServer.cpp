@@ -18,7 +18,6 @@ _servers(),
 _timeOut(),
 _read_fds(),
 _write_fds(),
-buffer(new char[BUFFERSIZE + 1]),
 _max_fd(0)
 {
 	buffer = new char[BUFFERSIZE + 1];

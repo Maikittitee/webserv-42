@@ -22,7 +22,6 @@ typedef enum e_version{
 	HTTP00, // else
 } t_version;
 
-bool						readFile(std::string &buff, std::string const &filename);
 void						replace_str(std::string &str, std::string s1, std::string s2);
 void						trimTrailingSpaces(std::string& str);
 void						trimLeadingSpaces(std::string& str);

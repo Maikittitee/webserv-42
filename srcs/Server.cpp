@@ -8,7 +8,7 @@ server_name("localhost"),
 // error_page{"400", "403", "404", "405", "error.html"},
 _config(),
 _mime(),
-_env(nullptr)
+_env(NULL)
 {
 	error_page.clear();
 
