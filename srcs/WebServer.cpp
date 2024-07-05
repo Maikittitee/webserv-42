@@ -145,7 +145,6 @@ bool WebServer::runServer(void)
 		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, &timeOut);
 		if (status == -1){
 			std::cerr << RED << "select error " << RESET << std::endl;
-			perror("select");
 			return (false);
 		}
 		if (status == 0){
