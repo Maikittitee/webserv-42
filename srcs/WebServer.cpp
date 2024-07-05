@@ -9,6 +9,7 @@ _write_fds(),
 buffer(new char[BUFFERSIZE + 1]),
 _max_fd(0)
 {
+	_clients.clear();
 
 }
 
@@ -22,6 +23,7 @@ _max_fd(0)
 {
 	buffer = new char[BUFFERSIZE + 1];
 	struct sockaddr_in	sockAddr;
+	_clients.clear();
 	socklen_t addr_len = sizeof(sockAddr);
 	for (unsigned long i = 0; i < servers.size(); i++){
 		if (_setSockAddr(sockAddr, servers[i]) == 0)
@@ -356,29 +358,21 @@ Client* WebServer::_get_client(int fd)
 	return (_clients[fd]);
 }
 
-bool WebServer::_disconnectClienet(int fd)
-{
-	if (!_clients.count(fd))
-		return (false);
-	std::map<int, Client *>::iterator it;
-	for (it = _clients.begin(); it != _clients.end(); it++){
-		std::cout << "clients::: "<< it->first << ":" << it->second << std::endl;
-		if (it->first == fd){
-			std::cout << RED << "disconnect client: " << fd << RESET << std::endl;
-			_clients.erase(fd);
-			std::cout << "bp99" << std::endl;
-			delete it->second ;
-			std::cout << "bp99" << std::endl;
+bool WebServer::_disconnectClienet(int fd){
+		if (_clients.count(fd)) {
 			if (FD_ISSET(fd, &_read_fds))
 				_clear_fd(fd, _read_fds);
 			else if (FD_ISSET(fd, &_write_fds))
 				_clear_fd(fd, _write_fds);
 			close(fd);
+			Client *cli = _clients[fd];
+			if (cli){
+				delete cli;
+			}
+			_clients.erase(fd);
 			return (true);
-		}
 	}
-
-	return (false);	
+	return (false);
 }
 
 bool	WebServer::_disconnectAllClienets( void )
@@ -387,15 +381,15 @@ bool	WebServer::_disconnectAllClienets( void )
 	// neet fix
 		std::map<int, Client *>::iterator it;
 
-		for (it = _clients.begin(); it != _clients.end(); it++){
+		for (it = _clients.begin(); it != _clients.end(); ++it){
 			std::cout << RED << "disconnect client: " << it->first << RESET << std::endl;
 			// _clients.erase(it->first);
 			delete it->second;
 			close(it->first);
-			if (FD_ISSET(it->first, &_read_fds))
-				_clear_fd(it->first, _read_fds);
-			else if (FD_ISSET(it->first, &_write_fds))
-				_clear_fd(it->first, _write_fds);
+			// if (FD_ISSET(it->first, &_read_fds))
+			// 	_clear_fd(it->first, _read_fds);
+			// else if (FD_ISSET(it->first, &_write_fds))
+			// 	_clear_fd(it->first, _write_fds);
 
 		}
 		_clients.clear();
