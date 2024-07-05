@@ -14,7 +14,6 @@ request(NULL),
 location(NULL)
 {
 	updateTime();
-	std::cout << "client last connect time: " << lastTimeConnected << std::endl;
 	pipe_fd[0] = -1;
 	pipe_fd[1] = -1;
 	pipe_fd_out[0] = -1;

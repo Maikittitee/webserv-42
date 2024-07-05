@@ -13,6 +13,13 @@ std::string concat_path(std::string s1, std::string s2)
 	return (ret);
 }
 
+// void operator delete  ( void* ptr ) noexcept{
+// 	std::cout << ptr << std::endl;
+// 	::delete ptr;
+
+// }
+
+
 void	replace_str(std::string &str, std::string s1, std::string s2)
 {
 	size_t	found_pos = 0;

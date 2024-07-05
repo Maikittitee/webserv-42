@@ -59,6 +59,7 @@ _max_fd(0)
 
 WebServer::~WebServer(){
 	delete[] buffer;
+	
 	// std::map<int, Client *>	_clients;
     // Iterating over the map using iterators
     // std::map<int, Client *>::iterator iter;
@@ -276,15 +277,16 @@ Server *WebServer::_get_server(int fd)
 bool	WebServer::_accept_connection(int server_fd)
 {
 	int 	fd;
-	socklen_t			addrLen;
 	struct sockaddr_in	addr;
+	socklen_t			addrLen = sizeof(addr);
+	
 
 	fd = accept(server_fd, (sockaddr *)&addr, &addrLen);
 	if (fd < 0){
 		std::cerr << RED << "cannot accept connection." << RESET << std::endl;
 		return (false);
 	}
-	_clients[fd] = new Client;
+	_clients[fd] = new Client();
 	_clients[fd]->server = _get_server(server_fd);
 	_clients[fd]->fd = fd;
 	if (!_clients[fd]->server){
@@ -360,11 +362,13 @@ bool WebServer::_disconnectClienet(int fd)
 		return (false);
 	std::map<int, Client *>::iterator it;
 	for (it = _clients.begin(); it != _clients.end(); it++){
+		std::cout << "clients::: "<< it->first << ":" << it->second << std::endl;
 		if (it->first == fd){
 			std::cout << RED << "disconnect client: " << fd << RESET << std::endl;
 			_clients.erase(fd);
-			delete it->second;
-			it->second = NULL;
+			std::cout << "bp99" << std::endl;
+			delete it->second ;
+			std::cout << "bp99" << std::endl;
 			if (FD_ISSET(fd, &_read_fds))
 				_clear_fd(fd, _read_fds);
 			else if (FD_ISSET(fd, &_write_fds))
