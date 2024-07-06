@@ -87,7 +87,7 @@ void sig_handler(int signum)
 }
 
 
-int main(int ac, char **av, char **env)
+int main(int ac, char **av)
 {
 	struct sigaction sigint;
 	sigint.sa_handler = sig_handler;
@@ -102,7 +102,7 @@ int main(int ac, char **av, char **env)
 		return(1);
 	}
 
-	for (int i = 0; i < sv.size(); i++)
+	for (unsigned long i = 0; i < sv.size(); i++)
 	{
 		std::cout << "serv in main" << sv[i].server_name << std::endl;
 		ft_prt_server(sv[i]);

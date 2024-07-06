@@ -37,13 +37,11 @@ std::string get_boundary(const std::string& post_body) {
 void handle_post_request(const std::string& post_data, const std::string& boundary) {
     int pipe_fd[2];
     if (pipe(pipe_fd) == -1) {
-        perror("pipe");
         exit(EXIT_FAILURE);
     }
 
     pid_t pid = fork();
     if (pid == -1) {
-        perror("fork");
         exit(EXIT_FAILURE);
     }
 

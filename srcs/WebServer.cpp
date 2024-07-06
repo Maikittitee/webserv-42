@@ -9,6 +9,7 @@ _write_fds(),
 buffer(new char[BUFFERSIZE + 1]),
 _max_fd(0)
 {
+	_clients.clear();
 
 }
 
@@ -18,13 +19,13 @@ _servers(),
 _timeOut(),
 _read_fds(),
 _write_fds(),
-buffer(new char[BUFFERSIZE + 1]),
 _max_fd(0)
 {
 	buffer = new char[BUFFERSIZE + 1];
 	struct sockaddr_in	sockAddr;
+	_clients.clear();
 	socklen_t addr_len = sizeof(sockAddr);
-	for (int i = 0; i < servers.size(); i++){
+	for (unsigned long i = 0; i < servers.size(); i++){
 		if (_setSockAddr(sockAddr, servers[i]) == 0)
 			std::cerr << "setup socket failed" << std::endl;
 
@@ -60,6 +61,7 @@ _max_fd(0)
 
 WebServer::~WebServer(){
 	delete[] buffer;
+	
 	// std::map<int, Client *>	_clients;
     // Iterating over the map using iterators
     // std::map<int, Client *>::iterator iter;
@@ -94,7 +96,7 @@ bool WebServer::initServer(std::vector<Server> &servers)
 {
 	struct sockaddr_in	sockAddr;
 	socklen_t addr_len = sizeof(sockAddr);
-	for (int i = 0; i < servers.size(); i++){
+	for (unsigned long i = 0; i < servers.size(); i++){
 		if (_setSockAddr(sockAddr, servers[i]) == 0)
 			std::cerr << "setup socket failed" << std::endl;
 
@@ -143,11 +145,10 @@ bool WebServer::runServer(void)
 		int status = select(_max_fd + 1, &tmp_read_fds, &tmp_write_fds, NULL, &timeOut);
 		if (status == -1){
 			std::cerr << RED << "select error " << RESET << std::endl;
-			perror("select");
 			return (false);
 		}
 		if (status == 0){
-			std::cerr << YEL << "checking for timeout..." << RESET << std::endl;
+			// std::cerr << YEL << "checking for timeout..." << RESET << std::endl;
 			_checkTimeout();
 			continue;
 		}
@@ -174,6 +175,7 @@ bool WebServer::runServer(void)
 			}
 			continue;
 		}
+		_checkTimeout();
 	}
 	return (true);
 
@@ -213,8 +215,8 @@ bool	WebServer::_send_response(int fd) // write fd
 		server->errorPage(413, *response);
 	}
 	std::string msg = response->get_response_text();
-	std::cout << BLU << "sending response:" << RESET << std::endl;
-	std::cout << YEL << msg << RESET << std::endl;
+	// std::cout << BLU << "sending response:" << RESET << std::endl;
+	// std::cout << YEL << msg << RESET << std::endl;
 	write(fd, msg.c_str(), msg.size());
 	_disconnectClienet(fd);
 	delete response;
@@ -224,7 +226,7 @@ bool	WebServer::_send_response(int fd) // write fd
 
 bool	WebServer::_is_match_server(int fd)
 {
-	for (int i = 0; i < _servers.size(); i++){
+	for (unsigned long i = 0; i < _servers.size(); i++){
 		if (_servers[i]._server_fd == fd)
 			return (true);
 	}
@@ -266,7 +268,7 @@ bool	WebServer::_clear_fd(int fd, fd_set &set) {
 
 Server *WebServer::_get_server(int fd)
 {
-	for (int i = 0; i < _servers.size(); i++){
+	for (unsigned long i = 0; i < _servers.size(); i++){
 		if (_servers[i]._server_fd == fd)
 			return (&(_servers[i]));
 	}
@@ -276,15 +278,16 @@ Server *WebServer::_get_server(int fd)
 bool	WebServer::_accept_connection(int server_fd)
 {
 	int 	fd;
-	socklen_t			addrLen;
 	struct sockaddr_in	addr;
+	socklen_t			addrLen = sizeof(addr);
+	
 
 	fd = accept(server_fd, (sockaddr *)&addr, &addrLen);
 	if (fd < 0){
 		std::cerr << RED << "cannot accept connection." << RESET << std::endl;
 		return (false);
 	}
-	_clients[fd] = new Client;
+	_clients[fd] = new Client();
 	_clients[fd]->server = _get_server(server_fd);
 	_clients[fd]->fd = fd;
 	if (!_clients[fd]->server){
@@ -298,11 +301,8 @@ bool	WebServer::_accept_connection(int server_fd)
 
 bool WebServer::_parsing_request(int client_fd)
 {
-	static int i;
 	Client *client = _get_client(client_fd);
-	Server *server = client->server;
 
-	i += 1;
 	client->bufSize = recv(client->fd, client->buffer, BUFFERSIZE, MSG_DONTWAIT);
 	// mai's 
 	// client->request = my_request_parser(client->buffer);
@@ -357,27 +357,21 @@ Client* WebServer::_get_client(int fd)
 	return (_clients[fd]);
 }
 
-bool WebServer::_disconnectClienet(int fd)
-{
-	if (!_clients.count(fd))
-		return (false);
-	std::map<int, Client *>::iterator it;
-	for (it = _clients.begin(); it != _clients.end(); it++){
-		if (it->first == fd){
-			std::cout << RED << "disconnect client: " << fd << RESET << std::endl;
-			_clients.erase(fd);
-			delete it->second;
-			it->second = NULL;
+bool WebServer::_disconnectClienet(int fd){
+		if (_clients.count(fd)) {
 			if (FD_ISSET(fd, &_read_fds))
 				_clear_fd(fd, _read_fds);
 			else if (FD_ISSET(fd, &_write_fds))
 				_clear_fd(fd, _write_fds);
 			close(fd);
+			Client *cli = _clients[fd];
+			if (cli){
+				delete cli;
+			}
+			_clients.erase(fd);
 			return (true);
-		}
 	}
-
-	return (false);	
+	return (false);
 }
 
 bool	WebServer::_disconnectAllClienets( void )
@@ -386,15 +380,15 @@ bool	WebServer::_disconnectAllClienets( void )
 	// neet fix
 		std::map<int, Client *>::iterator it;
 
-		for (it = _clients.begin(); it != _clients.end(); it++){
+		for (it = _clients.begin(); it != _clients.end(); ++it){
 			std::cout << RED << "disconnect client: " << it->first << RESET << std::endl;
 			// _clients.erase(it->first);
 			delete it->second;
 			close(it->first);
-			if (FD_ISSET(it->first, &_read_fds))
-				_clear_fd(it->first, _read_fds);
-			else if (FD_ISSET(it->first, &_write_fds))
-				_clear_fd(it->first, _write_fds);
+			// if (FD_ISSET(it->first, &_read_fds))
+			// 	_clear_fd(it->first, _read_fds);
+			// else if (FD_ISSET(it->first, &_write_fds))
+			// 	_clear_fd(it->first, _write_fds);
 
 		}
 		_clients.clear();
@@ -408,14 +402,13 @@ bool WebServer::_checkTimeout( void ){
 	std::map<int, Client *>::iterator it;
 
 	std::time(&currentTime);
-
 	for (it = _clients.begin(); it != _clients.end(); it++){
-		if (it->second->lastTimeConnected > currentTime){
+		if (it->second->lastTimeConnected < currentTime){
 			fd_list.push_back(it->first);
 		}
 	}
 
-	for (int i = 0; i < fd_list.size(); i++){
+	for (unsigned long i = 0; i < fd_list.size(); i++){
 		std::cerr << RED << "timeout" << RESET << std::endl;
 		_disconnectClienet(fd_list[i]);
 	}

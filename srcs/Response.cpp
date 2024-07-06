@@ -69,7 +69,7 @@ std::string Response::_get_content_type_from_cgi_body(std::string body)
 	std::vector<std::string> vec;
 
 	vec = splitToVector(body, '\n');
-	for (int i = 0; i < vec.size(); i++){
+	for (unsigned long i = 0; i < vec.size(); i++){
 		if (vec[i].find("Content-Type") != std::string::npos)
 			return (vec[i]);
 		if (vec[i].find("content-type") != std::string::npos)

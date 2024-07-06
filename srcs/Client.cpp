@@ -5,20 +5,18 @@ fd(-1),
 pipe_available(false),
 child_pid(-1),
 IPaddr(""),
-addrLen(0),
 buffer(""),
 rawReqMsg(""),
 bufSize(0),
-server(nullptr),
-request(nullptr),
-location(nullptr)
+server(NULL),
+request(NULL),
+location(NULL)
 {
 	updateTime();
 	pipe_fd[0] = -1;
 	pipe_fd[1] = -1;
 	pipe_fd_out[0] = -1;
 	pipe_fd_out[1] = -1;
-	addrLen = sizeof(struct sockaddr_in);
 	std::cout << "client constructor called" << std::endl;
 }
 

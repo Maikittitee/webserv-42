@@ -25,7 +25,7 @@ std::string _append_index(Client &client)
 				client.request->_path += "/";
 			// loop index
 			std::string tmp_file;
-			for (int i = 0; i < client.location->index.size(); i++)
+			for (unsigned long i = 0; i < client.location->index.size(); i++)
 			{
 				tmp_file = client.request->_path + client.location->index[i];
 				if (access(tmp_file.c_str(), F_OK) == 0){
@@ -43,8 +43,6 @@ std::string _append_index(Client &client)
 
 t_cgi_return CGI::rout(Client &client, Server &server)
 {
-	t_cgi_return ret;
-
 	client.location = _select_location(*client.request, server);
 	if (!client.location)
 		std::cout << RED << "can't find matching location" << RESET << std::endl;
@@ -111,11 +109,11 @@ t_cgi_return CGI::rout(Client &client, Server &server)
             (char*)content_length.c_str(),
             (char*)content_type.c_str(),
 			(char*)query_string.c_str(),
-            nullptr
+            NULL
         	};
 
 			std::cerr << BLU << "execute file: " << client.request->_path.c_str() << RESET << std::endl ;
-			char *arg[2] = {(char *)client.request->_path.c_str(), nullptr};
+			char *arg[2] = {(char *)client.request->_path.c_str(), NULL};
 			if (execve(arg[0], arg, envp) != 0)
 				perror("execve");
 			exit(1);
@@ -147,7 +145,7 @@ Response* CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 	Response *response = new Response;
 	bool	readable = false;
 	char buffer[BUFFERSIZE];
-	int fd;
+	int fd = -1;
 	int length = 0;
 
 	std::cout << "in readfile" << std::endl; 
@@ -224,6 +222,7 @@ Response* CGI::readfile(Client &client, Server &server, t_cgi_return cgi_return)
 
 bool	CGI::_auto_indexing(Client &client, Server &server, Response &response)
 {
+	(void)server;
 	DIR *dr;
 	struct dirent *en;
 	dr = opendir(client.request->_path.c_str());
@@ -328,7 +327,6 @@ Location* CGI::_select_location(Request &request, Server &server)
 {
 	bool match = false;
 	Location *select_loc;
-	struct stat s;
 	
 
 	std::cout << RED << "request path: " << request._path << RESET << std::endl;
@@ -355,7 +353,7 @@ Location* CGI::_select_location(Request &request, Server &server)
 
 bool	CGI::_is_allow_method(t_method method, Location &location)
 {
-	for (int i = 0; i < location.allowMethod.size(); i++){
+	for (unsigned long i = 0; i < location.allowMethod.size(); i++){
 		if (method == location.allowMethod[i])
 			return (true);
 	}

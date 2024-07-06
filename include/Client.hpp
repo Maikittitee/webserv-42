@@ -21,8 +21,6 @@ class Client
 		int 				pipe_fd[2];
 		int					pipe_fd_out[2];
 		std::string			IPaddr;
-		socklen_t			addrLen;
-		struct sockaddr_in	addr;
 	
 		char				buffer[BUFFERSIZE + 1];
 

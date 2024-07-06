@@ -5,24 +5,13 @@ _server_fd(0),
 ipAddr("0.0.0.0"),
 listen(80),
 server_name("localhost"),
-error_page{"400", "403", "404", "405", "error.html"},
+// error_page{"400", "403", "404", "405", "error.html"},
 _config(),
 _mime(),
-_env(nullptr)
+_env(NULL)
 {
+	error_page.clear();
 
-}
-
-Server::Server(int port, char **env):
-_server_fd(0),
-ipAddr("0.0.0.0"),
-listen(80),
-server_name("localhost"),
-error_page{"400", "403", "404", "405", "error.html"},
-_config(),
-_mime() 
-{
-	_env = env;
 }
 
 Server::~Server (void) {
@@ -31,7 +20,7 @@ Server::~Server (void) {
 
 bool count_promax(std::vector<std::string> vec, std::string target)
 {
-	for (int i = 0; i < vec.size(); i++){
+	for (unsigned long i = 0; i < vec.size(); i++){
 		if (vec[i] == target)
 			return (true);
 	}
@@ -58,6 +47,7 @@ bool Server::errorPage(int error_code, Response &response){ // return resposne
 			response._body.append(buffer, len);
 			std::cout << response._body << std::endl;
 			response._content_type = "text/html";
+			close(fd);
 			return (true);
 		}
 	}

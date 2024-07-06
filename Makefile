@@ -1,6 +1,6 @@
 NAME	= webserv
 
-CC		= g++
+CC		= c++
 RM		= rm -f
 # CFLAGS	= -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 CFLAGS	= -Wall -Wextra -Werror -std=c++98 -g
@@ -15,7 +15,7 @@ HEADER	= $(wildcard $(INCLUDE_PATH)/*.hpp)
 
 OBJS	= $(SRCS:.cpp=.o)
 
-%.o:%.c
+%.o:%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)

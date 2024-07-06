@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nkietwee <nkietwee@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ktunchar <ktunchar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 02:07:08 by nkietwee          #+#    #+#             */
-/*   Updated: 2024/06/27 12:08:50 by nkietwee         ###   ########.fr       */
+/*   Updated: 2024/07/05 16:34:13 by ktunchar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,13 +83,13 @@ uint64_t	ft_stouint(std::string str)
 
 void	ft_print_vec_str(std::vector<std::string> vec)
 {
-	for (int i = 0; i < vec.size(); i++)
+	for (unsigned long i = 0; i < vec.size(); i++)
         	std::cout << i << "|" << vec[i] << "|" << std::endl;
 }
 
 void	ft_print_vec_uint(std::vector<uint64_t> vec)
 {
-	for (int i = 0; i < vec.size(); i++)
+	for (unsigned long i = 0; i < vec.size(); i++)
         	std::cout << i << "|" << vec[i] << "|" << std::endl;
 }
 
@@ -275,7 +275,7 @@ void	ft_prt_server(Server &sv)
 
 void	ft_prt_allowmethod(std::map<std::string, Location>::iterator it, std::vector<t_method> allowMethod)
 {
-	for (int i = 0; i < allowMethod.size(); i++)
+	for (unsigned long i = 0; i < allowMethod.size(); i++)
 	{
 		if (allowMethod[i] == ELSE)
 			std::cout << it->first << ":: allowMethod [" << i << "]" << " : " << "ELSE" << std::endl;
@@ -311,7 +311,7 @@ void	ft_prt_only_location(Location lc)
 	
 	std::cout << " :: " << "root : " << lc.root << std::endl;
 	
-	for (int j = 0; j < lc.index.size(); j++)
+	for (unsigned long j = 0; j < lc.index.size(); j++)
 		std::cout << " :: " << "index[" << j << "] : " << lc.index[j] << std::endl;
 	
 	std::cout << " :: " << "return code : " << lc.ret.code << std::endl;
@@ -348,7 +348,7 @@ void	ft_prt_location(std::map<std::string, Location> _config)
 			
 			std::cout << it->first << " :: " << "root : " << it->second.root << std::endl;
 			
-			for (int j= 0; j < it->second.index.size(); j++)
+			for (unsigned long j= 0; j < it->second.index.size(); j++)
 				std::cout << it->first << " :: " << "index[" << j << "] : " << it->second.index[j] << std::endl;
 			
 			std::cout << it->first << " :: " << "return code : " << it->second.ret.code << std::endl;
@@ -453,7 +453,7 @@ std::vector<t_method>	ft_get_allowMethod(std::string value)
 	std::vector<t_method>		res;
 
 	sp = ft_split(value);
-	for (int i = 0; i < sp.size(); i++)
+	for (unsigned long i = 0; i < sp.size(); i++)
 	{
 		if (sp[i] == "ELSE")
 			res.push_back(ELSE);
@@ -616,7 +616,7 @@ int	parsing_config(int ac, char **av, std::vector<Server> &sv)
 		}
 		if (check_paren == 0)
 		{
-			for (int i = 0; i < tmp_port.size(); i++)
+			for (unsigned long i = 0; i < tmp_port.size(); i++)
 			{
 				server.listen = tmp_port[i];			
 				sv.push_back(server);
